@@ -483,8 +483,9 @@ def check_style(md):
     n_scoped = html_doc.count('<th scope="col">')
     check("style: every HTML table has scope=col header cells", n_scoped >= n_tables,
           f"{n_scoped} scoped headers for {n_tables} tables")
+    n_stamped = html_doc.count('class="stamp"')
     check("style: the proof stamp signature is applied to every proof table",
-          html_doc.count('class="stamp"') == 14, f"{html_doc.count('class=\"stamp\"')} stamped")
+          n_stamped == 14, f"{n_stamped} stamped")
     check("style: the page is a single self contained file",
           "<style>" in html_doc and "<script>" in html_doc, "")
     check("style: light and dark themes both present from the roadmap tokens",

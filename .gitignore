@@ -10,9 +10,11 @@ __pycache__/
 *.pyc
 
 # gate screenshots (regenerable, and they are megabytes of pixels)
-.qa/ui-gate-*.png
-.qa/review-*.png
-.qa/zoom-*.png
+ui-gate-*.png
+review-*.png
+zoom-*.png
+.qa/*.png
+shots/*.png
 
 # course material that is not mine to republish (university handout, submissions)
 Handouts/

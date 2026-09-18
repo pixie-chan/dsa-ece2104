@@ -25,7 +25,7 @@
     "G14 META": "PASS",
     "G15 ASSETS": "PASS",
     "G16 STATES": "SKIP",
-    "G18 ITER": "PASS"
+    "G18 ITER": "WARN"
   },
   "shots": [
     "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/ui-gate-01-1280x900.png",

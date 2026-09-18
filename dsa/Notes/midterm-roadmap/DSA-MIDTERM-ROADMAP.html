@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+<script>
+  /* decide the sheet before the first paint, or a dark reader sees a light flash */
+  (function () {
+    try {
+      var saved = localStorage.getItem("dsa-roadmap-theme");
+      if (!saved && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) saved = "dark";
+      if (saved) document.documentElement.setAttribute("data-theme", saved);
+    } catch (e) {}
+  })();
+</script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +19,16 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="DSA Mid-Term Roadmap, ECE2104">
 <meta property="og:description" content="Lectures 1 to 16 of ECE2104: what the exam covers, the concept chain, a seven session plan, twelve numericals with a separate key, and the gaps still open.">
-<meta property="og:image" content="og-card.svg">
+<meta property="og:url" content="https://github.com/pixie-chan/dsa-ece2104">
+<meta property="og:image" content="og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23fafaf9'/%3E%3Cg fill='%231b4d7a'%3E%3Crect x='3' y='2' width='2' height='2'/%3E%3Crect x='3' y='5' width='2' height='2'/%3E%3Crect x='3' y='8' width='2' height='2'/%3E%3Crect x='6' y='8' width='7' height='2'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- NOSTATE: static single file dossier, no fetches, no server, no async data. The only empty cases are the
+<!-- NOSTATE: static single file dossier with no server and no async data after load. It does fetch three Google font families on first paint (Instrument Serif, Instrument Sans, IBM Plex Mono) and falls back to Georgia and the system sans offline, so there is no runtime fetch and therefore no loading or error state. The only empty cases are the
      readiness meter before anything is ticked (it prints "nothing ticked yet") and the answer reveals before a reveal
      (they print "hidden, work them on paper first"). Loading and error states do not exist on this page by design. -->
 <!--
@@ -30,6 +44,7 @@
 -->
 <style>
 :root {
+  color-scheme:light;
   --bg:#fafaf9; --surface:#ffffff; --surface-2:#f2f0ec; --surface-3:#e6e3dd;
   --line:#e2dfd9; --line-2:#c4bfb4; --rule:#d8d3c8;
   --text:#1c1917; --text-2:#4a453f; --text-3:#635d54;
@@ -48,6 +63,7 @@
   --w-reg:400; --w-med:500; --w-semi:600;
 }
 [data-theme="dark"] {
+  color-scheme:dark;
   --bg:#14120f; --surface:#1d1a16; --surface-2:#262218; --surface-3:#322c22;
   --line:#38322a; --line-2:#4f4739; --rule:#443c31;
   --text:#f5f2ec; --text-2:#cdc6b8; --text-3:#a49b8b;
@@ -104,15 +120,15 @@ code{font-family:var(--font-mono); font-size:1em; font-variant-numeric:tabular-n
 
 /* ===== block timeline (signature) ===== */
 .blocks{margin-top:var(--s-7)}
-.blocks__rail{position:relative; padding-top:var(--s-8); display:grid; gap:2px; align-items:stretch;
+.blocks__rail{position:relative; padding-top:96px; display:grid; gap:2px; align-items:stretch;
   grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,1fr) minmax(0,5fr) minmax(0,1fr) 232px; grid-template-rows:auto auto}
-.blocks__rail::before{content:""; position:absolute; top:38px; left:0; right:0; height:2px; background:var(--text); z-index:0}
+.blocks__rail::before{content:""; position:absolute; top:64px; left:0; right:0; height:2px; background:var(--text); z-index:0}
 .blocks__axis + .slab{border-left-width:1px}
 .blocks__axis{display:contents}
 .blocks__axis span{grid-row:1; font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.06em;
   text-transform:uppercase; color:var(--text-3); padding-left:2px; align-self:end}
 .slab{grid-row:2; min-width:0}
-.slab::before{content:""; position:absolute; top:calc(-1 * var(--s-5) + 6px); left:12px; width:2px; height:calc(var(--s-5) - 6px); background:var(--line-2)}
+.slab::before{content:""; position:absolute; top:-30px; left:12px; width:2px; height:30px; background:var(--line-2)}
 .slab{position:relative; background:var(--surface); border:1px solid var(--line-2); padding:var(--s-4);
   display:flex; flex-direction:column; gap:var(--s-2); min-height:132px; animation:slabIn var(--dur-3) var(--ease) both}
 .slab:hover{background:color-mix(in oklab, var(--accent) 7%, var(--surface)); border-color:var(--accent)}
@@ -135,7 +151,8 @@ code{font-family:var(--font-mono); font-size:1em; font-variant-numeric:tabular-n
 @media print{ .blocks__rail{grid-template-columns:repeat(6, 1fr)} .slab{min-height:auto} }
 
 /* ===== rail (lecture spine) ===== */
-.rail{position:sticky; top:var(--s-4); border-left:1px solid var(--line-2); padding-left:var(--s-4)}
+.rail{position:sticky; top:var(--s-4); border-left:1px solid var(--line-2); padding-left:var(--s-4);
+  max-height:calc(100dvh - var(--s-6)); overflow-y:auto; overscroll-behavior:contain; padding-right:var(--s-2)}
 .rail h2{font-family:var(--font-body); font-size:var(--text-md); font-weight:600; margin-bottom:var(--s-3)}
 .tick{display:grid; grid-template-columns:26px minmax(0,1fr) 14px; gap:var(--s-2); align-items:center; width:100%;
   min-height:44px; padding:2px var(--s-2); border:0; background:none; color:var(--text-2); font:inherit;
@@ -255,11 +272,14 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
 .foot{border-top:2px solid var(--text); margin-top:var(--s-7); padding-top:var(--s-5); color:var(--text-3); font-size:var(--text-sm)}
 .foot code{font-size:var(--text-xs)}
 @media print{
+  .slab,.pill,.meter__fill,.mapnode{-webkit-print-color-adjust:exact; print-color-adjust:exact}
   .rail,.skip,.rail__btns,.trail,.revs{display:none !important}
   .paper{display:block; max-width:none; padding:0}
   .hero__top,.cols,.chain{grid-template-columns:minmax(0,1fr)}
   body{background:#ffffff; color:#000000; font-size:12pt}
-  details.ans{display:block}
+  details.ans{display:block; break-inside:avoid}
+  details.ans > summary{display:none}
+  details.ans::details-content{display:block; content-visibility:visible; contain:none}
   details.ans > *{display:block !important}
   section{break-inside:auto}
 }
@@ -301,7 +321,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       <div class="metric">
         <b>Material ready</b>
         <span id="ready-count">2 of 5 blocks</span>
-        <small>memory and lists shipped and verified, stacks, queues and recursion still open</small>
+        <small>blocks A and B shipped and verified (foundation, memory, lists), blocks C to E still open</small>
       </div>
     </div>
 
@@ -374,7 +394,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
     </div>
     <div class="meter">
       <p class="eyebrow">Readiness</p>
-      <div class="meter__bar" role="img" aria-label="Fraction of the sixteen lectures ticked off"><div class="meter__fill" id="meter-fill"></div></div>
+      <div class="meter__bar" id="meter-bar" role="progressbar" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0" aria-label="Lectures ticked off, out of sixteen"><div class="meter__fill" id="meter-fill"></div></div>
       <p class="meter__text" id="meter-text" aria-live="polite">nothing ticked yet</p>
       <div class="split">
         <div><b>CO1 &middot; 1 to 10</b><span id="co1-count">0 / 10</span></div>
@@ -387,12 +407,12 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       <button class="btn" type="button" id="theme-btn" aria-pressed="false"><span id="theme-label">dark sheet</span></button>
     </div>
     <p class="eyebrow" style="margin-top:24px">Session trail</p>
-    <ol class="trail" id="trail" aria-live="polite"></ol>
+    <ol class="trail" id="trail"></ol>
   </nav>
 
   <main class="main">
 
-    <section id="s1" aria-labelledby="h1-title">
+    <section id="s1" tabindex="-1" aria-labelledby="h1-title">
       <div class="sec__head">
         <div>
           <p class="eyebrow">01 &middot; exam facts</p>
@@ -404,7 +424,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
         <div class="tbl-wrap">
           <table>
             <caption>Assessment plan, handout section E</caption>
-            <thead><tr><th>Assessment</th><th>Detail</th><th class="n">Marks</th></tr></thead>
+            <thead><tr><th scope="col">Assessment</th><th scope="col">Detail</th><th class="n" scope="col">Marks</th></tr></thead>
             <tbody>
               <tr><td>Mid-Term Examination</td><td>closed book, lectures 1 to 16</td><td class="n">30</td></tr>
               <tr><td>Class Work Sessional</td><td>quiz, MOOC, assignment</td><td class="n">30</td></tr>
@@ -429,7 +449,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       </div>
     </section>
 
-    <section id="s2" aria-labelledby="h2-title">
+    <section id="s2" data-lectures="1 16" aria-labelledby="h2-title">
       <div class="sec__head">
         <div>
           <p class="eyebrow">02 &middot; the sixteen lectures</p>
@@ -442,7 +462,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       <div class="tbl-wrap">
         <table>
           <caption>Lecture plan, with the state of the material</caption>
-          <thead><tr><th class="n">L</th><th>Topic</th><th>Session outcome</th><th class="n">CO</th><th>Material</th></tr></thead>
+          <thead><tr><th class="n" scope="col">L</th><th scope="col">Topic</th><th scope="col">Session outcome</th><th class="n" scope="col">CO</th><th scope="col">Material</th></tr></thead>
           <tbody>
             <tr><td class="n">1</td><td>Introduction and Course Hand-out briefing</td><td>Understand basics of subject and assessment</td><td class="n">1</td><td><span class="pill">no artifact needed</span></td></tr>
             <tr><td class="n">2</td><td>Introduction to C++/Python, Features, Program Structure</td><td>Understand basic language syntax and operations</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>lesson 01</span></td></tr>
@@ -465,7 +485,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       </div>
     </section>
 
-    <section id="s3" aria-labelledby="h3-title">
+    <section id="s3" data-lectures="5 9" aria-labelledby="h3-title">
       <div class="sec__head">
         <div>
           <p class="eyebrow">03 &middot; the chain</p>
@@ -539,7 +559,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       </div>
     </section>
 
-    <section id="s5" aria-labelledby="h5-title">
+    <section id="s5" data-lectures="11 16" aria-labelledby="h5-title">
       <div class="sec__head">
         <div>
           <p class="eyebrow">05 &middot; the plan</p>
@@ -600,7 +620,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       </div>
     </section>
 
-    <section id="s6" aria-labelledby="h6-title">
+    <section id="s6" data-lectures="5 9" aria-labelledby="h6-title">
       <div class="sec__head">
         <div>
           <p class="eyebrow">06 &middot; numericals</p>
@@ -645,7 +665,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       </div>
     </section>
 
-    <section id="s7" aria-labelledby="h7-title">
+    <section id="s7" data-lectures="16" aria-labelledby="h7-title">
       <div class="sec__head">
         <div>
           <p class="eyebrow">07 &middot; evidence</p>
@@ -657,7 +677,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
         <div class="tbl-wrap">
           <table>
             <caption>Frame probe, measured on this machine</caption>
-            <thead><tr><th>Call</th><th class="n">Recursive calls</th><th class="n">Deepest nesting</th><th class="n">Moves</th></tr></thead>
+            <thead><tr><th scope="col">Call</th><th class="n" scope="col">Recursive calls</th><th class="n" scope="col">Deepest nesting</th><th class="n" scope="col">Moves</th></tr></thead>
             <tbody>
               <tr><td><code>factorial(1)</code> to <code>factorial(5)</code></td><td class="n">n</td><td class="n">n</td><td class="n">n/a</td></tr>
               <tr><td><code>factorial(4)</code>, frames alive</td><td class="n">4</td><td class="n">4 plus main</td><td class="n">n/a</td></tr>
@@ -673,6 +693,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
           <ul class="plain">
             <li>Every Hanoi call performs exactly one move, so calls and moves are both <code>2ⁿ - 1</code>. There is no second count to memorise.</li>
             <li>The probe measured 144 bytes across four nested frames: the same <code>48 bytes per frame</code> the lecture 5 capture reported. Two independent runs, one number.</li>
+        <li>Question 11 charges five frames, not four: the four recursive <code>factorial</code> frames plus <code>main</code>. Both numbers are the same measurement read two ways, 4 x 48 = 192 bytes of recursion inside 5 x 48 = 240 bytes of stack.</li>
             <li>Recursion questions are frame questions: depth is memory, and the base case is what stops the stack growing.</li>
           </ul>
         </div>
@@ -690,7 +711,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       <div class="tbl-wrap">
         <table>
           <caption>Material state</caption>
-          <thead><tr><th>Area</th><th>Materials</th><th>State</th></tr></thead>
+          <thead><tr><th scope="col">Area</th><th scope="col">Materials</th><th scope="col">State</th></tr></thead>
           <tbody>
             <tr><td>Lecture 5, memory</td><td><code>Notes/intro-memory/</code>: interactive guide, notes, 5 rendered diagrams, verifier</td><td><span class="pill pill--ok"><span class="pill__dot"></span>complete, verified</span></td></tr>
             <tr><td>Lectures 6 to 8, lists</td><td><code>Notes/linked-list/</code>: notes, 4 diagrams, lessons 06 to 08, verifier</td><td><span class="pill pill--ok"><span class="pill__dot"></span>complete, verified</span></td></tr>
@@ -734,7 +755,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       <div class="tbl-wrap">
         <table>
           <caption>Provenance</caption>
-          <thead><tr><th>Source</th><th>What was taken from it</th></tr></thead>
+          <thead><tr><th scope="col">Source</th><th scope="col">What was taken from it</th></tr></thead>
           <tbody>
             <tr><td>Handout section E</td><td>assessment plan: mid-term 30, CWS 30, end term 40</td></tr>
             <tr><td>Handout section G, pages 4 to 6</td><td>lecture plan rows, verbatim topic and outcome wording, CO mapping, and the position of the MID SEMESTER EXAMINATION row after lecture 16</td></tr>
@@ -753,7 +774,7 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       <h2 id="hkey">The twelve answers in one block, for a cold self-test</h2>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th class="n">Q</th><th>Answer, short form</th></tr></thead>
+          <thead><tr><th class="n" scope="col">Q</th><th scope="col">Answer, short form</th></tr></thead>
           <tbody>
             <tr><td class="n">1</td><td><code>0x7ffe7c3131bc</code>, one access, one multiply and one add</td></tr>
             <tr><td class="n">2</td><td>not computable, the address is stored in the previous node, four walks</td></tr>
@@ -798,12 +819,15 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
     var li = document.createElement("li");
     li.textContent = ACTIONS + ". " + msg;
     TRAIL.appendChild(li);
+    while (TRAIL.children.length > 40) TRAIL.removeChild(TRAIL.firstElementChild);
   }
 
   /* theme */
   var themeBtn = $("theme-btn"), themeLabel = $("theme-label");
   function applyTheme(t) {
     document.documentElement.setAttribute("data-theme", t);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", getComputedStyle(document.body).backgroundColor);
     var dark = t === "dark";
     if (themeBtn) themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
     if (themeLabel) themeLabel.textContent = dark ? "light sheet" : "dark sheet";
@@ -828,10 +852,16 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       var isDone = !!done[lec];
       ticks[i].setAttribute("data-state", isDone ? "done" : "todo");
       ticks[i].setAttribute("aria-pressed", isDone ? "true" : "false");
-      ticks[i].setAttribute("aria-label", "lecture " + lec + (isDone ? ", ticked off" : ", not ticked off yet"));
+      var topic = ticks[i].querySelector(".tick__n");
+      var topicText = "";
+      var spans = ticks[i].querySelectorAll("span");
+      if (spans.length > 1) topicText = (spans[1].textContent || "").trim();
+      if (topic) topic.setAttribute("aria-hidden", "true");
+      ticks[i].setAttribute("aria-label", "lecture " + lec + ", " + topicText + (isDone ? ", ticked off" : ", not ticked off yet"));
       if (isDone) { n++; if (parseInt(lec, 10) <= 10) co1++; else co2++; }
     }
     if ($("meter-fill")) $("meter-fill").style.width = Math.round((n / ticks.length) * 100) + "%";
+    if ($("meter-bar")) $("meter-bar").setAttribute("aria-valuenow", String(n));
     if ($("meter-text")) $("meter-text").textContent = n === 0
       ? "nothing ticked yet"
       : n + " of " + ticks.length + " lectures ticked, " + Math.round((n / ticks.length) * 100) + " percent of the paper covered";
@@ -852,12 +882,23 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
     save(); render(); log("every lecture ticked, readiness 16 of 16");
   });
   if ($("tick-reset")) $("tick-reset").addEventListener("click", function () {
-    done = {}; save(); render(); log("readiness reset: all sixteen lectures unticked, meter back to nothing ticked yet");
+    done = {}; save();
+    if (TRAIL) { TRAIL.innerHTML = ""; ACTIONS = 0; }
+    render();
+    log("readiness reset: all sixteen lectures unticked, trail cleared, meter back to nothing ticked yet");
   });
   render();
 
   /* the spine follows the reader */
-  var RANGES = { s2: [1, 16], s3: [5, 9], s5: [11, 16], s6: [5, 9], s7: [16] };
+  /* each section declares its own range: data-lectures="5 9" on the section element */
+  var RANGES = {};
+  (function () {
+    var marked = document.querySelectorAll("section[data-lectures]");
+    for (var m = 0; m < marked.length; m++) {
+      var parts = (marked[m].getAttribute("data-lectures") || "").split(/\s+/);
+      if (parts.length === 2) RANGES[marked[m].id] = [parseInt(parts[0], 10), parseInt(parts[1], 10)];
+    }
+  })();
   var sections = document.querySelectorAll("section[id]");
   if (window.IntersectionObserver) {
     var io = new IntersectionObserver(function (entries) {
@@ -895,12 +936,18 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
   revState();
 
   /* Enter on a control counts as a commit, and is recorded like any other action */
-  document.addEventListener("keydown", function (ev) {
-    if (ev.key !== "Enter") return;
-    var el = ev.target;
-    if (!el || (el.tagName !== "INPUT" && el.tagName !== "SELECT")) return;
-    if (el.id) log("committed " + el.id);
+  /* printing from an interactive session: open every answer, then restore */
+  window.addEventListener("beforeprint", function () {
+    var all = document.querySelectorAll("details.ans"), restore = [];
+    for (var i = 0; i < all.length; i++) { restore.push(all[i].open); all[i].open = true; }
+    window.__rmRestoreOpen = restore;
   });
+  window.addEventListener("afterprint", function () {
+    var all = document.querySelectorAll("details.ans"), r = window.__rmRestoreOpen || [];
+    for (var i = 0; i < all.length; i++) all[i].open = r[i] || false;
+  });
+
+
 })();
 </script>
 </body>

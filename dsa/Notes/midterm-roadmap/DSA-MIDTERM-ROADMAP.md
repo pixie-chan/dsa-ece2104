@@ -20,7 +20,7 @@
 | Session outcome verbs used | understand, define, represent, perform, implement, apply |
 | Stated assessment mode per lecture | in-class quiz throughout, and every CO1/CO2 lecture also counts to Mid Term |
 
-![Lecture dependency for the mid-term](diagrams/01-lecture-dependency.png)
+![Lecture dependency for the mid-term](diagrams/01-lecture-dependency.svg)
 
 ## 2. The sixteen lectures, as the handout lists them
 
@@ -44,7 +44,7 @@
 | 16 | Recursion and Recursive Algorithms | Apply recursion and linear DS to solve problems | 2 | improved: `DAS-LAB/Exp3_Recursion/` plus `09_recursion_frames.cpp` (measured calls, depth, frame bytes) |
 | 17 onward | Trees, heaps, sorting, graphs, analysis | end-term material | 3, 4, 5 | out of scope here |
 
-![Mid-term timeline](diagrams/02-midterm-timeline.png)
+![Mid-term timeline](diagrams/02-midterm-timeline.svg)
 
 ## 3. How the puzzle fits together
 
@@ -61,7 +61,7 @@ The 16 lectures are not 16 independent topics. There is one chain, and every exa
 | Two ends give FIFO | queue, circular queue wrap-around | lecture 13, 14 |
 | The call stack is a stack | recursion, frames 48 bytes apart measured | lecture 16 |
 
-![Concept map](diagrams/03-concept-map.png)
+![Concept map](diagrams/03-concept-map.svg)
 
 ## 4. What to be able to do, per course outcome
 
@@ -90,13 +90,13 @@ One session is roughly 90 minutes. Do not move on until the proof is produced; t
 | 1 | Lecture 5 material: read `INTRO-MEMORY-STUDY-NOTES.md`, then play the interactive guide sheets 01 to 04 | `python3 ~/learning/cpp/exercises/verify_ds_memory_lec5.py` prints 81/81 |
 | 2 | Lecture 6: linked list concept, types, node representation; run `06_linked_list_representation.cpp` | draw from memory: 16 byte node, both offsets, three list types |
 | 3 | Lecture 7: insert and delete; run `07_linked_list_operations.cpp`, then the exercises file | write insert-at-position on paper, then diff against the code |
-| 4 | Lecture 8: search and applications; run `08_linked_list_searching_apps.cpp` | solve the ten numerical problems in section 6 without looking |
+| 4 | Lecture 8: search and applications; run `08_linked_list_searching_apps.cpp` | solve the twelve numerical problems in section 6 without looking |
 | 5 | Lectures 11 and 12: stack in an array and as a linked list; push, pop, top, isEmpty | both implementations compile and print the same operation log |
 | 6 | Lectures 13 and 14: queue in an array, as a linked list, and circular; enqueue, dequeue, wrap | a circular queue that survives 2 full wrap-arounds, plus the count formula |
 | 7 | Lecture 16: recursion; `DAS-LAB/Exp3_Recursion/` factorial, fibonacci, Hanoi, then `09_recursion_frames.cpp` | trace Hanoi for n = 3, then match your counts against the probe's measured 7 calls, 3 frames deep |
 | check | 40 question mock, closed book, 60 minutes, section 6 and the two shipped guides' self-tests | score, then re-read only the misses |
 
-![Study sequence](diagrams/04-study-sequence.png)
+![Study sequence](diagrams/04-study-sequence.svg)
 
 ## 6. Numerical problems (the part lecture 8 explicitly names)
 

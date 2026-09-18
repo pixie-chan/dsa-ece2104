@@ -1,6 +1,6 @@
 # Snapshot index
 
-Five byte copies of `../DSA-MIDTERM-ROADMAP.html`, one per accepted round of change. Each folder
+Six byte copies of `../DSA-MIDTERM-ROADMAP.html`, one per accepted round of change. Each folder
 carries its own README with the reason, the hash and the test result at that moment; this page is the
 one-glance index.
 
@@ -11,8 +11,9 @@ one-glance index.
 | `v3-timeline-relayout` | 2026-09-18 23:31 | `21316272` | 230493 | taken after the relayout: the wide, short timeline |
 | `v4-pre-leftovers` | 2026-09-18 23:56 | `21316272` | 230493 | before the Batch 2 leftovers. Byte-identical to v3, because nothing changed the page in between; it also carries the APPLY and REVIEW documents as they read at that moment |
 | `v5-pre-og` | 2026-09-19 00:09 | `19f35017` | 230529 | before the share-card URLs were made absolute, which is A12 |
+| `v6-pre-topicwise-link` | 2026-09-18 23:59 | `cbc321cd` | 231128 | before the cross-link to the topic-wise explanation set was added to the topic plan section |
 
-Live page as of the last pass: `cbc321cd`, 231128 bytes.
+Live page as of the last pass: `5445084f`, 231889 bytes (carries the topic-wise cross-link).
 
 ## Full digests
 
@@ -22,6 +23,7 @@ Live page as of the last pass: `cbc321cd`, 231128 bytes.
 2131627215d8df3870a4d41fbe217e056824e755b04ed58e1efd6985dc61626b  v3-timeline-relayout/DSA-MIDTERM-ROADMAP-v3-timeline-relayout.html
 2131627215d8df3870a4d41fbe217e056824e755b04ed58e1efd6985dc61626b  v4-pre-leftovers/DSA-MIDTERM-ROADMAP.html
 19f350175c8da8bab37902a645dd241d9dc3c0fcb1a3fdee9a8c8cff905665d8  v5-pre-og/DSA-MIDTERM-ROADMAP.html
+cbc321cd4a017fb8f053947c42fdca0376c326e2056e6ae8042b882b3d49fb48  v6-pre-topicwise-link/DSA-MIDTERM-ROADMAP.html
 ```
 
 ## How a snapshot is taken

@@ -592,6 +592,31 @@ def check_keys_after_topics(md):
           f"{n_topics_after} topics after the keys")
 
 
+ROADMAP_HTML = NOTES / "midterm-roadmap" / "DSA-MIDTERM-ROADMAP.html"
+
+
+def check_cross_links(md, html_doc):
+    """Both directions of the roadmap cross-link, and that each lands on a real anchor.
+
+    A link that points at an id the target page does not have is a 404 in a browser tab and
+    looks like a working link in a diff, so the anchor is resolved against the target file.
+    """
+    frag = ROADMAP_LINK.split("#")[-1]
+    check("cross-link: the roadmap file exists on disk", ROADMAP_HTML.exists(), str(ROADMAP_HTML))
+    if ROADMAP_HTML.exists():
+        target = ROADMAP_HTML.read_text(encoding="utf-8")
+        check(f"cross-link: the roadmap really has the #{frag} anchor",
+              f'id="{frag}"' in target, f'id="{frag}" not found in the roadmap')
+        check("cross-link: the roadmap links back to this explanation set",
+              "topic-wise/TOPIC-WISE-EXPLAINED.html" in target, "")
+        check("cross-link: the roadmap still passes its own verifier marker",
+              "DSA Mid-Term Roadmap" in target or "ECE2104" in target, "")
+    check("cross-link: the HTML carries the roadmap link as a real anchor",
+          f'href="{ROADMAP_LINK}"' in html_doc, "")
+    check("cross-link: the HTML renders it as a link, not as literal markdown",
+          "[DSA mid-term roadmap" not in html_doc, "markdown left unrendered")
+
+
 # ------------------------------------------------------------------ mutation battery
 
 def mutate_and_run(name, transform, tmp, caps):
@@ -616,6 +641,9 @@ def mutate_and_run(name, transform, tmp, caps):
             check_keys_after_topics(doc)
             check_style(doc)
             check_no_sibling_paths(doc)
+            # the real HTML, not the mutant: passing the mutant as the HTML would make
+            # every fault look caught for the wrong reason
+            check_cross_links(doc, HTML.read_text(encoding="utf-8"))
             failed = [l for l, ok, _ in RESULTS if not ok]
         finally:
             globals()["MD"] = saved_md
@@ -711,6 +739,7 @@ def main():
     check_diagrams(md)
     check_style(md)
     check_no_sibling_paths(md)
+    check_cross_links(md, HTML.read_text(encoding="utf-8"))
 
     passed = sum(1 for _, ok, _ in RESULTS if ok)
     total = len(RESULTS)

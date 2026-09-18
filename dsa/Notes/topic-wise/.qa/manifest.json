@@ -1,0 +1,36 @@
+{
+  "file": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/topic-wise/TOPIC-WISE-EXPLAINED.html",
+  "direction": "editorial",
+  "project": "topic-wise-explained",
+  "date": "2026-09-19",
+  "gate_summary": {
+    "G0  TOPIC-DIRECT": "PASS",
+    "G0A REFS": "NO-TOKEN",
+    "G0B LEDGER": "FAIL",
+    "G1  CRAFT": "FAIL",
+    "G2  BUILD": "PASS",
+    "G3  GUARD": "PASS",
+    "G4  CONTRAST": "PASS",
+    "G4A A11Y": "FAIL",
+    "G5  VISUAL": "FAIL",
+    "G17 COMPOSE": "WARN",
+    "G6  CROSS": "SKIP",
+    "G7  PERF": "PASS",
+    "G8  INTERACTION": "PASS",
+    "G9  GLYPH": "PASS",
+    "G10 LOOP": "FAIL",
+    "G11 CONCEPT": "FAIL",
+    "G12 MOTION": "PASS",
+    "G13 COPY": "WARN",
+    "G14 META": "PASS",
+    "G15 ASSETS": "PASS",
+    "G16 STATES": "SKIP",
+    "G18 ITER": "NO-TOKEN"
+  },
+  "shots": [
+    "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/topic-wise/.qa/ui-gate-01-1280x900.png",
+    "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/topic-wise/.qa/ui-gate-01-1280x900-scrolled.png",
+    "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/topic-wise/.qa/ui-gate-02-375x812.png",
+    "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/topic-wise/.qa/ui-gate-02-375x812-scrolled.png"
+  ]
+}

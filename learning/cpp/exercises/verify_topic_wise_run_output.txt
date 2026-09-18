@@ -1,0 +1,21 @@
+
+== VERIFY: 243/243 checks pass ==
+== MUTATION BATTERY: a verifier that cannot fail is not a verifier ==
+  [CAUGHT] a measured number changed to a wrong value  -> numbers: all 130 multi-digit tokens traceable to a capture, a fresh run, or the named derived allowlist
+  [CAUGHT] a capture file name misquoted  -> captures: the document names only real capture files
+  [CAUGHT] a topic renamed away from the projected list  -> topics: the projected order, not the handout order
+  [CAUGHT] a topic section deleted  -> topics: exactly 14 sections
+  [CAUGHT] an em dash injected  -> style: no em dash (U+2014) anywhere
+  [CAUGHT] a numerical deleted from a topic, so the key no longer matches  -> topic 2 (Pointers): numericals numbered 1..7
+  [CAUGHT] a key row deleted, so the key no longer numbers 1 to 1  -> topic 1 (Array): key has one entry per numerical
+  [CAUGHT] an answer leaked into the question section  -> keys: no answer leaked into the question sections
+  [CAUGHT] a diagram embed pointed at a sibling folder  -> paths: no image embed escapes this folder
+  [CAUGHT] ASCII spelling of a math word introduced  -> style: no ASCII spelling of the math words
+  [CAUGHT] the keys section moved before the topics  -> keys: the keys section sits after the last topic
+== MUTATION RESULT: 11/11 injected faults caught ==
+== KNOWN BLIND SPOTS (stated, not hidden):
+   - a measured number swapped for ANOTHER number the same capture contains: the
+     traceability check is a membership test, so it cannot tell a swap from a
+     repeat. The headline quotes ARE checked by name against their capture line.
+   - a code block that is syntactically valid but semantically wrong (a wrong
+     loop bound that still compiles) is not caught by a compile-only check.

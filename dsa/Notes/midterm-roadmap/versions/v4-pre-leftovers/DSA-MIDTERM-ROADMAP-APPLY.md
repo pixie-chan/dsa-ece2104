@@ -1,11 +1,9 @@
 # Apply list: DSA-MIDTERM-ROADMAP.html
 
-The do-now list. Twelve patches, ordered by value, each with the literal edit and a check. Every item here is now applied, including the three Batch 2 leftovers (B4, B5, B9) closed at revision `19f350175c8da8ba`. Deeper evidence for every item, plus the record of what is already fixed, is in `DSA-MIDTERM-ROADMAP-PATCHES.md`; the measurements behind each claim are in `DSA-MIDTERM-ROADMAP-REVIEW.md`.
+The do-now list. Twelve patches, ordered by value, each with the literal edit and a check. Nothing here has been applied. Deeper evidence for every item, plus the record of what is already fixed, is in `DSA-MIDTERM-ROADMAP-PATCHES.md`; the measurements behind each claim are in `DSA-MIDTERM-ROADMAP-REVIEW.md`.
 
 - **Target:** `~/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/DSA-MIDTERM-ROADMAP.html`
-- **Current revision:** `sha256 19f350175c8da8ba`, 230529 bytes, mtime 2026-09-18 23:56:34 IST. Everything below is applied at this revision, and the health battery passes 15 of 15 rows.
-- **Pre-edit snapshot:** `versions/v4-pre-leftovers/` holds the page and both documents as they stood at `2131627215d8df38`.
-- **Pinned revision this list was validated against:** `sha256 2131627215d8df38`, 230493 bytes, mtime 2026-09-18 23:29:35 IST
+- **Pinned revision:** `sha256 2131627215d8df38`, 230493 bytes, mtime 2026-09-18 23:29:35 IST
 - **Careful with line numbers.** Revision `10634400` reformatted the file from 2632 lines to 1121 by compacting whitespace, so the line numbers written when this list was drafted (against `7fc0de2d` and `c13596a0`) are stale. Every literal snippet in this document was re-validated against `10634400` and still matches exactly once, except the nine-image prefix in B6 which matches nine times by design. Locate every edit by its snippet.
 
 ## Every patch here was test-applied and verified
@@ -339,62 +337,18 @@ The page grew from 1317 to 2632 lines and from 90KB to 237KB. It now carries the
 | B1 | FIXED | Seven axis labels match seven slabs, verified pairwise from 1241px up |
 | B2 | FIXED | Block F now reads `15 lectures, past the spine` with no fill bar, and `SLABS` carries the `f` entry |
 | B3 | FIXED | The chips read `topic plan`, `inventory`, `honesty`; no placeholder labels remain |
-| B4 | FIXED | The description now ends `... each with its own answer key, and the gaps that are still open.`, no clipped join |
-| B5 | FIXED | 69 of 69 tables wrapped and captioned; every one of the 234 `<th>` already carried `scope="col"` |
+| B4 | PARTLY | The old "Roughly sequence" fragment is gone, but the description now ends `answer key.re still open.` |
+| B5 | NEARLY | 69 of 69 tables carry a caption, 68 of 69 are wrapped, about 7 `<th>` still lack `scope` |
 | B6 | FIXED | All ten figures now sit in `diagrams/` beside the page and every file resolves |
 | B7 | FIXED | Zero mangled struct literals remain; `sizeof(Node{int data; Node* next;})` is back |
 | B8 | FIXED | Rail 1431px to 464px, uniform 347px slabs, no overflow at any of eleven widths |
-| B9 | FIXED | `min-width:44px` merged into the single `.slab__link` rule; one declaration, computed value still 44px |
+| B9 | OPEN | The duplicate `.slab__link{min-width:44px}` is still declared beside the slab rule |
 
 Status measured at revision `2131627215d8df38`. The sections below are kept as the measurement record; where one disagrees with this table, the table is current.
 
-### Batch 2 closed out, revision 19f350175c8da8ba
+### B4b, the one thing still worth fixing in the meta description
 
-Applied 2026-09-18 23:56 IST to the live page, after snapshotting it to `versions/v4-pre-leftovers/`. Three items, four literal edits, nothing else touched:
-
-| # | Edit |
-|---|---|
-| B4 | line 17: `...each with its own answer key.re still open.` becomes `...each with its own answer key, and the gaps that are still open.` |
-| B5 | line 700: `<h3>The four gaps that only practice closes</h3><table>` becomes `</h3><div class="tbl-wrap"><table>`, and that table's closing `</table>` becomes `</table></div>` |
-| B9 | line 292: `.slab__link{min-width:44px} .slab__link{position:absolute; ...}` becomes one rule, `.slab__link{min-width:44px; position:absolute; ...}` |
-
-**B5 needed only the wrap.** The `<th scope>` half was a phantom: the census command used to find it, `grep -o '<th' file \| wc -l`, also matches `<thead>`, and this file has 43 of those. Counted properly, all 234 `<th>` elements already carried `scope="col"` (227 plain, 7 with `class="n"`), which is why the reported "about seven headers" was exactly the `<thead>` opening tags. Corrected commands are at the end of this section.
-
-Verified against the live page at `sha256 19f350175c8da8ba`, 230529 bytes, mtime 23:56:34:
-
-```
-node ~/.cache/roadmap-qa/leftovers.mjs   ALL LEFTOVER CHECKS PASS (8 rows, 0 page errors)
-node ~/.cache/roadmap-qa/health.mjs      15 of 15 PASS
-node ~/.cache/roadmap-qa/verify14.mjs    trail 1 to 10, s7Spine 16, errs []
-node ~/.cache/roadmap-qa/wheel.mjs       page 2500 to 2900 over the pinned bar, strip stays at 0
-node ~/.cache/roadmap-qa/verify4.mjs     beforePrintOpen 2, double 2 (equal), openAfterPdf 0
-node ~/.cache/roadmap-qa/sweep.mjs       ok at all ten widths, 320px to 1920px
-print                                    83 pages, all four gap rows present, SHOW ANSWER 0
-python3 ~/scripts/export-tokens.py DSA-MIDTERM-ROADMAP.html --check    clean, rc 0
-three inline scripts                     node --check clean
-```
-
-`leftovers.mjs` is the new probe and it reads the DOM rather than the source: 69 tables with 69 `.tbl-wrap` and 0 loose, the description as whole sentences with no `word.word` join, exactly one `.slab__link` rule in the CSSOM whose computed `min-width` is still 44px, link box 356 x 235 at 390px, and no document overflow at 390px.
-
-**Probe pitfall, it cost one false FAIL.** Current Chromium gives every `CSSStyleRule` a `cssRules` property that exists but is empty. A CSSOM sweep guarded with `if (rule.cssRules) return [...rule.cssRules].forEach(walk)` therefore recurses into nothing and reports zero rules, which reads exactly like "the declaration was deleted". Guard on `rule.cssRules && rule.cssRules.length`.
-
-### Corrected table checks
-
-The `<th>` commands quoted in the B5 sections above over-count by 43. Use these instead:
-
-```
-grep -o '<table' DSA-MIDTERM-ROADMAP.html | wc -l                 # 69
-grep -o 'class="tbl-wrap"' DSA-MIDTERM-ROADMAP.html | wc -l       # 69
-grep -o '<th[^>]*>' DSA-MIDTERM-ROADMAP.html | sort | uniq -c     # every line carries scope="col"
-```
-
-The third command is a census rather than a count, so it shows which variant each header uses and cannot be fooled by `<thead>`.
-
-### B4b, the meta description (applied at revision 19f350175c8da8ba)
-
-The text quoted below is the state before the fix. The tail was clipped off with the front of "The gaps are still open", leaving `key.re still open.`, so the whole content was replaced with a clean version that keeps the original front half and closes the sentence as `... each with its own answer key, and the gaps that are still open.`
-
-It ended:
+It currently ends:
 
 ```
 ... a forty question mock paper and a twenty four problem numeric set, each with its own answer key.re still open.
@@ -408,10 +362,10 @@ It ended:
 
 **Check:** the description reads as whole sentences and contains no `key.re` style joins.
 
-### B5 residue, two small passes (applied at revision 19f350175c8da8ba)
+### B5 residue, two small passes
 
-- The table titled "The four gaps that only practice closes" in the mock paper section is now wrapped like the other 68.
-- **The `<th>` pass needed nothing, and the command that asked for it was wrong.** `grep -o '<th ' file | wc -l` counts `<thead>` opening tags too, and this file has 43 of them. Every one of the 234 `<th>` elements already carried `scope="col"`, so the "about seven headers" here were the `<thead>` tags themselves. Use the census command in the closure section above.
+- One table is still outside a `.tbl-wrap`: the one titled "The four gaps that only practice closes" in the mock paper section. Wrap it like the other 68.
+- About 7 `<th>` cells still lack `scope="col"`. Compare `grep -o '<th ' file | wc -l` against `grep -o '<th scope="col"' file | wc -l` and add the attribute where it is missing.
 
 ### B1. Timeline labels no longer line up with the slabs
 
@@ -507,10 +461,10 @@ Line 17 ends `... and a timed mock paper. Roughly sequence, twelve numerical pro
 ### B5. Table hygiene in the new sections
 
 - **Line 1835**, the table "The four gaps that only practice closes" in the mock paper section is the only one of 69 not wrapped in `.tbl-wrap`, so it can push the layout sideways on a narrow screen. Wrap it like its neighbours.
-- **133 of 277 `<th>` elements have no `scope="col"`.** Superseded and false: see the B5 residue item above. All 234 real `<th>` elements carry it; the 277 came from counting `<thead>` as well. A mechanical pass over the new sections would have added nothing.
+- **133 of 277 `<th>` elements have no `scope="col"`.** The batch 1 patch covered the original tables; the new ones were added without it. A mechanical pass over the new sections fixes it.
 - **58 of 69 tables have no `<caption>`.** The originals all had one. Captions are also what a screen reader announces as the table name.
 
-**Check:** `grep -o '<table' file | wc -l` equals `grep -o 'class="tbl-wrap"' file | wc -l` (69 each), and `grep -o '<th[^>]*>' file | sort | uniq -c` shows only variants containing `scope="col"`. The older form of this check, `grep -o '<th' file | wc -l`, over-counts by the number of `<thead>` tags and reports a phantom defect.
+**Check:** `grep -c '<table' file` minus `grep -c 'class="tbl-wrap"' file` should be 0, and `grep -o '<th' file | wc -l` should equal `grep -o '<th scope="col"' file | wc -l`.
 
 ### B6. Nine figures now live outside this folder
 
@@ -562,9 +516,9 @@ sizeof(TreeNode{int data; TreeNode* left; TreeNode* right;})
 
 The single-lecture columns were given minimum widths instead of a bare `1fr`, and the padding and line height were trimmed, so the two slabs that used to wrap to 1231px and 1314px now sit at 347px like the rest. Measured: rail 1431px to 464px, slabs 1314px to 347px, and the intrinsic heights are uniform enough that no slab carries dead space. `node ~/.cache/roadmap-qa/tall3.mjs` re-measures it.
 
-### B9. A duplicated `.slab__link` declaration (applied at revision 19f350175c8da8ba)
+### B9. A duplicated `.slab__link` declaration (cosmetic, still present)
 
-The 23:07 save added `.slab__link{min-width:44px}` on the same line as the existing rule, so the file had two `.slab__link` declarations where one would do. They are now one rule, `min-width:44px` first so the declaration order is unchanged, and the CSSOM reports exactly one `.slab__link` entry whose computed `min-width` is still 44px. The text below is the state before the merge.
+The 23:07 save added `.slab__link{min-width:44px}` on the same line as the existing rule, so the file now has two `.slab__link` declarations where one would do:
 
 ```css
 .slab__link{min-width:44px} .slab__link{position:absolute; inset:0; z-index:1; display:block; color:inherit; text-decoration:none}

@@ -6,8 +6,8 @@ Agent-ready fix list. Every item has the exact location, the measured evidence, 
 - **Pinned revision:** `sha256 c13596a0952abdae`, 2632 lines, 237504 bytes, mtime 2026-09-18 23:00:39 IST
 - **Status at this revision:** every patch in this catalogue, P0 to P14, is either applied or superseded. The page then grew from 1317 to 2632 lines with the projected MTE scope, and the new findings from that expansion are catalogued as Batch 2 in `DSA-MIDTERM-ROADMAP-APPLY.md`. The health battery passes 15 of 15 rows.
 - **Companion section:** `DSA-MIDTERM-ROADMAP.md` (one content fix below)
-- **Chronological evidence log:** `DSA-MIDTERM-ROADMAP-REVIEW.md` (rounds 1 to 21, with the measurement method for every number)
-- **State of the catalogue:** every item in this sheet is applied or superseded, and so is every Batch 2 item in the apply list. The last three (B4 the meta description tail, B5 the one unwrapped table, B9 the duplicated `.slab__link` declaration) were closed at `sha256 19f350175c8da8ba`, 230529 bytes.
+- **Chronological evidence log:** `DSA-MIDTERM-ROADMAP-REVIEW.md` (rounds 1 to 22, with the measurement method for every number)
+- **State of the catalogue:** every item in this sheet is applied or superseded, and so is every Batch 2 item in the apply list. The last three (B4 the meta description tail, B5 the one unwrapped table, B9 the duplicated `.slab__link` declaration) were closed at `sha256 19f350175c8da8ba`, and the last A12 item, the share-card URLs, at `sha256 cbc321cd4a017fb8` (231128 bytes).
 
 ## Instructions for the agent
 

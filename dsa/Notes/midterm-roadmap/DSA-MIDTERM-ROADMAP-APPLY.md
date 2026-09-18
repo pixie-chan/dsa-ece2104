@@ -3,8 +3,8 @@
 The do-now list. Twelve patches, ordered by value, each with the literal edit and a check. Every item here is now applied, including the three Batch 2 leftovers (B4, B5, B9) closed at revision `19f350175c8da8ba`. Deeper evidence for every item, plus the record of what is already fixed, is in `DSA-MIDTERM-ROADMAP-PATCHES.md`; the measurements behind each claim are in `DSA-MIDTERM-ROADMAP-REVIEW.md`.
 
 - **Target:** `~/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/DSA-MIDTERM-ROADMAP.html`
-- **Current revision:** `sha256 19f350175c8da8ba`, 230529 bytes, mtime 2026-09-18 23:56:34 IST. Everything below is applied at this revision, and the health battery passes 15 of 15 rows.
-- **Pre-edit snapshot:** `versions/v4-pre-leftovers/` holds the page and both documents as they stood at `2131627215d8df38`.
+- **Current revision:** `sha256 cbc321cd4a017fb8`, 231128 bytes, mtime 2026-09-19 00:09:38 IST. Everything below is applied at this revision, and the health battery passes 15 of 15 rows.
+- **Pre-edit snapshots:** `versions/v5-pre-og/` holds the page at `19f350175c8da8ba`, before the share-card pass, and `versions/v4-pre-leftovers/` holds the page and both documents at `2131627215d8df38`, before the leftovers.
 - **Pinned revision this list was validated against:** `sha256 2131627215d8df38`, 230493 bytes, mtime 2026-09-18 23:29:35 IST
 - **Careful with line numbers.** Revision `10634400` reformatted the file from 2632 lines to 1121 by compacting whitespace, so the line numbers written when this list was drafted (against `7fc0de2d` and `c13596a0`) are stale. Every literal snippet in this document was re-validated against `10634400` and still matches exactly once, except the nine-image prefix in B6 which matches nine times by design. Locate every edit by its snippet.
 
@@ -68,7 +68,7 @@ awk 'BEGIN{n=0} /<script>/{n++; f=sprintf("%s/s%d.js", ENVIRON["HOME"]"/.cache/r
 | A9 | P10 | 144 against 192 in the same list | 1 line |
 | A10 | P11 | Cleanup: dead selector, dead id, invalid head script, unused tokens | 4 small edits |
 | A11 | P13 | Chip strip taxes vertical wheel | delete 1 block |
-| A12 | P4 | OG URLs are relative, fine locally, wrong once published | publish-time only |
+| A12 | P4 | Share-card URLs were relative | FIXED, absolute and live-verified |
 
 ---
 
@@ -310,9 +310,23 @@ The chips stay reachable by tab, by prev/next, and by their own anchors. If side
 
 ---
 
-## A12. OG URLs at publish time (P4, residual)
+## A12. Share-card URLs (P4, fixed at revision cbc321cd4a017fb8)
 
-Not a local edit. `og-card.png` now exists and is 1200x630, so the reference resolves. When the page is published, make `og:image` an absolute URL on the host that serves it, and point `og:url` at the page itself: it currently names the repo root (`https://github.com/pixie-chan/dsa-ece2104`, resolves 200), not the page, which matters if the HTML lives in a subfolder such as `Notes/midterm-roadmap/`.
+The defect was not only "wrong once published". `og:image` was the bare string `og-card.png`, and a relative URL in a share card never resolves: every scraper (Slack, X, WhatsApp, Discord) fetches metadata with no document base, so the card was broken everywhere, including locally. `og:url` named the repo root rather than the page.
+
+Fixed by making both absolute against the host that actually serves the file today, plus the missing Twitter mirrors:
+
+| Tag | Was | Now |
+|---|---|---|
+| `og:url` | `https://github.com/pixie-chan/dsa-ece2104` | `https://github.com/pixie-chan/dsa-ece2104/blob/main/dsa/Notes/midterm-roadmap/DSA-MIDTERM-ROADMAP.html` |
+| `og:image` | `og-card.png` | `https://raw.githubusercontent.com/pixie-chan/dsa-ece2104/main/dsa/Notes/midterm-roadmap/og-card.png` |
+| `twitter:image` | absent | the same absolute card URL |
+| `twitter:title` | absent | the `og:title` wording |
+| `twitter:description` | absent | 168 characters, trimmed to fit the card limit |
+
+All three absolute URLs were checked with `curl -sI` and return 200, the card returns `image/png`, and `og-card.png` measures exactly 1200 x 630, matching `og:image:width` and `og:image:height`.
+
+**One line to change if the page ever gets a real host.** The durable answer is a GitHub Pages site, which would make `og:url` the rendered page instead of a source view. It is not enabled on this repo (the Pages API returns 404), so nothing here points at a URL that does not exist. If Pages is turned on at `/`, swap the two URLs to `https://pixie-chan.github.io/dsa-ece2104/...` and this section becomes history again.
 
 ---
 

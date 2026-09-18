@@ -782,3 +782,50 @@ The first version of `leftovers.mjs` reported "zero `.slab__link` rules" and rea
 
 Nothing behavioural. The only open item in the whole catalogue is A12, which is not an edit: when the page is published, `og:image` needs to be an absolute URL on the publishing host, and `og:url` currently names the repo root rather than the page.
 
+---
+
+# Round 22, A12 closed and the rest of the repo swept
+
+Checked at 2026-09-19 00:15 IST against `sha256 cbc321cd4a017fb8` (231128 bytes, mtime 00:09:38). Pre-edit state at `versions/v5-pre-og/` (`19f350175c8da8ba`, 230529 bytes).
+
+## A12 closed, and the defect was bigger than the note said
+
+A relative `og:image` does not resolve for any scraper. Metadata is fetched without a document base, so `content="og-card.png"` produced a broken card on every platform today, not only after publication; the `og:url` pointing at the repo root was the smaller half of the same note. Both are now absolute against the host that serves the file right now, and the Twitter mirrors that were missing are there too.
+
+| Tag | Was | Now |
+|---|---|---|
+| `og:url` | repo root | the file in the repo |
+| `og:image` | `og-card.png` | raw absolute card URL |
+| `twitter:image` `twitter:title` `twitter:description` | absent | present, description 168 characters |
+
+Evidence: `curl -sI` returns 200 for all three absolute URLs, `image/png` for the card, and the PNG header reports exactly 1200 x 630, which is what `og:image:width` and `og:image:height` claim. Nothing points at a host that does not exist: this repo has no Pages site (the Pages API returns 404), and the APPLY entry records the one-line swap if one is ever enabled.
+
+## The battery at this revision
+
+- `health.mjs` 15 of 15 PASS, `leftovers.mjs` 8 of 8 PASS, all three inline scripts parse.
+- `verify14.mjs` trail 1 to 10 with `s7Spine` 16, `wheel.mjs` gains equal, `verify4.mjs` `double` equals `beforePrintOpen`, `sweep.mjs` clean at ten widths.
+- `export-tokens.py --check` clean, 46 properties.
+- The edit was head-only metadata, so no behaviour moved; the hash change is the whole difference.
+
+## Also in this pass: the other pages in the repo
+
+Two probes were written for this, and both are reusable: `~/scripts/qa-page.mjs` loads a page at 1440 and 390 and reports page errors, broken images, dead in-page anchors, document overflow and sub-44px targets; `~/scripts/overflow-probe.mjs` names the exact element that pushes a page sideways. Run over all seven live HTML deliverables:
+
+| Page | Found | Fixed |
+|---|---|---|
+| `DAS-LAB_Records.html` | no viewport meta at all, and fifteen experiment tables pushed the phone layout 182px sideways | viewport meta added; a screen-only rule lets tables scroll inside their own box, print untouched |
+| `DSA-STUDY-PLAN.html` | the sticky phase nav sat 24px past the right edge at every width | dropped the redundant `-24px` margin, it was already full-bleed |
+| `stack-guide.html` | table 69px over on a phone, three controls under 44px | narrow-screen table scroll, `min-height` on the input, buttons and summary |
+| `TOPIC-WISE-EXPLAINED.html` | two nav controls 29px and 27px tall | `min-height:44px` on chip and toggle |
+| `intro-memory`, `linked-list-visual`, this page | clean | untouched |
+
+After the pass, all seven load with zero errors, zero broken images, zero dead anchors and zero overflow at both widths. Deliberate exceptions, with their numbers: a 54x18 inline prose link (WCAG exempts links inside a sentence), `stack-guide`'s 406x27 code-line buttons (widening them would add about 340px to the code reader), and the two 24px disclosure rows, which meet the WCAG 2.2 minimum of 24px.
+
+## The one trap in that pass
+
+Raising the study plan's theme toggle from 32x32 to 44x44 grew its sticky header from 57px to 69px, and the phase nav pins at a hardcoded `top:57px`, so the nav would have slid 12px underneath the header. Measured it rather than eyeballing it: `getBoundingClientRect().height` on the header returns 69, the nav's own rect top read 57 while scrolled, a gap of -12. Moved the nav to `top:69px` and re-measured; the gap is 0. A control-size change that silently breaks a sticky offset is exactly what a screenshot review misses.
+
+## What is left
+
+Nothing. A12 was the last item, and it is closed with live URLs rather than a note.
+

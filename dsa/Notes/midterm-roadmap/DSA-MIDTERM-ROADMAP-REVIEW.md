@@ -275,3 +275,139 @@ One save (16:39:18) briefly went unreviewed because the watcher auto-baselined w
 ## Still open
 
 Section 7's single-value `data-lectures="16"` is still skipped by the parser, `og-card.png` is still missing, the `aria-valuenow` item is done, and the rest of the round 4 and 5 lists stand: the "4 x 48 = 192" sentence, the 21px timeline gap, the rail wheel trap, the inert `prefers-color-scheme` branch, unguarded double print, `SHOW ANSWER` printing, dead `.mapnode`, unused tokens, `#ready-count`, the MD's "ten", and the `--text-2xl` drift.
+
+---
+
+# Round 7 verification, revision 5856374a (BLOCKER: patch A aborts the script)
+
+Checked at 2026-09-18 16:46 IST against `sha256 5856374a34243e4a` (85686 bytes, mtime 16:44:38). This revision adds the slab jump links and the sticky section navigator.
+
+## Blocker: one out-of-scope line kills the whole section navigator
+
+Patch A ends with:
+
+```js
+window.__rmHooks.push(function () { syncAll(); });
+/* two things the section navigator appended below needs from this closure */
+window.__rmRender = render;
+```
+
+`render` is declared with `function render()` inside the FIRST IIFE of the same `<script>` block, so it is not visible here. That line throws `ReferenceError: render is not defined`, and because all three IIFEs live in one script element, the throw aborts the remainder of the block: **the entire section navigator IIFE never runs.**
+
+Proof, measured in the browser:
+
+- One page error: `render is not defined`.
+- `window.__rmRender` is `undefined`, and `window.__rmHooks.length` is 1 (patch A's hook only). The navigator's own hook was never pushed, which is only possible if its IIFE never executed.
+- `#jump-now` stays `01 / 11` after scrolling to y=6000, and the active chip stays `#s1`.
+- Chip clicks do not write to the session trail; `prev` and `next` do nothing at all.
+- Everything defined before the throw still works: the slab jump links (native anchor plus flash, `aria-current`, dynamic `.vh` text, one trail line), the lecture spine, the meter, and `aria-valuenow`.
+
+Fix: move the export into the scope that owns the function. Inside the first IIFE, right after its `render();` call, add `window.__rmRender = render;`, then delete the out-of-scope line in patch A. Simpler still: the navigator only needs the page's logger, and `window.__rmLog` is already exported from inside that IIFE, so the navigator can call `window.__rmLog(...)` directly and drop the `__rmRender` handshake entirely.
+
+## Second defect in the same block: every hook runs twice
+
+`render()` contains the hook loop twice:
+
+```js
+for (var hk = 0; hk < (window.__rmHooks || []).length; hk++) { try { window.__rmHooks[hk](log); } catch (e) {} }
+if (window.__rmHooks) { for (var h = 0; h < window.__rmHooks.length; h++) { try { window.__rmHooks[h](log); } catch (e) {} } }
+```
+
+Confirmed by counting both loop variables in the served DOM: 2. Any hook that is not idempotent, and any future hook that logs, will fire twice per render. Delete one loop.
+
+## Verified working in this revision
+
+- Slab jump links: clicking Block B jumped to `#s3` (scrollY 3367), applied `is-jump`, marked the slab `data-current="true"`, and logged `slab jump: Block B, Memory and lists to #s3 (0 of 5 lectures ticked)`.
+- The dynamic accessible name reads `Block B, Memory and lists, lectures 5 to 9, 0 of 5 ticked off: jump to section 03, the chain`.
+- Sticky bar is 57px tall at 1460, 900 and 375px widths, and after an anchor jump the section head sits at y=65 against a bar bottom of 57, so the heading is not covered. That clearance is only 8px and exists because sections carry 48px of top padding, worth knowing before the bar grows.
+- Mobile: no body-level horizontal overflow at 375 (`scrollWidth` 375); the strip scrolls internally (769px of chip overflow).
+- Print: the nav and the slab links are hidden (0 occurrences of the bar text in the PDF), and the answers still print (`allocator bookkeeping` present, `SHOW ANSWER` still 12 times).
+
+## Still open
+
+The section 7 spine range bug is unchanged (`data-lectures="16"` still skipped, measured `s7` = none while `s3` = 5 to 9), plus the earlier list: `og-card.png` missing, the "4 x 48 = 192" sentence, the 21px timeline gap, the rail wheel trap, the inert `prefers-color-scheme` branch, unguarded double print, `SHOW ANSWER` printing, dead `.mapnode`, unused tokens, `#ready-count`, the MD's "ten", and the `--text-2xl` drift.
+
+Two notes for when the navigator is alive again:
+
+- Its wheel handler on the chip strip will hijack vertical wheel while the strip still has room. Measured overflow: 161px at 1460, 769px at 375, so it will be active almost always. That is the same trap class as the rail's `overscroll-behavior: contain`, by design this time; consider dropping it since the chips are reachable by tab and by the prev/next buttons.
+- `data-lectures` now has two formats in one file: `"1-4"` on the slabs and `"5 9"` on the sections. Pick one.
+
+---
+
+# Round 8 verification, revision 4fdfb930
+
+Checked at 2026-09-18 16:50 IST against `sha256 4fdfb9301b98832a` (85555 bytes, 1251 lines, mtime 16:49:19).
+
+## Fixed
+
+The duplicate hook loop is gone from `render()` (P2 on the patch sheet). Only one hook loop remains, so `syncAll()` runs once per render.
+
+## Still broken, and it is the headline item
+
+P1 on the patch sheet, `window.__rmRender = render;`, is untouched, so the `ReferenceError: render is not defined` throw still aborts the script block and the whole section navigator still never runs. Re-measured at this revision: 1 page error, `window.__rmHooks.length` is 1, `window.__rmRender` is `undefined`, `#jump-now` stays `01 / 11` after a 6000px scroll, the active chip stays `#s1`, and `prev` and `next` do nothing.
+
+## Patch sheet
+
+A standalone, agent-ready fix list now exists beside this log: `DSA-MIDTERM-ROADMAP-PATCHES.md`. It pins a revision, gives every open item an ID, its literal location, the measured evidence, the exact edit and a verification step, and it lists what is already fixed so an agent does not revert it. This log stays as the chronological evidence trail.
+
+---
+
+# Round 9 verification, revision c7c60d9c (BLOCKER: the main script does not parse)
+
+Checked at 2026-09-18 16:52 IST against `sha256 c7c60d9ca1292d51` (90308 bytes, 1321 lines, mtime 16:50:50). This revision adds a state row to each timeline slab and a third `<script>` that paints it.
+
+## The page is inert
+
+The new hook loop was inserted into `render()` ABOVE the loop it was meant to replace, and the old loop's closing brace was left in place. Line 969 therefore closes `render()`, lines 970 to 973 become loose statements inside the IIFE, and line 974 closes the IIFE early. The trailing `})();` no longer matches, so the entire main script block fails to compile.
+
+Proof:
+
+- `node --check` on the extracted block (`~/.cache/roadmap-qa/s2.js`) reports `SyntaxError: Unexpected token 'function'` at line 975, `function save()`.
+- Browser: one page error, `Unexpected token 'function'`.
+- `window.__rmLog` and `window.__rmRender` are both `undefined`, and `window.__rmHooks.length` is 1, the new third script only.
+- Clicking a tick does nothing: `data-state` stays `todo`, the meter stays `nothing ticked yet`, the trail stays empty.
+- The new slab counters paint `0 of 4`, `0 of 5`, `0 of 1`, `0 of 5`, `0 of 1`, `0 of 16`, reading static HTML that nothing updates.
+
+So the spine, meter, trail, slab jump links and section navigator are all dead at this revision. The page looks complete only because the static markup is.
+
+## Second blocker waiting behind the first
+
+The hook contract changed from `(log)` to `(done, n, ticks.length)`, but the navigator still registers `function (pageLog) { own = pageLog; }` at line 1273. Once the parse error is fixed, `own` becomes the `done` map and the next `say(msg)` throws `TypeError: own is not a function` inside a click handler, breaking chip clicks and both stepper buttons.
+
+## Fix order
+
+1. Delete lines 970 to 974 in the HTML (the orphan comment, the old loop and the extra brace).
+2. Pass the logger as a fourth hook argument, or make the navigator use `window.__rmLog` directly and drop the handshake.
+3. Fix `window.__rmRender = render;` (line 1151) by exporting `render` from the scope that owns it, right after the `render();` call at line 994, or drop the handshake with step 2.
+
+Full details, exact snippets and verification commands are in `DSA-MIDTERM-ROADMAP-PATCHES.md`, which now leads with P0 and P0b.
+
+---
+
+# Round 10 verification, revision e5b32c74
+
+Checked at 2026-09-18 16:54 IST against `sha256 e5b32c74af252811` (90107 bytes, 1317 lines, mtime 16:52:54).
+
+## Fixed, and the page is alive again
+
+The repair collapsed the two hook loops into one and deleted the orphaned block, so `render()` now ends with a single guarded loop:
+
+```js
+    var hks = window.__rmHooks || [];
+    for (var h = 0; h < hks.length; h++) {
+      try { hks[h](log, done, n, ticks.length); } catch (e) {}
+    }
+```
+
+- All three inline scripts pass `node --check`.
+- No page error from a parse failure any more; `window.__rmLog` is a function.
+- Clicking ticks 5 to 9 moves the meter to `5 of 16 lectures ticked, 31 percent`, sets `aria-valuenow` to 5, writes five trail lines, and repaints the new slab row: `rm-count-b` reads `5 of 5 ticked`, `rm-fill-b` is 100 percent, the slab is `data-cleared="true"`, and its accessible name becomes `Block B, Memory and lists, lectures 5 to 9, every lecture in this block is ticked off: jump to section 03, the chain`.
+- P0b is fixed by the same edit: the hook call passes `log` first, so the navigator's `function (pageLog) { own = pageLog; }` contract holds, and `done`, `n`, `total` still reach the slab painter.
+
+## Still the one blocker: P1
+
+`window.__rmRender = render;` at line 1147 is still out of scope, so the block still throws `render is not defined` after patch A finishes. Measured with P0 fixed: one page error, `window.__rmRender` `undefined`, `#jump-now` stuck at `01 / 11` after a 6000px scroll, the active chip stuck at `#s1`, chip clicks writing nothing to the trail, and `prev` / `next` doing nothing. The section navigator has still never run in any revision since it was added.
+
+## Also still open
+
+P3 (section 7 range: measured `s7` = none, `s3` = 5 to 9), P4 (`og-card.png` missing), P5, P6, P7 (re-measured: `beforeprint` twice leaves 12 answers open), P8, P9, P10, P11, P12 and the P13 judgment items. Print still works: answers present, `SHOW ANSWER` still 12 times.

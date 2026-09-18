@@ -283,6 +283,61 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
   details.ans > *{display:block !important}
   section{break-inside:auto}
 }
+/* ===== patch A: the six timeline slabs are jump links ===== */
+.slab__link{position:absolute; inset:0; z-index:1; display:block; color:inherit; text-decoration:none}
+.slab__link:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.slab:focus-within{border-color:var(--accent); background:color-mix(in oklab, var(--accent) 7%, var(--surface))}
+.vh{position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden;
+  clip:rect(0 0 0 0); clip-path:inset(50%); border:0; white-space:nowrap}
+.slab__foot{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between;
+  gap:var(--s-1) var(--s-2); min-width:0}
+.slab__go{flex:none; font-family:var(--font-mono); font-size:var(--text-xs); color:var(--accent);
+  transition:transform var(--dur-2) var(--ease)}
+.slab:hover .slab__go,.slab:focus-within .slab__go{transform:translateX(3px)}
+.slab[data-current="true"]{box-shadow:inset 0 3px 0 var(--accent)}
+.slab[data-current="true"] .slab__n{color:var(--accent)}
+.slab[data-cleared="true"] .slab__n{color:var(--ok)}
+.slab[data-cleared="true"] .slab__go::after{content:" \2713"; color:var(--ok)}
+#s1,#s2,#s3,#s4,#s5,#s6,#s7,#s8,#s9,#s10,#key{scroll-margin-top:var(--s-4)}
+.is-jump{animation:jumpHit 1500ms var(--ease) both}
+@keyframes jumpHit{from{background:color-mix(in oklab, var(--accent) 10%, var(--bg))}
+  to{background:color-mix(in oklab, var(--accent) 0%, var(--bg))}}
+@media print{ .slab__link,.slab__go,.vh{display:none} }
+
+/* ===== section navigator (added: the eleven sections, one click away) ===== */
+.jump{position:sticky; top:0; z-index:3; display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);
+  padding:var(--s-2) 0 var(--s-1); background:var(--surface); border-bottom:var(--hair) solid var(--line-2)}
+.jump__step{display:flex; flex:0 0 auto; gap:var(--s-1)}
+.jump__move{min-width:44px; padding:var(--s-2) var(--s-3)}
+.jump__strip{flex:1 1 0; min-width:0; display:flex; align-items:center; gap:var(--s-1); overflow-x:auto;
+  scrollbar-width:thin; scrollbar-color:var(--line-2) transparent}
+.jump__chip{flex:0 0 auto; display:inline-flex; align-items:center; min-height:44px; padding:var(--s-2) var(--s-3);
+  border:var(--hair) solid var(--line); border-radius:var(--r-2); font-family:var(--font-mono);
+  font-size:var(--text-xs); letter-spacing:.04em; color:var(--text-2); text-decoration:none; white-space:nowrap;
+  transition:background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease)}
+.jump__chip:hover{background:color-mix(in oklab, var(--accent) 8%, var(--surface)); border-color:var(--line-2); color:var(--text)}
+.jump__chip:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.jump__chip[aria-current="true"]{background:color-mix(in oklab, var(--accent) 10%, var(--surface));
+  border-color:var(--accent); color:var(--text)}
+.jump__now{margin:0; font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3);
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+section[id]{scroll-margin-top:calc(var(--s-8) + var(--s-2))}
+@media (max-width:1040px){ .jump__now{display:none} }
+@media print{ .jump{display:none !important} }
+/* ===== block timeline: slab state (finishing pass) ===== */
+.slab__state{display:block; margin-top:var(--s-2); border-top:1px solid var(--line); padding-top:var(--s-2)}
+.slab__state .pill{white-space:normal; max-width:100%; margin-right:var(--s-2)}
+.slab__state .pill__dot{flex:none}
+.slab__tag{font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.05em;
+  text-transform:uppercase; margin-right:var(--s-2)}
+.slab__tag--ok{color:var(--ok)}
+.slab__tag--part{color:var(--warn)}
+.slab__count{font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3);
+  font-variant-numeric:tabular-nums}
+.slab__bar{display:block; height:2px; margin-top:var(--s-2); background:var(--line-2)}
+.slab__fill{display:block; height:100%; width:0; background:var(--accent);
+  transition:width var(--dur-2) var(--ease)}
+.slab--exam .slab__count{color:var(--text-2)}
 </style>
 </head>
 <body>
@@ -329,46 +384,60 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       <p class="eyebrow">The shape of the mid-term</p>
       <div class="blocks__rail" role="list" aria-label="Five teaching blocks and the exam">
         <div class="blocks__axis" aria-hidden="true"><span>1 to 4</span><span>5 to 9</span><span>10</span><span>11 to 15</span><span>16</span><span>exam</span></div>
-        <div class="slab" role="listitem" style="animation-delay:0ms">
+        <div class="slab" role="listitem" style="animation-delay:0ms" data-target="#s2" data-lectures="1-4" data-name="Block A, Foundation" data-dest="section 02, the sixteen lectures">
+          <a class="slab__link" href="#s2"><span class="vh">Block A, Foundation, lectures 1 to 4: jump to section 02, the sixteen lectures</span></a>
           <span class="slab__n">Block A &middot; 4 lectures</span>
           <span class="slab__t">Foundation</span>
           <span class="slab__l">C++ / Python syntax, variables, types, operators, control flow, functions</span>
-          <span class="slab__foot">lectures 1 to 4</span>
+          <span class="slab__state" aria-hidden="true"><span class="pill pill--ok"><span class="pill__dot"></span>built</span><span class="slab__count" id="rm-count-a">0 of 4 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-a"></span></span></span>
+          <span class="slab__foot">lectures 1 to 4<span class="slab__go" aria-hidden="true">&rarr;</span></span>
         </div>
-        <div class="slab" role="listitem" style="animation-delay:60ms">
+        <div class="slab" role="listitem" style="animation-delay:60ms" data-target="#s3" data-lectures="5-9" data-name="Block B, Memory and lists" data-dest="section 03, the chain">
+          <a class="slab__link" href="#s3"><span class="vh">Block B, Memory and lists, lectures 5 to 9: jump to section 03, the chain</span></a>
           <span class="slab__n">Block B &middot; 5 lectures</span>
           <span class="slab__t">Memory and lists</span>
           <span class="slab__l">Memory representation, node, linked list operations, search, numerical problems</span>
-          <span class="slab__foot">lectures 5 to 9</span>
+          <span class="slab__state" aria-hidden="true"><span class="pill pill--ok"><span class="pill__dot"></span>built, verified</span><span class="slab__count" id="rm-count-b">0 of 5 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-b"></span></span></span>
+          <span class="slab__foot">lectures 5 to 9<span class="slab__go" aria-hidden="true">&rarr;</span></span>
         </div>
-        <div class="slab slab--test" role="listitem" style="animation-delay:120ms">
+        <div class="slab slab--test" role="listitem" style="animation-delay:120ms" data-target="#s6" data-lectures="10" data-name="Block C, class test 1" data-dest="section 06, the numericals">
+          <a class="slab__link" href="#s6"><span class="vh">Block C, class test 1, lecture 10: jump to section 06, the numericals</span></a>
           <span class="slab__n">Block C &middot; 1 lecture</span>
           <span class="slab__t">Class test 1</span>
           <span class="slab__l">Covers the CO1 block, counts toward CWS</span>
-          <span class="slab__foot">lecture 10</span>
+          <span class="slab__state" aria-hidden="true"><span class="slab__tag slab__tag--ok">self-tests</span><span class="slab__count" id="rm-count-c">0 of 1 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-c"></span></span></span>
+          <span class="slab__foot">lecture 10<span class="slab__go" aria-hidden="true">&rarr;</span></span>
         </div>
-        <div class="slab" role="listitem" style="animation-delay:180ms">
+        <div class="slab" role="listitem" style="animation-delay:180ms" data-target="#s5" data-lectures="11-15" data-name="Block D, Stacks and queues" data-dest="section 05, the plan">
+          <a class="slab__link" href="#s5"><span class="vh">Block D, Stacks and queues, lectures 11 to 15: jump to section 05, the plan</span></a>
           <span class="slab__n">Block D &middot; 5 lectures</span>
           <span class="slab__t">Stacks and queues</span>
           <span class="slab__l">Both representations, applications, circular queue wrap-around</span>
-          <span class="slab__foot">lectures 11 to 15</span>
+          <span class="slab__state" aria-hidden="true"><span class="pill pill--part"><span class="pill__dot"></span>stacks partial</span><span class="pill pill--gap"><span class="pill__dot"></span>queues missing</span><span class="slab__count" id="rm-count-d">0 of 5 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-d"></span></span></span>
+          <span class="slab__foot">lectures 11 to 15<span class="slab__go" aria-hidden="true">&rarr;</span></span>
         </div>
-        <div class="slab" role="listitem" style="animation-delay:240ms">
+        <div class="slab" role="listitem" style="animation-delay:240ms" data-target="#s7" data-lectures="16" data-name="Block E, Recursion" data-dest="section 07, the evidence">
+          <a class="slab__link" href="#s7"><span class="vh">Block E, Recursion, lecture 16: jump to section 07, the evidence</span></a>
           <span class="slab__n">Block E &middot; 1 lecture</span>
           <span class="slab__t">Recursion</span>
           <span class="slab__l">Recursive algorithms on linear structures, traced in frames</span>
-          <span class="slab__foot">lecture 16</span>
+          <span class="slab__state" aria-hidden="true"><span class="slab__tag slab__tag--part">lab code</span><span class="slab__count" id="rm-count-e">0 of 1 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-e"></span></span></span>
+          <span class="slab__foot">lecture 16<span class="slab__go" aria-hidden="true">&rarr;</span></span>
         </div>
-        <div class="slab slab--exam" role="listitem" style="animation-delay:300ms">
+        <div class="slab slab--exam" role="listitem" style="animation-delay:300ms" data-target="#key" data-lectures="1-16" data-name="Exam" data-dest="the answer key">
+          <a class="slab__link" href="#key"><span class="vh">Exam, every lecture: jump to the answer key</span></a>
           <span class="slab__n">Exam</span>
           <span class="slab__t">Mid-semester exam</span>
           <span class="slab__l">Closed book, everything above</span>
-          <span class="slab__foot">30 marks</span>
+          <span class="slab__state" aria-hidden="true"><span class="pill pill--part"><span class="pill__dot"></span>practice partial</span><span class="slab__count" id="rm-count-exam">0 of 16 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-exam"></span></span></span>
+          <span class="slab__foot">30 marks<span class="slab__go" aria-hidden="true">&rarr;</span></span>
         </div>
       </div>
       <p class="blocks__note">The widths are the lecture counts, drawn to scale: four lectures of foundation, five of memory and
       lists, the single class-test lecture, five of stacks and queues, the single recursion lecture, then the exam. The dashed slab
-      is the class test, the only interruption inside the teaching weeks.</p>
+      is the class test, the only interruption inside the teaching weeks. The label on each slab is the state of
+      the material behind that block, and the strip and count under it are the lectures ticked off on the spine, so
+      the timeline and the meter always say the same thing.</p>
     </div>
   </header>
 
@@ -411,6 +480,27 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
   </nav>
 
   <main class="main">
+
+    <nav class="jump" aria-label="Section navigator">
+      <div class="jump__step">
+        <button class="btn jump__move" type="button" id="jump-prev" aria-label="previous section">prev</button>
+        <button class="btn jump__move" type="button" id="jump-next" aria-label="next section">next</button>
+      </div>
+      <div class="jump__strip" id="jump-strip">
+        <a class="jump__chip" href="#s1" aria-current="true">exam facts</a>
+        <a class="jump__chip" href="#s2">lectures</a>
+        <a class="jump__chip" href="#s3">chain</a>
+        <a class="jump__chip" href="#s4">outcomes</a>
+        <a class="jump__chip" href="#s5">plan</a>
+        <a class="jump__chip" href="#s6">numericals</a>
+        <a class="jump__chip" href="#s7">evidence</a>
+        <a class="jump__chip" href="#s8">inventory</a>
+        <a class="jump__chip" href="#s9">honesty</a>
+        <a class="jump__chip" href="#s10">sources</a>
+        <a class="jump__chip" href="#key">answer key</a>
+      </div>
+      <p class="jump__now" id="jump-now" aria-live="polite">01 / 11</p>
+    </nav>
 
     <section id="s1" tabindex="-1" aria-labelledby="h1-title">
       <div class="sec__head">
@@ -813,6 +903,9 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
   var TRAIL = $("trail"), ACTIONS = 0;
+  /* patch A: the trail logger and a hook list, shared with later scripts */
+  window.__rmHooks = window.__rmHooks || [];
+  window.__rmLog = log;
   function log(msg) {
     ACTIONS++;
     if (!TRAIL) return;
@@ -845,6 +938,8 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
   var ticks = document.querySelectorAll(".tick");
   var done = {};
   try { done = JSON.parse(localStorage.getItem("dsa-roadmap-done") || "{}") || {}; } catch (e) { done = {}; }
+  /* hooks: anything that repaints alongside the meter registers here (slab state, pass C) */
+  window.__rmHooks = window.__rmHooks || [];
   function render() {
     var n = 0, co1 = 0, co2 = 0;
     for (var i = 0; i < ticks.length; i++) {
@@ -867,6 +962,11 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
       : n + " of " + ticks.length + " lectures ticked, " + Math.round((n / ticks.length) * 100) + " percent of the paper covered";
     if ($("co1-count")) $("co1-count").textContent = co1 + " / 10";
     if ($("co2-count")) $("co2-count").textContent = co2 + " / 6";
+    /* one guarded loop: a failed hook must not break the meter */
+    var hks = window.__rmHooks || [];
+    for (var h = 0; h < hks.length; h++) {
+      try { hks[h](log, done, n, ticks.length); } catch (e) {}
+    }
   }
   function save() { try { localStorage.setItem("dsa-roadmap-done", JSON.stringify(done)); } catch (e) {} }
   for (var t = 0; t < ticks.length; t++) {
@@ -948,6 +1048,269 @@ ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
   });
 
 
+})();
+/* ===== patch A: the six timeline slabs behave as jump links ===== */
+(function () {
+  "use strict";
+  var slabs = document.querySelectorAll(".slab[data-target]");
+  if (!slabs.length) return;
+  function log(msg) { if (typeof window.__rmLog === "function") window.__rmLog(msg); }
+
+  function lecList(spec) {
+    var out = [], parts = String(spec || "").split(","), i, j, r, a, b;
+    for (i = 0; i < parts.length; i++) {
+      r = parts[i].split("-");
+      if (!r[0]) continue;
+      a = parseInt(r[0], 10);
+      b = r[1] ? parseInt(r[1], 10) : a;
+      if (isNaN(a)) continue;
+      if (isNaN(b)) b = a;
+      for (j = a; j <= b; j++) out.push(j);
+    }
+    return out;
+  }
+  function lecWord(spec) {
+    var s = String(spec || "").trim();
+    if (s === "1-16") return "every lecture";
+    return "lectures " + s.replace("-", " to ");
+  }
+  /* a slab reads "cleared" when the lecture spine has every lecture it covers */
+  function sync(slab) {
+    var nums = lecList(slab.getAttribute("data-lectures")), ticked = 0, i, t;
+    for (i = 0; i < nums.length; i++) {
+      t = document.getElementById("tick-" + nums[i]);
+      if (t && t.getAttribute("data-state") === "done") ticked++;
+    }
+    var cleared = nums.length > 0 && ticked === nums.length;
+    slab.setAttribute("data-cleared", cleared ? "true" : "false");
+    slab.setAttribute("data-progress", ticked + " of " + nums.length);
+    var txt = slab.querySelector(".slab__link .vh");
+    if (txt) {
+      txt.textContent = (slab.getAttribute("data-name") || "block") + ", " +
+        lecWord(slab.getAttribute("data-lectures")) +
+        (cleared ? ", every lecture in this block is ticked off"
+                 : ", " + ticked + " of " + nums.length + " ticked off") +
+        ": jump to " + (slab.getAttribute("data-dest") || "the section below");
+    }
+  }
+  function syncAll() { for (var i = 0; i < slabs.length; i++) sync(slabs[i]); }
+
+  /* the slab whose section is on screen gets the accent edge */
+  function markCurrent(id) {
+    for (var i = 0; i < slabs.length; i++) {
+      var on = slabs[i].getAttribute("data-target") === "#" + id;
+      slabs[i].setAttribute("data-current", on ? "true" : "false");
+      var link = slabs[i].querySelector(".slab__link");
+      if (link) { if (on) link.setAttribute("aria-current", "true"); else link.removeAttribute("aria-current"); }
+    }
+  }
+
+  var FLASH = 1500;
+  function flash(el) {
+    if (!el) return;
+    el.classList.remove("is-jump");
+    void el.offsetWidth;
+    el.classList.add("is-jump");
+    window.setTimeout(function () { el.classList.remove("is-jump"); }, FLASH);
+  }
+
+  syncAll();
+
+  /* the whole slab is the link: click lands on the section, flashes it, logs it */
+  for (var s = 0; s < slabs.length; s++) {
+    (function (slab) {
+      var link = slab.querySelector(".slab__link");
+      if (!link) return;
+      link.addEventListener("click", function () {
+        var href = slab.getAttribute("data-target") || link.getAttribute("href") || "";
+        var dest = href.charAt(0) === "#" ? href.slice(1) : href;
+        flash(document.getElementById(dest));
+        log("slab jump: " + (slab.getAttribute("data-name") || dest) + " to " + href +
+            " (" + (slab.getAttribute("data-progress") || "0 of 0") + " lectures ticked)");
+      });
+    })(slabs[s]);
+  }
+
+  if (window.IntersectionObserver) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) markCurrent(e.target.id); });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    for (var k = 0; k < slabs.length; k++) {
+      var id = (slabs[k].getAttribute("data-target") || "").slice(1);
+      if (id) { var el = document.getElementById(id); if (el) io.observe(el); }
+    }
+  }
+
+  window.__rmHooks = window.__rmHooks || [];
+  window.__rmHooks.push(function () { syncAll(); });
+  /* two things the section navigator appended below needs from this closure */
+  window.__rmRender = typeof render === "function" ? render : null;
+})();
+
+/* ===== section navigator =====================================================
+   The sticky bar in <main>. Every chip is a real anchor, so jumping to a section
+   works without this code; the script only adds the active-section state, the
+   prev/next stepper, and a line in the session trail for each move. The page's
+   own log() is IIFE-local, so it is collected through window.__rmHooks -- which
+   render() calls -- and the handshake is completed by calling that render once. */
+(function () {
+  "use strict";
+  var bar = document.querySelector(".jump");
+  var strip = document.getElementById("jump-strip");
+  var now = document.getElementById("jump-now");
+  var chips = strip ? strip.querySelectorAll(".jump__chip") : [];
+  var secs = Array.prototype.slice.call(document.querySelectorAll("section[id]"));
+  var prevBtn = document.getElementById("jump-prev");
+  var nextBtn = document.getElementById("jump-next");
+  var trail = document.getElementById("trail");
+  var own = null;        /* the page's own trail logger, handed over by the hook */
+  var unattached = 0;    /* fallback counter, used only if that handover never lands */
+
+  if (!bar || !strip || !chips.length || !secs.length) return;
+
+  function say(msg) {
+    if (own) { own(msg); return; }
+    /* Defensive: a move must still leave a mark if the handover fails. */
+    if (!trail) return;
+    if (!unattached) unattached = trail.children.length;
+    unattached++;
+    var li = document.createElement("li");
+    li.textContent = unattached + ". " + msg;
+    trail.appendChild(li);
+  }
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+  function indexOfSection() {
+    var y = window.pageYOffset + (bar.offsetHeight || 56) + 8;
+    var i = 0;
+    for (var k = 0; k < secs.length; k++) {
+      if (secs[k].getBoundingClientRect().top + window.pageYOffset <= y) i = k;
+    }
+    return i;
+  }
+
+  function label(i) {
+    /* the chip label is the same phrase the section itself uses, kept short */
+    var t = chips[i] ? chips[i].textContent.replace(/\s+/g, " ").trim() : "";
+    return pad(i + 1) + " " + (t || "section");
+  }
+
+  function reveal(chip) {
+    /* keep the active chip inside the strip without moving the page */
+    var cr = chip.getBoundingClientRect(), sr = strip.getBoundingClientRect();
+    if (cr.left < sr.left) strip.scrollLeft -= (sr.left - cr.left) + 8;
+    else if (cr.right > sr.right) strip.scrollLeft += (cr.right - sr.right) + 8;
+  }
+
+  function setActive(i, follow) {
+    for (var k = 0; k < chips.length; k++) {
+      chips[k].setAttribute("aria-current", k === i ? "true" : "false");
+    }
+    if (now) now.textContent = pad(i + 1) + " / " + chips.length;
+    if (follow && chips[i]) reveal(chips[i]);
+  }
+
+  function go(i) {
+    var s = secs[i];
+    if (!s) return;
+    /* instant, like every other in-page anchor on this page; scroll-margin-top
+       on the sections keeps the sticky bar off the heading */
+    if (s.scrollIntoView) s.scrollIntoView({ behavior: "auto", block: "start" });
+    setActive(i, true);
+  }
+
+  function step(delta) {
+    var i = indexOfSection();
+    var j = Math.max(0, Math.min(secs.length - 1, i + delta));
+    if (j === i) {
+      say((delta < 0 ? "already at the first section, " : "already at the last section, ") + label(i));
+      setActive(i, true);
+      return;
+    }
+    say((delta < 0 ? "stepped back to " : "stepped on to ") + label(j));
+    go(j);
+  }
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    var raf = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
+    raf(function () { ticking = false; setActive(indexOfSection(), true); });
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
+
+  for (var c = 0; c < chips.length; c++) {
+    chips[c].addEventListener("click", function () {
+      var i = Array.prototype.indexOf.call(chips, this);
+      say("jumped to " + label(i < 0 ? indexOfSection() : i));
+      setActive(i < 0 ? indexOfSection() : i, true);
+    });
+  }
+  if (prevBtn) prevBtn.addEventListener("click", function () { step(-1); });
+  if (nextBtn) nextBtn.addEventListener("click", function () { step(1); });
+
+  /* a vertical wheel over the strip walks it sideways while it still has room,
+     so the chips past the right edge are reachable without a trackpad gesture */
+  strip.addEventListener("wheel", function (ev) {
+    if (Math.abs(ev.deltaY) <= Math.abs(ev.deltaX)) return;
+    var max = strip.scrollWidth - strip.clientWidth;
+    if (max <= 0) return;
+    if (ev.deltaY < 0 ? strip.scrollLeft <= 0 : strip.scrollLeft >= max - 1) return;
+    ev.preventDefault();
+    strip.scrollLeft += ev.deltaY;
+  }, { passive: false });
+
+  /* handshake: collect the page's logger, then let render() hand it over. The
+     try/catch keeps the navigator working even if render() itself throws. */
+  window.__rmHooks = window.__rmHooks || [];
+  window.__rmHooks.push(function (pageLog) { own = pageLog; });
+  if (window.__rmRender) { try { window.__rmRender(); } catch (e) {} }
+
+  setActive(indexOfSection(), false);
+})();
+</script>
+<script>
+/* Slab finishing pass: every block reports the state of the material behind it and the number
+   of its lectures ticked on the spine. The count repaints from the same tick state the
+   readiness meter reads, through the hook the script above calls at the end of render(),
+   so the timeline and the meter can never disagree. This IIFE fetches nothing, stores
+   nothing and changes no page state; it only writes text and one width. */
+(function () {
+  "use strict";
+  var SLABS = [
+    { id: "a", lo: 1, hi: 4 },
+    { id: "b", lo: 5, hi: 9 },
+    { id: "c", lo: 10, hi: 10 },
+    { id: "d", lo: 11, hi: 15 },
+    { id: "e", lo: 16, hi: 16 },
+    { id: "exam", lo: 1, hi: 16 }
+  ];
+  var ticks = document.querySelectorAll(".tick");
+  function ticked() {
+    var map = {}, i, lec;
+    for (i = 0; i < ticks.length; i++) {
+      lec = parseInt(ticks[i].getAttribute("data-lecture"), 10);
+      map[lec] = ticks[i].getAttribute("data-state") === "done";
+    }
+    return map;
+  }
+  function paint() {
+    var map = ticked();
+    for (var i = 0; i < SLABS.length; i++) {
+      var s = SLABS[i], n = 0, total = s.hi - s.lo + 1;
+      for (var lec = s.lo; lec <= s.hi; lec++) if (map[lec]) n++;
+      var count = document.getElementById("rm-count-" + s.id);
+      if (count) count.textContent = n + " of " + total + " ticked";
+      var fill = document.getElementById("rm-fill-" + s.id);
+      if (fill) fill.style.width = Math.round((n / total) * 100) + "%";
+    }
+  }
+  window.__rmHooks = window.__rmHooks || [];
+  window.__rmHooks.push(paint);
+  paint();
 })();
 </script>
 </body>

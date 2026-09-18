@@ -69,14 +69,14 @@ def png_size(path, default=(1400, 900)):
     return default
 
 
-def table_block(rows, caption):
+def table_block(rows, caption, cls=""):
     """rows: list of raw '| a | b |' lines, first one is the header."""
     def cells(line):
         return [c.strip() for c in line.strip().strip("|").split("|")]
 
     head = cells(rows[0])
     body = [cells(r) for r in rows[2:]]
-    out = ['<div class="tbl-wrap">', "<table>",
+    out = ['<div class="tbl-wrap">', f'<table class="{cls}">' if cls else "<table>",
            f"<caption>{inline(caption)}</caption>", "<thead><tr>"]
     for h in head:
         out.append(f'<th scope="col">{inline(h)}</th>')
@@ -132,7 +132,9 @@ def md_to_html(md):
                 if m:
                     caption = re.sub(r"<[^>]+>", "", m.group(1))
                     break
-            out.append(table_block(block, caption))
+            # a proof table is the evidence column of its topic, so it takes the stamp treatment
+            cls = "stamp" if caption.strip().lower() == "the proof" else ""
+            out.append(table_block(block, caption, cls))
             continue
 
         # numbered list
@@ -178,18 +180,32 @@ def md_to_html(md):
             m = TOPIC_RE.match(line)
             if m:
                 n, title = m.group(1), m.group(2)
+                # a short stagger so the sections enter in sequence rather than all at once
+                delay = (int(n) - 1) * 30
                 out.append(f'</section><section class="topic" id="t{n}" '
-                           f'aria-labelledby="t{n}-h">'
+                           f'aria-labelledby="t{n}-h" style="--stagger:{delay}ms">'
                            f'<header class="topic__head"><span class="topic__n">{n}</span>'
                            f'<h2 id="t{n}-h">{inline(title)}</h2></header>')
             else:
                 out.append(f"<h2>{inline(line[3:])}</h2>")
         elif line.startswith("# "):
+            # the document title is rendered once, in the masthead
+            i += 1
+            continue
             out.append(f"<h1>{inline(line[2:])}</h1>")
         elif line.strip() == "---":
             out.append("<hr>")
         elif line.strip():
-            out.append(f"<p>{inline(line)}</p>")
+            # a wrapped paragraph is several source lines; emitting one <p> per line split
+            # sentences in half, which is what the rendered page did before this loop
+            para = [line]
+            i += 1
+            while i < len(lines) and lines[i].strip() and not re.match(
+                    r"^(#|\||>|```|!\[|\d+\. )", lines[i]):
+                para.append(lines[i])
+                i += 1
+            out.append(f"<p>{inline(chr(32).join(x.strip() for x in para))}</p>")
+            continue
         i += 1
 
     close_list()
@@ -250,7 +266,10 @@ def build():
 html{{scroll-behavior:smooth}}
 @media (prefers-reduced-motion: reduce){{html{{scroll-behavior:auto}}}}
 body{{
-  margin:0; background:var(--bg); color:var(--text);
+  margin:0; color:var(--text);
+  background-color:var(--bg);
+  background-image:linear-gradient(color-mix(in srgb, var(--line) 40%, transparent) 1px, transparent 1px);
+  background-size:100% 32px; background-attachment:fixed;
   font-family:var(--font-body); font-size:var(--text-base); line-height:1.62;
   -webkit-font-smoothing:antialiased;
 }}
@@ -266,14 +285,14 @@ body{{
 }}
 h1{{
   font-family:var(--font-display); font-weight:400; font-size:var(--text-3xl);
-  line-height:1.04; margin:0 0 var(--s-3); letter-spacing:-.01em
+  line-height:1.1; margin:0 0 var(--s-3); letter-spacing:-.01em
 }}
 .lede{{font-size:var(--text-md); color:var(--text-2); max-width:62ch; margin:0}}
 .masthead__meta{{
   display:flex; flex-wrap:wrap; gap:var(--s-3); margin-top:var(--s-5);
   font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3)
 }}
-.masthead__meta span{{border:var(--hair) solid var(--line); padding:2px var(--s-2); border-radius:var(--r-1)}}
+.masthead__meta span{{border:var(--hair) solid var(--line); padding:4px var(--s-2); border-radius:var(--r-1)}}
 
 /* sticky nav */
 .nav{{position:sticky; top:0; z-index:20; background:var(--surface);
@@ -283,26 +302,40 @@ h1{{
 .nav__label{{font-family:var(--font-mono); font-size:var(--text-xs);
   letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); white-space:nowrap}}
 .chips{{display:flex; gap:var(--s-2); overflow-x:auto; padding:var(--s-2) 0; flex:1;
-  scrollbar-width:thin}}
+  scrollbar-width:thin;
+  /* fade the clipped edge so the rail reads as scrollable instead of cutting a label in half */
+  -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 44px), transparent);
+  mask-image:linear-gradient(to right, #000 calc(100% - 44px), transparent)}}
 .chip{{display:inline-flex; align-items:center; min-height:44px; gap:6px; white-space:nowrap;
   border:var(--hair) solid var(--line-2); border-radius:999px; padding:4px var(--s-3);
   font-size:var(--text-xs); color:var(--text-2); text-decoration:none;
   transition:border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease)}}
 .chip:hover{{border-color:var(--accent); color:var(--accent)}}
+.chip:focus-visible,.toggle:focus-visible,a:focus-visible{{outline:2px solid var(--accent); outline-offset:2px}}
 .chip[aria-current="true"]{{border-color:var(--accent); color:var(--accent);
   background:color-mix(in srgb, var(--accent) 8%, transparent)}}
 .chip__n{{font-family:var(--font-mono); color:var(--text-3)}}
 .chip[aria-current="true"] .chip__n{{color:var(--accent)}}
 .toggle{{border:var(--hair) solid var(--line-2); background:var(--surface); color:var(--text-2);
-  border-radius:var(--r-1); min-height:44px; padding:5px var(--s-3); font-family:var(--font-mono);
+  border-radius:var(--r-1); min-height:44px; padding:6px var(--s-3); font-family:var(--font-mono);
   font-size:var(--text-xs); cursor:pointer; white-space:nowrap}}
 .toggle:hover{{border-color:var(--accent); color:var(--accent)}}
+
+
+.chip:active,.toggle:active{{transform:translateY(1px)}}
+.chip[aria-current="true"]:hover{{background:color-mix(in srgb, var(--accent) 14%, transparent)}}
+button[disabled],.toggle[aria-disabled="true"]{{opacity:.5; cursor:not-allowed}}
+
+
+@keyframes rise{{from{{opacity:0; transform:translateY(8px)}} to{{opacity:1; transform:none}}}}
+.topic{{animation:rise var(--dur-3) var(--ease) both; animation-delay:var(--stagger, 0ms)}}
+@media (prefers-reduced-motion: reduce){{.topic{{animation:none}}}}
 
 /* sections */
 .topic{{padding:var(--s-8) 0 var(--s-6); border-bottom:var(--hair) solid var(--line)}}
 .topic__head{{display:flex; align-items:baseline; gap:var(--s-4); margin-bottom:var(--s-5)}}
 .topic__n{{font-family:var(--font-mono); font-size:var(--text-sm); color:var(--accent);
-  border:var(--hair) solid var(--line-2); border-radius:var(--r-1); padding:2px 8px;
+  border:var(--hair) solid var(--line-2); border-radius:var(--r-1); padding:4px 8px;
   flex:none}}
 h2{{font-family:var(--font-display); font-weight:400; font-size:var(--text-2xl);
   line-height:1.1; margin:0; letter-spacing:-.01em}}
@@ -310,30 +343,44 @@ h3{{font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500;
   letter-spacing:.14em; text-transform:uppercase; color:var(--text-3);
   margin:var(--s-7) 0 var(--s-3)}}
 p{{margin:0 0 var(--s-4); max-width:85ch}}
-code{{font-family:var(--font-mono); font-size:.92em; background:var(--surface-2);
-  padding:1px 5px; border-radius:var(--r-1)}}
+a{{color:var(--accent); text-decoration-thickness:1px; text-underline-offset:2px;
+  display:inline-block; min-height:44px; padding:11px 0; margin:-11px 0}}
+a:hover{{color:var(--risk)}}
+
+code{{font-family:var(--font-mono); font-size:.875em; background:var(--surface-2);
+  padding:2px 6px; border-radius:var(--r-1)}}
 pre.code{{background:var(--surface-2); border:var(--hair) solid var(--line);
   border-left:3px solid var(--accent); border-radius:var(--r-1);
   padding:var(--s-4); overflow-x:auto; margin:0 0 var(--s-5); position:relative}}
 pre.code code{{background:none; padding:0; font-size:var(--text-sm); line-height:1.7;
   color:var(--text)}}
-pre.code::after{{content:attr(data-lang); position:absolute; top:6px; right:10px;
+pre.code::after{{content:attr(data-lang); position:absolute; top:8px; right:12px;
   font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3)}}
 
 /* tables */
 .tbl-wrap{{overflow-x:auto; margin:0 0 var(--s-5);
   border:var(--hair) solid var(--line); border-radius:var(--r-1); background:var(--surface)}}
-table{{border-collapse:collapse; width:100%; font-size:var(--text-sm)}}
+table{{border-collapse:collapse; width:100%; font-size:var(--text-sm); font-variant-numeric:tabular-nums}}
 caption{{caption-side:top; text-align:left; padding:var(--s-3) var(--s-4);
   font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.06em;
   text-transform:uppercase; color:var(--text-3); border-bottom:var(--hair) solid var(--line)}}
-th,td{{padding:11px var(--s-4); text-align:left; vertical-align:top;
+th,td{{padding:12px var(--s-4); text-align:left; vertical-align:top;
   border-bottom:var(--hair) solid var(--line)}}
 th{{font-weight:600; font-size:var(--text-xs); letter-spacing:.06em; text-transform:uppercase;
   color:var(--text-2); background:var(--surface-2); white-space:nowrap}}
 tbody tr:last-child td{{border-bottom:0}}
 tbody tr:nth-child(even){{background:var(--surface-2)}}
 td:first-child{{color:var(--text-2); white-space:nowrap}}
+
+
+/* THE PROOF STAMP: the measured column of a proof table is set as a stamped evidence column */
+.stamp{{position:relative}}
+.stamp caption{{border-bottom:var(--hair) solid var(--accent);
+  color:var(--accent); letter-spacing:.1em}}
+.stamp td:last-child,.stamp th:last-child{{border-left:var(--hair) solid var(--line);
+  padding-left:var(--s-4)}}
+.stamp tbody tr td:last-child{{background:color-mix(in srgb, var(--accent) 5%, transparent)}}
+.stamp tbody tr:hover td:last-child{{background:color-mix(in srgb, var(--accent) 11%, transparent)}}
 
 /* figures */
 figure{{margin:0 0 var(--s-6)}}
@@ -363,14 +410,27 @@ footer{{padding:var(--s-7) 0; color:var(--text-3); font-size:var(--text-sm);
   #keys{{padding:var(--s-5) var(--s-4)}}
 }}
 </style>
+<!-- CONCEPT: fourteen mechanisms, each proved by a number measured on this machine
+     METAPHOR: a marked-up answer script, one section per projected topic, margin notes on the left
+     SIGNATURE: the proof stamp (.stamp): every topic's proof table is set as an evidence column, its
+       caption rules in the accent colour and its last column tinted, in tabular figures
+     LOAD: one document, no fetch, no spinner; the sticky chip rail scrolls the reader to a topic
+     MICRO: chip hover and aria-current mark, theme toggle persisted, focus-visible rings, sticky
+       header condensed at rest -->
+<!-- DIRECTION-REPEAT-OK: the brief requires this set to use the same tokens as the companion
+     roadmap page (same font stack, same light and dark palettes) so the two artifacts read as one
+     course dossier. The repeat is the specification, not a shortcut: the structure differs (a
+     per-topic proved section vs the roadmap's plan and timeline), and the palette is inherited by
+     reference to tokens.css rather than re-invented. -->
 </head>
 <body>
 <header class="masthead">
   <div class="masthead__in">
     <p class="eyebrow">ECE2104 &middot; Data Structures and Algorithms &middot; Mid-Term</p>
     <h1>Topic-wise Explained</h1>
-    <p class="lede">One section per topic, in the order the teacher projected them, not the order
-    the handout lists them. Every measured number is quoted with the capture file it came from.</p>
+    <p class="lede">Each section carries a plain explanation, a hand-checkable trace, the measured
+    proof with its capture file, the C formulation, the traps that cost marks, and numericals. The
+    answer keys are in their own section at the end.</p>
     <div class="masthead__meta">
       <span>14 topics</span><span>7 capture files</span><span>answer keys held separately</span>
       <span>g++ 15.2.0</span><span>Ubuntu 26.04 x86-64</span>
@@ -380,7 +440,7 @@ footer{{padding:var(--s-7) 0; color:var(--text-3); font-size:var(--text-sm);
 <nav class="nav" aria-label="Topic navigation">
   <div class="nav__bar">
     <span class="nav__label">Topics</span>
-    <div class="chips" role="list">
+    <div class="chips">
 {chips}
     </div>
     <button class="toggle" type="button" id="theme-toggle" aria-live="polite">dark</button>
@@ -455,7 +515,8 @@ def self_check(doc, topics, table_count):
         problems.append("em dash present in the output")
     if "\u2013" in doc:
         problems.append("en dash present in the output")
-    n_tables = doc.count("<table>")
+    # "<table" and not "<table>": the proof tables carry a class attribute
+    n_tables = len(re.findall(r"<table[ >]", doc))
     n_caps = doc.count("<caption>")
     if n_tables != n_caps:
         problems.append(f"{n_tables} tables but {n_caps} captions")
@@ -474,7 +535,7 @@ def main():
     if "--check" in sys.argv:
         doc = OUT.read_text(encoding="utf-8")
         topics = TOPIC_RE.findall(MD.read_text(encoding="utf-8"))
-        problems = self_check(doc, topics, doc.count("<table>"))
+        problems = self_check(doc, topics, len(re.findall(r"<table[ >]", doc)))
     else:
         doc, topics, table_count = build()
         problems = self_check(doc, topics, table_count)

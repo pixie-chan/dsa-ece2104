@@ -1,5 +1,5 @@
 
-== VERIFY: 243/243 checks pass ==
+== VERIFY: 250/250 checks pass ==
 == MUTATION BATTERY: a verifier that cannot fail is not a verifier ==
   [CAUGHT] a measured number changed to a wrong value  -> numbers: all 130 multi-digit tokens traceable to a capture, a fresh run, or the named derived allowlist
   [CAUGHT] a capture file name misquoted  -> captures: the document names only real capture files

@@ -475,12 +475,16 @@ def check_style(md):
     check("style: no ASCII-art tree drawing (rendered mermaid instead)",
           not any(ch in md for ch in ("\u251c", "\u2514", "\u250c", "\u2502")), "")
     # tables carry a caption and a scoped header
-    n_tables = html_doc.count("<table>")
+    # count "<table" not "<table>": a table carrying a class attribute (the proof stamp) would
+    # otherwise go uncounted and the equality would fail on a correct page
+    n_tables = len(re.findall(r"<table[ >]", html_doc))
     check("style: every HTML table carries a caption",
           n_tables == html_doc.count("<caption>"), f"{n_tables} tables")
     n_scoped = html_doc.count('<th scope="col">')
     check("style: every HTML table has scope=col header cells", n_scoped >= n_tables,
           f"{n_scoped} scoped headers for {n_tables} tables")
+    check("style: the proof stamp signature is applied to every proof table",
+          html_doc.count('class="stamp"') == 14, f"{html_doc.count('class=\"stamp\"')} stamped")
     check("style: the page is a single self contained file",
           "<style>" in html_doc and "<script>" in html_doc, "")
     check("style: light and dark themes both present from the roadmap tokens",

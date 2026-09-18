@@ -7,7 +7,7 @@
     "G0  TOPIC-DIRECT": "PASS",
     "G0A REFS": "PASS",
     "G0B LEDGER": "WARN",
-    "G1  CRAFT": "PASS",
+    "G1  CRAFT": "WARN",
     "G2  BUILD": "PASS",
     "G3  GUARD": "PASS",
     "G4  CONTRAST": "PASS",

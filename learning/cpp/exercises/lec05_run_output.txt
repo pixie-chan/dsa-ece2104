@@ -1,0 +1,81 @@
+=== 1. sizes and alignment (bytes) ===
+sizeof(char)=1 sizeof(short)=2 sizeof(int)=4 sizeof(long)=8 sizeof(float)=4 sizeof(double)=8 sizeof(void*)=8
+alignof(int)=4 alignof(double)=8 alignof(void*)=8
+sizeof(Node)=16 alignof(Node)=8
+
+=== 2. where each kind of object lives (real addresses) ===
+global (data segment) &g_global   = 0x57a29ecd4010
+stack  (local frame)  &stackLocal= 0x7ffe7c3131a4
+heap   (one new int)  heapOne     = 0x57a2bc523030
+four nested calls, innermost frame LAST and LOWEST:
+    frame depth 3  &local = 0x7ffe7c313154
+    frame depth 2  &local = 0x7ffe7c313124
+    frame depth 1  &local = 0x7ffe7c3130f4
+    frame depth 0  &local = 0x7ffe7c3130c4   <- innermost, LOWEST address
+stack sits 41326 GiB above the heap in this run:
+  they are two ends of the same address space, not one block.
+
+=== 3. an array is contiguous: the address stride equals sizeof(T) ===
+base &a[0] = 0x7ffe7c3131b0
+  i=0  &a[0]=0x7ffe7c3131b0  byte offset=0  value=10
+  i=1  &a[1]=0x7ffe7c3131b4  byte offset=4  value=20
+  i=2  &a[2]=0x7ffe7c3131b8  byte offset=8  value=30
+  i=3  &a[3]=0x7ffe7c3131bc  byte offset=12  value=40
+  i=4  &a[4]=0x7ffe7c3131c0  byte offset=16  value=50
+index 4 in ONE step (base + 4*sizeof(int)) = 0x7ffe7c3131c0  == &a[4] ? yes
+
+=== 3b. the same array seen as raw bytes (x86-64 is little-endian) ===
+   a[0]+ 0  byte 0a
+   a[0]+ 1  byte 00
+   a[0]+ 2  byte 00
+   a[0]+ 3  byte 00   <- the 4 bytes above are a[0] = 10
+   a[0]+ 4  byte 14
+   a[0]+ 5  byte 00
+   a[0]+ 6  byte 00
+   a[0]+ 7  byte 00   <- the 4 bytes above are a[1] = 20
+   a[0]+ 8  byte 1e
+   a[0]+ 9  byte 00
+   a[0]+10  byte 00
+   a[0]+11  byte 00   <- the 4 bytes above are a[2] = 30
+   a[0]+12  byte 28
+   a[0]+13  byte 00
+   a[0]+14  byte 00
+   a[0]+15  byte 00   <- the 4 bytes above are a[3] = 40
+   a[0]+16  byte 32
+   a[0]+17  byte 00
+   a[0]+18  byte 00
+   a[0]+19  byte 00   <- the 4 bytes above are a[4] = 50
+   a double lives at 0x7ffe7c3131a8, divisible by 8? yes (alignment rule)
+
+=== 4. a string is just bytes at an address ===
+sizeof(s)=4 (3 characters + 1 terminator)
+  s[0] at 0x7ffe7c313204  hex=44
+  s[1] at 0x7ffe7c313205  hex=53
+  s[2] at 0x7ffe7c313206  hex=41
+  s[3] at 0x7ffe7c313207  hex=00
+
+=== 5. padding: same fields, different order, different footprint ===
+P1 {int a; char b; char c;}   sizeof=8  offsetof(a)=0 offsetof(b)=4 offsetof(c)=5
+P2 {char a; int b; char c;}   sizeof=12  offsetof(a)=0 offsetof(b)=4 offsetof(c)=8
+P3 {char a; char b; int c;}   sizeof=8  offsetof(a)=0 offsetof(b)=1 offsetof(c)=4
+Node{int data; Node* next;}   sizeof=16  offsetof(data)=0 offsetof(next)=8  (4 bytes of padding so the pointer sits on an 8 byte boundary)
+
+=== 6. the heap scatters: five new Node calls ===
+  node 0 at 0x57a2bc523050
+  node 1 at 0x57a2bc523070   delta from previous = 32 bytes
+  node 2 at 0x57a2bc523090   delta from previous = 32 bytes
+  node 3 at 0x57a2bc5230b0   delta from previous = 32 bytes
+  node 4 at 0x57a2bc5230d0   delta from previous = 32 bytes
+  requested per node = 16 bytes, allocator actually hands out 24 usable bytes and charges a 32 byte stride (the rest is its own header plus alignment)
+
+=== 7. cost is the shape: measured access time per element ===
+  array walk  (arr[i], contiguous, hardware prefetcher helps): 0.19 ns/element
+  array walk  (arr[idx], same array, scattered order):        2.46 ns/element
+  linked walk (cur = cur->next, one dependent load per hop):  2.45 ns/element
+  scattered array is 12.69x the sequential one and the list is 12.64x it, SAME O(n) work, different SHAPE
+  (sanity: sums 15999992000000 and 15999992000000 agree? yes, scattered sum 15999992000000)
+
+=== 8. the one line to remember ===
+  address of element i in a contiguous block = base + i * sizeof(element)
+  that single multiply is why indexed access is O(1);
+  in a scattered structure you must follow links, so it is O(n).

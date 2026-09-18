@@ -1,0 +1,36 @@
+{
+  "file": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/INTRO-MEMORY-VISUAL-GUIDE.html",
+  "direction": "industrial",
+  "project": "dsa-lecture5-memory-guide",
+  "date": "2026-09-18",
+  "gate_summary": {
+    "G0  TOPIC-DIRECT": "PASS",
+    "G0A REFS": "PASS",
+    "G0B LEDGER": "PASS",
+    "G1  CRAFT": "PASS",
+    "G2  BUILD": "PASS",
+    "G3  GUARD": "PASS",
+    "G4  CONTRAST": "PASS",
+    "G4A A11Y": "PASS",
+    "G5  VISUAL": "PASS",
+    "G17 COMPOSE": "PASS",
+    "G6  CROSS": "SKIP",
+    "G7  PERF": "PASS",
+    "G8  INTERACTION": "PASS",
+    "G9  GLYPH": "PASS",
+    "G10 LOOP": "PASS",
+    "G11 CONCEPT": "PASS",
+    "G12 MOTION": "PASS",
+    "G13 COPY": "PASS",
+    "G14 META": "PASS",
+    "G15 ASSETS": "PASS",
+    "G16 STATES": "SKIP",
+    "G18 ITER": "WARN"
+  },
+  "shots": [
+    "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/.qa/ui-gate-01-1280x900.png",
+    "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/.qa/ui-gate-01-1280x900-scrolled.png",
+    "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/.qa/ui-gate-02-375x812.png",
+    "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/.qa/ui-gate-02-375x812-scrolled.png"
+  ]
+}

@@ -1,0 +1,96 @@
+/* ============================================================
+   DSA mid-term roadmap, token file (feeds craft-audit.py + contrast-check.py)
+   Direction: Editorial (2.1) per the topic bank route for "Education / learning /
+   courses", with the bank's education override applied: the editorial recipe but a
+   calm blue accent instead of terracotta, serif display kept.
+   Temperature: neutral-cool paper, warm-neutral ink, cool blue accent.
+   One accent (calm blueprint blue) plus three muted semantics (risk, ok, warning).
+   ============================================================ */
+
+:root {
+  /* ---- ground and surfaces ---- */
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface-2: #f2f0ec;
+  --surface-3: #e6e3dd;
+
+  /* ---- lines ---- */
+  --line: #e2dfd9;
+  --line-2: #c4bfb4;
+  --rule: #d8d3c8;
+
+  /* ---- ink ramp ---- */
+  --text: #1c1917;
+  --text-2: #4a453f;
+  --text-3: #635d54;
+
+  /* ---- accent and semantics ---- */
+  --accent: #1b4d7a;      /* calm blue: headings, links, the spine, the meter */
+  --risk: #7a3355;        /* the gap/risk markers and the exam row */
+  --ok: #3d6b3f;          /* shipped, verified */
+  --warn: #7a5310;        /* practice-only, needs work */
+
+  /* ---- type ---- */
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-body: "Instrument Sans", "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: clamp(2.5rem, 5vw, 3.5rem);
+
+  /* ---- spacing ladder ---- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+
+  /* ---- geometry ---- */
+  --r-1: 2px;
+  --r-2: 4px;
+  --hair: 1px;
+  --shadow-1: 0 1px 0 var(--line);
+  --shadow-2: 0 2px 0 var(--line-2), 0 10px 24px -18px rgba(28, 25, 23, 0.4);
+
+  /* ---- motion ---- */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 420ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ---- weights ---- */
+  --w-reg: 400;
+  --w-med: 500;
+  --w-semi: 600;
+}
+
+[data-theme="dark"] {
+  --bg: #14120f;
+  --surface: #1d1a16;
+  --surface-2: #262218;
+  --surface-3: #322c22;
+
+  --line: #38322a;
+  --line-2: #4f4739;
+  --rule: #443c31;
+
+  --text: #f5f2ec;
+  --text-2: #cdc6b8;
+  --text-3: #a49b8b;
+
+  --accent: #7fb0d8;
+  --risk: #d18fb0;
+  --ok: #8fbe91;
+  --warn: #d9b070;
+
+  --shadow-2: 0 2px 0 var(--line-2), 0 10px 24px -18px rgba(0, 0, 0, 0.7);
+}

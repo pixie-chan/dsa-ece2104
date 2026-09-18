@@ -1,0 +1,17 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"IBM Plex Mono, monospace","fontSize":"15px","primaryColor":"#f7f4ef","primaryTextColor":"#1c1917","primaryBorderColor":"#1b4d7a","lineColor":"#8a8375","secondaryColor":"#e8e3d9","tertiaryColor":"#ffffff"}}}%%
+flowchart TB
+  classDef blk fill:#f7f4ef,stroke:#1b4d7a,color:#1c1917
+  classDef exam fill:#f3e7ee,stroke:#7a3355,color:#4a1f34
+  B1["BLOCK A, lectures 1 to 4
+  C++ and Python foundation"]:::blk
+  B2["BLOCK B, lectures 5 to 9
+  memory representation, linked lists"]:::blk
+  B3["BLOCK C, lecture 10
+  class test 1, covers the CO1 block"]:::blk
+  B4["BLOCK D, lectures 11 to 15
+  stacks and queues, array and linked"]:::blk
+  B5["BLOCK E, lecture 16
+  recursion, traced in frames"]:::blk
+  EX["MID SEMESTER EXAM
+  30 marks, closed book"]:::exam
+  B1 --> B2 --> B3 --> B4 --> B5 --> EX

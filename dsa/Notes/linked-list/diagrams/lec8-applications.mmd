@@ -1,0 +1,18 @@
+flowchart TB
+  LL(["Linked list"]) --> A1["Reverse in place<br/>prev, cur, next walking<br/>O of n, no extra memory"]
+  LL --> A2["Remove duplicates in a sorted list<br/>compare cur with cur next<br/>O of n"]
+  LL --> A3["Merge two sorted lists<br/>dummy node plus tail pointer<br/>the merge step of merge sort"]
+  LL --> A4["Polynomial addition<br/>node holds coefficient and exponent<br/>matching exponents get added"]
+  LL --> A5["Stack and Queue<br/>push and pop at the head<br/>Lecture 12 and 14"]
+  LL --> A6["Move to front search<br/>promote the found node<br/>self organising lists"]
+
+  A3 --> MS["Merge sort on a linked list<br/>Lecture 27"]
+  A5 --> ST["Stack and Queue<br/>Lecture 11 to 15"]
+
+  style LL fill:#fdf1e7,stroke:#b5713a
+  style A1 fill:#eef2f7,stroke:#5b6b7f
+  style A2 fill:#eef2f7,stroke:#5b6b7f
+  style A3 fill:#e8f4ea,stroke:#3d7a4a
+  style A4 fill:#e8f4ea,stroke:#3d7a4a
+  style A5 fill:#e8f4ea,stroke:#3d7a4a
+  style A6 fill:#eef2f7,stroke:#5b6b7f

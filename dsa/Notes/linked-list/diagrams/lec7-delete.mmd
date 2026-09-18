@@ -1,0 +1,18 @@
+flowchart TB
+  START(["deleteByValue head, v"]) --> Q1{"head is NULL?"}
+  Q1 -->|yes| RET1["return: nothing to delete"]
+  Q1 -->|no| Q2{"head data equals v?"}
+  Q2 -->|yes| CASE1["CASE 1: it is the first node<br/>dead = head<br/>head = head next<br/>delete dead"]
+  Q2 -->|no| WALK["cur = head<br/>walk while cur next is not NULL<br/>and cur next data is not v"]
+  WALK --> Q3{"cur next is NULL?"}
+  Q3 -->|yes| CASE2["CASE 2: value absent<br/>return, list untouched"]
+  Q3 -->|no| CASE3["CASE 3: middle or last node<br/>dead = cur next<br/>cur next = dead next<br/>delete dead"]
+
+  CASE1 --- N1["move head FIRST, then delete.<br/>Delete first and head dangles on freed memory"]
+  CASE3 --- N3["bridge around the node FIRST,<br/>then delete. Otherwise the rest<br/>of the list is unreachable"]
+
+  style CASE1 fill:#e8f4ea,stroke:#3d7a4a
+  style CASE2 fill:#f2f2f2,stroke:#777777
+  style CASE3 fill:#fdf1e7,stroke:#b5713a
+  style N1 fill:#ffffff,stroke:#3d7a4a,stroke-dasharray: 4 3
+  style N3 fill:#ffffff,stroke:#b5713a,stroke-dasharray: 4 3

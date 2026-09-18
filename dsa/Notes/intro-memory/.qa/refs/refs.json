@@ -1,0 +1,51 @@
+{
+  "build": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/INTRO-MEMORY-VISUAL-GUIDE.html",
+  "viewport": "1280x900",
+  "refs": [
+    {
+      "url": "https://samwho.dev/memory-allocation/",
+      "status": 200,
+      "class": "REAL",
+      "note": "ok",
+      "page_load": true,
+      "title": "Memory Allocation",
+      "final_url": "https://samwho.dev/memory-allocation/",
+      "consent_dismissed": null,
+      "screenshot": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/.qa/refs/ref-01-samwho.dev-memory-allocation.png"
+    },
+    {
+      "url": "https://teenage.engineering/",
+      "status": 200,
+      "class": "REAL",
+      "note": "ok",
+      "page_load": true,
+      "title": "teenage engineering",
+      "final_url": "https://teenage.engineering/",
+      "consent_dismissed": null,
+      "screenshot": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/.qa/refs/ref-02-teenage.engineering.png"
+    },
+    {
+      "url": "https://ciechanow.ski/",
+      "status": 200,
+      "class": "REAL",
+      "note": "ok",
+      "page_load": true,
+      "title": "Bartosz Ciechanowski",
+      "final_url": "https://ciechanow.ski/",
+      "consent_dismissed": null,
+      "screenshot": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/intro-memory/.qa/refs/ref-03-ciechanow.ski.png"
+    }
+  ],
+  "generated_by": "ui-refs.py",
+  "build_shot": null,
+  "ab_pairs": [],
+  "summary": {
+    "refs_given": 3,
+    "refs_resolved": 3,
+    "screenshots": 3,
+    "ab_pairs": 0,
+    "check_only": false,
+    "verdict": "PASS",
+    "verdict_note": "references resolved and shot"
+  }
+}

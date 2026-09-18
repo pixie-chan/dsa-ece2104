@@ -1,0 +1,111 @@
+/* ============================================================
+   DSA Lecture 5 visual learning guide, token file
+   (feeds craft-audit.py and contrast-check.py before the build)
+
+   DIRECTION: Industrial (2.8), developed as a memory DATASHEET / drafting sheet.
+   Bank recipe used (frontend-design topic-direction-bank, Industrial sections):
+     light  --bg #f4f6f8  --text #16202b  --accent #1d4ed8  --border #dbe1e8
+     dark   --bg #0e141b  --text #e6ecf3  --accent #60a5fa  --border #233042
+     fonts  Archivo display + IBM Plex Sans + IBM Plex Mono (spec data, tabular-nums)
+   Kept from the recipe: spec tables with right-aligned numbers, ruler dividers,
+   status dots, blueprint grid in the hero only, flat elsewhere.
+   Added by this build: one signal colour (red markup pencil) for pointers and traps.
+   Temperature is COLD on purpose: bg #f4f6f8 is R244 B248, text #16202b is R22 B43.
+
+   Fills are never tokens: every tint is derived in the component CSS with
+   color-mix(in oklab, var(--accent) N%, var(--surface)), so the palette stays at
+   one accent plus three muted semantics and no hex is written outside this block.
+   ============================================================ */
+
+:root {
+  /* ground and surfaces (light = the printed sheet, and the default) */
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #e8ecf1;
+  --surface-3: #d9e0e8;
+
+  /* the drawing itself is made of these */
+  --line: #dbe1e8;
+  --line-2: #b3bfcc;
+  --line-draft: #7f8b9f;
+  --grid: #e4e9ee;
+
+  /* text ramp: 4 steps, all measured */
+  --text: #16202b;
+  --text-2: #3d4a5a;
+  --text-3: #55636f;
+
+  /* one accent, one signal, three semantics */
+  --accent: #1d4ed8;
+  --signal: #c81742;
+  --ok: #12633f;
+  --warn: #7d5100;
+
+  /* type */
+  --font-display: "Archivo", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: clamp(2.5rem, 5.5vw, 3.9rem);
+  --w-reg: 400;
+  --w-med: 500;
+  --w-semi: 600;
+  --w-bold: 700;
+
+  /* spacing ladder: 4/8 steps only */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+
+  /* geometry: drafting is square, radius stays small */
+  --r-1: 2px;
+  --r-2: 4px;
+  --r-3: 8px;
+
+  /* one elevation language */
+  --shadow-1: 0 1px 0 var(--line);
+  --shadow-2: 0 2px 0 var(--line-2), 0 10px 26px -18px rgba(22, 32, 43, 0.4);
+
+  /* motion */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 420ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* dark = the same drawing as a blueprint negative */
+[data-theme="dark"] {
+  --bg: #0e141b;
+  --surface: #151e28;
+  --surface-2: #1c2836;
+  --surface-3: #24313f;
+
+  --line: #233042;
+  --line-2: #3a4a60;
+  --line-draft: #5f70a8;
+  --grid: #1b2531;
+
+  --text: #e6ecf3;
+  --text-2: #b3c1d1;
+  --text-3: #8b9aab;
+
+  --accent: #60a5fa;
+  --signal: #ff7aa2;
+  --ok: #4fd39a;
+  --warn: #f0b64a;
+
+  --shadow-1: 0 1px 0 var(--line);
+  --shadow-2: 0 2px 0 var(--line-2), 0 10px 26px -18px rgba(0, 0, 0, 0.65);
+}

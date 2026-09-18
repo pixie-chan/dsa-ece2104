@@ -1,0 +1,10 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"IBM Plex Mono, monospace","fontSize":"14px","primaryColor":"#e8ecf1","primaryTextColor":"#16202b","primaryBorderColor":"#1d4ed8","lineColor":"#55636f","tertiaryColor":"#f4f6f8"}}}%%
+flowchart TB
+  LOW["low addresses 0x0"] --> TXT["text: the machine code"]
+  TXT --> DAT["data: globals and statics<br/>measured g_global = 0x57a29ecd4010"]
+  DAT --> HEAP["heap: new and malloc<br/>measured node 0 = 0x57a2bc523050<br/>stride 32 bytes per 16 byte node"]
+  HEAP --> GAP["unmapped gap<br/>41326 GiB in the captured run"]
+  GAP --> STK["stack: locals and call frames<br/>measured locals around 0x7ffe7c3131b0"]
+  STK --> HIGH["high addresses 0x7fffffffffff"]
+  HEAP -. "grows up" .-> GAP
+  STK -. "grows down: four nested calls took the address from 0x...3154 to 0x...30c4, 48 bytes per frame" .-> GAP

@@ -1,0 +1,12 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"IBM Plex Mono, monospace","fontSize":"14px","primaryColor":"#e8ecf1","primaryTextColor":"#16202b","primaryBorderColor":"#1d4ed8","lineColor":"#55636f","tertiaryColor":"#f4f6f8"}}}%%
+flowchart LR
+  subgraph ARR["Array: one block, 20 bytes for 5 ints"]
+    direction LR
+    A0["a[0]<br/>0x...1b0<br/>10"] --> A1["a[1]<br/>0x...1b4<br/>20"] --> A2["a[2]<br/>0x...1b8<br/>30"] --> A3["a[3]<br/>0x...1bc<br/>40"] --> A4["a[4]<br/>0x...1c0<br/>50"]
+  end
+  subgraph LST["Linked list: five chunks of 32 bytes each, addresses stored not computed"]
+    direction LR
+    H["head"] --> N0["node 0<br/>0x...3050"] --> N1["node 1<br/>0x...3070"] --> N2["node 2<br/>0x...3090"] --> NL["NULL"]
+  end
+  ARR --> R1["reach i: base + i x 4, ONE step"]
+  LST --> R2["reach i: follow i + 1 stored addresses"]

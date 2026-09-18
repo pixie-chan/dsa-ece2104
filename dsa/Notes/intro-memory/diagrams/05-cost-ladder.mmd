@@ -1,0 +1,7 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"IBM Plex Mono, monospace","fontSize":"14px","primaryColor":"#e8ecf1","primaryTextColor":"#16202b","primaryBorderColor":"#1d4ed8","lineColor":"#55636f","tertiaryColor":"#f4f6f8"}}}%%
+flowchart LR
+  O1["O(1)<br/>address arithmetic<br/>a[i]"] --> O2["O(log n)<br/>halve the range<br/>binary search"]
+  O2 --> O3["O(n)<br/>visit every element<br/>linked walk"]
+  O3 --> O4["O(n log n)<br/>log n passes over n<br/>merge sort"]
+  O4 --> O5["O(n^2)<br/>every pair compared<br/>bubble sort"]
+  M["measured on this machine: 0.19 ns per element sequential array,<br/>2.46 ns the same array in scattered order, 2.45 ns the linked walk"] -. "big-O hides exactly this constant" .-> O3

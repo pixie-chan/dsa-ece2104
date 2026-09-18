@@ -1,0 +1,12 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"IBM Plex Mono, monospace","fontSize":"14px","primaryColor":"#e8ecf1","primaryTextColor":"#16202b","primaryBorderColor":"#1d4ed8","lineColor":"#55636f","tertiaryColor":"#f4f6f8"}}}%%
+flowchart TD
+  DS["Data structures"] --> P["Primitive: one value<br/>int, char, float, double, pointer"]
+  DS --> C["Composite: many values as one unit"]
+  C --> LIN["Linear: one predecessor, one successor"]
+  C --> NLI["Non-linear: hierarchical or networked"]
+  LIN --> AR["Array (static, contiguous)"]
+  LIN --> LL["Linked list (dynamic, scattered)"]
+  LIN --> SQ["Stack and queue (linear + a discipline)"]
+  NLI --> TR["Tree: one parent, many children"]
+  NLI --> GR["Graph: any connections, cycles allowed"]
+  DS --> AX["Third axis: static (size fixed at compile time)<br/>or dynamic (grown at run time on the heap)"]

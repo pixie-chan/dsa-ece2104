@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Plate Dispenser: Stack DSA, explained like a kitchen</title>
+<style>
+  :root{
+    --bg:#f4eee1; --ink:#2e2620; --muted:#7c6e60; --card:#fffdf7;
+    --accent:#c2542f; --accent-dark:#9c3f24; --olive:#72855a; --olive-bg:#e9efdc;
+    --line:#e3d6c0; --code-bg:#2b221c; --code-ink:#f0e6d6; --plate:#fbf5e9;
+    --plate-rim:#e0cfb2; --shadow:0 1px 2px rgba(46,38,32,.06),0 6px 18px rgba(46,38,32,.07);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{content:""; position:fixed; inset:0; pointer-events:none; opacity:.04; z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");}
+  .wrap{max-width:880px; margin:0 auto; padding:48px 22px 90px; position:relative; z-index:1;}
+
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif; line-height:1.15; letter-spacing:-.01em;}
+  code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+
+  .eyebrow{font:600 12px/1 ui-monospace,monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--accent);}
+  h1{font-size:38px; margin:10px 0 8px;}
+  .sub{color:var(--muted); font-size:16px;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:24px;}
+  section{margin-top:44px;}
+  section > h2{font-size:26px; margin-bottom:6px;}
+  .kicker{font:600 12px/1 ui-monospace,monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--olive); margin-bottom:8px;}
+  .lede{color:var(--muted); margin-bottom:18px; max-width:60ch;}
+
+  /* ---------- kitchen sim ---------- */
+  .simlay{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media(max-width:720px){.simlay{grid-template-columns:1fr;}}
+  .rackcol{display:flex; flex-direction:column;}
+  .rack-label{font:600 12px/1 ui-monospace,monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;}
+  .rack{
+    position:relative; flex:1; min-height:300px; border:2px dashed var(--line); border-radius:14px;
+    background:repeating-linear-gradient(to bottom, #fbf7ee 0 44px, #f4ecdc 44px 46px);
+    padding:12px; display:flex; flex-direction:column-reverse; align-items:stretch; gap:4px; overflow:hidden;
+  }
+  .plate{
+    background:var(--plate); border:1px solid var(--plate-rim); border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:Georgia,serif; font-size:20px; font-weight:bold; color:var(--accent-dark);
+    box-shadow:0 1px 0 rgba(46,38,32,.10), inset 0 6px 0 rgba(255,255,255,.55);
+    padding:8px 10px; animation:plateIn .28s cubic-bezier(.32,.72,0,1);
+  }
+  @keyframes plateIn{from{opacity:0; transform:translateY(-14px) scale(.96);} to{opacity:1; transform:none;}}
+  .plate.taken{animation:plateOut .3s ease forwards;}
+  @keyframes plateOut{to{opacity:0; transform:translateY(16px) rotate(2deg);}}
+  .rackupright{position:absolute; right:-1px; top:0; bottom:0; width:16px;
+    background:linear-gradient(to bottom, #d9c9a8, #c4b28e); display:flex; align-items:center; justify-content:center;
+    font-family:Georgia,serif; font-size:22px; color:#8a7a5c; user-select:none;}
+  .counter-info{margin-top:10px; font-family:Georgia,serif; font-size:17px;}
+  .counter-info b{color:var(--accent-dark);}
+  .tos{display:inline-block; margin-top:8px; font:600 13px ui-monospace,monospace; padding:3px 9px; border-radius:999px; background:var(--olive-bg); color:#4c5c3a;}
+  .tos.off{background:#f4e2d8; color:#9c3f24;}
+  .controls{display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap; margin-top:14px;}
+  .btn{font:600 14px -apple-system,sans-serif; border:none; border-radius:10px; padding:11px 16px; cursor:pointer; transition:transform .08s, filter .15s;}
+  .btn:active{transform:scale(.96);}
+  .btn-push{background:var(--accent); color:#fff;}
+  .btn-push:hover{filter:brightness(1.06);}
+  .btn-pop{background:var(--olive); color:#fff;}
+  .btn-small{background:#ede4d2; color:var(--ink); font-size:12px; padding:9px 12px;}
+  .valinput{font:600 15px ui-monospace,monospace; width:74px; border:1px solid var(--line); border-radius:10px; padding:10px 8px; background:#fff; text-align:center;}
+  .flash{min-height:34px; margin-top:12px; font:600 13px/1.4 -apple-system,sans-serif; color:var(--accent-dark); background:#f7e8dd; border:1px solid #eccdb9; border-radius:10px; padding:9px 12px; opacity:0; transition:opacity .2s;}
+  .flash.on{opacity:1;}
+  .echowrap{margin-top:14px; border-radius:12px; overflow:hidden; background:var(--code-bg);}
+  .echohead{font:600 11px ui-monospace,monospace; letter-spacing:.12em; text-transform:uppercase; color:#a9967f; padding:7px 12px; border-bottom:1px solid #3a3026;}
+  .echoline{font:13px/1.7 ui-monospace,monospace; color:#f0e6d6; padding:9px 12px; min-height:22px; white-space:pre-wrap;}
+  .echoline .op{color:#e0b45a;}
+  .echoline .cm{color:#8f9d7e;}
+  .echoline .hl{color:#7fd4a0;}
+  .note{font-size:14px; color:var(--muted); margin-top:8px;}
+
+  /* ---------- annotated code ---------- */
+  .codeview{display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;}
+  @media(max-width:720px){.codeview{grid-template-columns:1fr;}}
+  .codelines{border-radius:14px; overflow:hidden; border:1px solid #3a3026; background:var(--code-bg); box-shadow:var(--shadow);}
+  .codetab{background:#382e25; color:#cbb89e; font:600 11px ui-monospace,monospace; letter-spacing:.1em; padding:8px 14px; border-bottom:1px solid #3a3026;}
+  .lin{border:none; width:100%; text-align:left; background:transparent; color:#d9caae; font:13px/1.75 ui-monospace,monospace; padding:2px 14px; cursor:pointer; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; padding-right:18px; display:block;}
+  .lin .n{display:inline-block; width:34px; color:#6d5d4a; user-select:none;}
+  .lin:hover{background:#38302a;}
+  .lin.sel{background:#4a3a2a; box-shadow:inset 3px 0 0 var(--accent);}
+  .explain{position:sticky; top:20px;}
+  .exbubble{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:12px; padding:16px 18px; min-height:150px; box-shadow:var(--shadow);}
+  .exbubble .who{font:600 12px ui-monospace,monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--accent);}
+  .exbubble h4{margin:4px 0 8px; font-size:18px;}
+  .exbubble p{color:var(--ink); font-size:15px;}
+  .exbubble .code-mini{display:block; margin:8px 0 4px; background:var(--code-bg); color:#e8d9bd; padding:7px 10px; border-radius:8px; font:13px ui-monospace,monospace; white-space:pre-wrap;}
+  .hint{font-size:13px; color:var(--muted); margin-top:10px;}
+
+  /* ---------- C vs C++ ---------- */
+  .duel{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media(max-width:720px){.duel{grid-template-columns:1fr;}}
+  .kitchen{border-radius:16px; padding:20px 22px; border:1px solid var(--line); box-shadow:var(--shadow);}
+  .kitchen legend{font:600 11px ui-monospace,monospace; letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px;}
+  .kitchen h3{font-size:21px; margin-bottom:6px;}
+  .kitchen .tagline{font-size:14px; color:var(--muted); margin-bottom:12px;}
+  .kitchen ul{list-style:none;}
+  .kitchen li{padding:6px 0 6px 24px; position:relative; font-size:15px;}
+  .kitchen li::before{content:"◆"; position:absolute; left:2px; top:7px; font-size:11px; color:var(--accent);}
+  .kitchen-c{background:#fbf3e8;}
+  .kitchen-cpp{background:#eef2e3;}
+  .vs-badge{display:grid; place-items:center;}
+  .vs{font-family:Georgia,serif; font-size:26px; color:var(--accent); background:var(--card); border:1px solid var(--line); width:56px; height:56px; border-radius:50%; display:grid; place-items:center; box-shadow:var(--shadow);}
+  table.tbl{width:100%; border-collapse:collapse; margin-top:20px; background:var(--card); border-radius:16px; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); font-size:14px;}
+  .tbl th{background:#efe6d4; text-align:left; padding:11px 14px; font:700 13px -apple-system,sans-serif; border-bottom:1px solid var(--line);}
+  .tbl td{padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .tbl tr:last-child td{border-bottom:none;}
+  .tbl td:first-child{font-weight:700; white-space:nowrap; color:var(--accent-dark);}
+  .tbl .ccode{font:12px ui-monospace,monospace; color:var(--muted);}
+
+  .gloss{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:10px; margin-top:16px;}
+  .gitem{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:11px 14px; font-size:14px;}
+  .gitem b{font-family:ui-monospace,monospace; color:var(--accent-dark);}
+  .gitem span{color:var(--muted);}
+
+  .quiz{counter-reset:q; margin-top:8px;}
+  .quiz li{counter-increment:q; list-style:none; padding:12px 14px 12px 44px; position:relative; background:var(--card); border:1px solid var(--line); border-radius:12px; margin-bottom:10px; font-size:15px;}
+  .quiz li::before{content:counter(q); position:absolute; left:12px; top:12px; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font:700 12px ui-monospace,monospace; display:grid; place-items:center;}
+  details{font-size:14px; color:var(--muted);}
+  details summary{cursor:pointer; color:var(--accent-dark); font-weight:700; margin-top:6px;}
+
+  .footer{margin-top:54px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px;}
+  .pill{display:inline-block; font:600 11px ui-monospace,monospace; letter-spacing:.08em; text-transform:uppercase; background:#f1e7d3; border-radius:999px; padding:4px 10px; margin:2px 3px 2px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">DSA · Lab · Kitchen Edition</div>
+  <h1>The Plate Dispenser</h1>
+  <p class="sub">Your <code>stack1</code> class, explained like a stack of plates on a kitchen counter. No, really. That is what a stack <i>is</i>.</p>
+
+  <section>
+    <div class="kicker">Act 1 · Feel it first</div>
+    <h2>Play with the machine</h2>
+    <p class="lede">A stack is a pile of dinner plates. You can only put a plate on <b>top</b>, and only take the plate off the <b>top</b>. Whatever you put down last, you pick up first. That is the whole secret. (Computers call that LIFO: Last In, First Out.)</p>
+    <div class="card">
+      <div class="simlay">
+        <div class="rackcol">
+          <div class="rack-label">The plate pile · capacity 6</div>
+          <div class="rack">
+            <div class="rackupright">ツ</div>
+            <div id="stackEl" style="display:contents;"></div>
+          </div>
+          <div class="counter-info">Holding <b id="countNum">0</b> / <b>6</b> plates</div>
+          <div class="tos" id="tosLabel">tos = -1 &nbsp;(no plates)</div>
+        </div>
+        <div>
+          <div class="rack-label">Controls</div>
+          <div class="controls">
+            <input id="valinput" class="valinput" type="number" value="42" min="0" max="999">
+            <button class="btn btn-push" onclick="pushPlate()">PUSH a plate ↑</button>
+            <button class="btn btn-pop" onclick="popPlate()">POP a plate ↓</button>
+            <button class="btn btn-small" onclick="fillDemo()">fill it</button>
+            <button class="btn btn-small btn-small-pop" onclick="emptyDemo()">empty it</button>
+            <button class="btn btn-small" onclick="resetSim()">reset</button>
+          </div>
+          <div class="flash" id="flash"></div>
+          <div class="echowrap">
+            <div class="echohead">C++ that just ran in the background</div>
+            <div class="echoline" id="echoline">(push some plates, see the code light up)</div>
+          </div>
+          <p class="note">The finger on the right is <b>tos</b>, short for "top of stack". It always points at the top plate. When the pile is empty, it points at <b>-1</b> (nothing).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="kicker">Act 2 · Read your own code</div>
+    <h2>Your two files, plate by plate</h2>
+    <p class="lede">The header file (<code>stack2.h</code>) is the <b>blueprint of the machine</b>: it declares the rack and the buttons, but does nothing yet. The second file (your <code>stack1_main.c</code>, really C++) is where each button gets its <b>recipe</b>. Tap any line below to see what it means in kitchen language.</p>
+
+    <div class="codeview">
+      <div>
+        <div class="codelines">
+          <div class="codetab">stack2.h · the machine blueprint</div>
+          <pre class="lin" style="cursor:text;">//#include &lt;iomanip&gt;          // (commented out, unused)
+//using namespace std;       // (off means you need std:: in front)
+
+struct _stack {              // the RAW PLATE RACK: 3 shelves, no rules
+    int *s;                  // the shelf itself: where plates actually sit
+    int size;                // how many plates fit (capacity)
+    int tos;                 // the finger: index of the top plate (-1 = empty)
+};
+
+class stack1 {               // the DISPENSER MACHINE that wraps the rack
+    _stack sta;              // its private rack, locked inside (private by default)
+public:
+    stack1();                // constructor: power-on self-check, runs on its own
+    stack1(int);             // constructor, but you pick the capacity
+    bool isfull();           // &quot;any room left?&quot;   -&gt; answers yes/no
+    bool isempty();          // &quot;any plates left?&quot; -&gt; answers yes/no
+    void push(int);          // PUT a plate on top
+    int  pop();              // TAKE the top plate off (returns it)
+    void display();          // read out every plate, bottom to top
+    ~stack1();               // destructor: shutdown + cleanup, runs on its own
+};</pre>
+        </div>
+        <p class="hint">Thing to notice: <code>class stack1</code> has a <code>public:</code> door. Everything after it (the buttons) can be used from outside. The <code>_stack sta</code> line sits <i>before</i> that door, so it is private: locked inside the machine, nobody can reach in and mess with the plates directly.</p>
+      </div>
+      <div>
+        <div class="codelines">
+          <div class="codetab">stack1_main · each button's recipe (tap lines!)</div>
+<button class="lin" data-ex="" onclick="explain('')"><span class="n">1</span>#include &lt;iostream&gt;</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">2</span>// (not in your screenshot: add this + std:: to compile as .cpp)</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">3</span> </button><button class="lin" data-ex="" onclick="explain('')"><span class="n">4</span>void stack1::push(int element) {</button><button class="lin" data-ex="1" onclick="explain('1')"><span class="n">5</span>    if (!isfull())                 // 1  room left on the pile?</button><button class="lin" data-ex="2" onclick="explain('2')"><span class="n">6</span>        sta.s[++sta.tos] = element;// 2  finger up, plate in that slot</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">7</span>    else</button><button class="lin" data-ex="3" onclick="explain('3')"><span class="n">8</span>        cout &lt;&lt; &quot;stack is full\n&quot;;// 3  no room, so complain out loud</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">9</span>}</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">10</span> </button><button class="lin" data-ex="" onclick="explain('')"><span class="n">11</span>int stack1::pop() {</button><button class="lin" data-ex="4" onclick="explain('4')"><span class="n">12</span>    int x = -999;                  // 4  place a decoy plate by default</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">13</span>    if (!isempty())</button><button class="lin" data-ex="5" onclick="explain('5')"><span class="n">14</span>        x = sta.s[sta.tos--];      // 5  take the top plate, then finger down</button><button class="lin" data-ex="6" onclick="explain('6')"><span class="n">15</span>    return x;                      // 6  hand the plate over (or the decoy)</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">16</span>}</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">17</span> </button><button class="lin" data-ex="7" onclick="explain('7')"><span class="n">18</span>stack1::~stack1() {                // 7  shutdown routine, runs automatically</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">19</span>    sta.size = 0;</button><button class="lin" data-ex="8" onclick="explain('8')"><span class="n">20</span>    sta.tos  = -1;                 // 8  wipe the chalk marks, pile is over</button><button class="lin" data-ex="9" onclick="explain('9')"><span class="n">21</span>    delete[] sta.s;                // 9  give the shelf back to the operating system</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">22</span>}</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">23</span> </button><button class="lin" data-ex="" onclick="explain('')"><span class="n">24</span>void stack1::display() {</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">25</span>    if (!isempty())</button><button class="lin" data-ex="10" onclick="explain('10')"><span class="n">26</span>        for (int i = 0; i &lt;= sta.tos; i++)   // 10  walk bottom (0) up to top</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">27</span>            cout &lt;&lt; sta.s[i] &lt;&lt; &quot;  &quot;;</button><button class="lin" data-ex="" onclick="explain('')"><span class="n">28</span>}</button>
+        </div>
+        <div class="hint">Click any line. The explanation appears on the right.</div>
+      </div>
+      <div class="explain">
+        <div class="exbubble" id="exbubble">
+          <div class="who">Recipe for the button</div>
+          <h4 id="exname">push / pop / destructor / display</h4>
+          <p id="extext">Tap a line on the left. Each one unpacks into plain kitchen logic.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="kicker">Act 3 · C vs C++: two ways to run a kitchen</div>
+    <h2>Same dish, two kitchens</h2>
+    <p class="lede">The stack algorithm is identical in both languages. The difference is <b>who keeps order</b>. In C, you are the only manager and you must remember everything. In C++, the machine (class) manages its own life.</p>
+
+    <div class="duel">
+      <div class="kitchen kitchen-c">
+        <legend>Kitchen #1</legend>
+        <h3>The C kitchen</h3>
+        <div class="tagline">one chef, recipes on the wall, everything manual</div>
+        <ul>
+          <li><b>Ingredients and recipes are separate.</b> A <code>struct</code> is just a box of ingredients. The functions (push, pop) are papers hanging on the wall, and every time you need one you hand the whole box over: <code>push(&amp;sta, 5)</code>.</li>
+          <li><b>You must set up the station yourself.</b> There is no automatic prep. You write an <code>init_stack()</code>, and if you forget to call it before cooking, you are working with garbage on the counter.</li>
+          <li><b>You must clean up yourself.</b> At the end you call <code>free_stack()</code> / <code>free()</code>. Forget it, and the rented shelf is never returned: that is a <b>memory leak</b>, leftover grease that ruins the next dish.</li>
+          <li><b>No locked doors.</b> Every part of the struct is public. Any function anywhere can reach in and mess up <code>tos</code>. Order exists only because you are careful.</li>
+        </ul>
+      </div>
+      <div class="vs-badge"><div class="vs">vs</div></div>
+      <div class="kitchen kitchen-cpp">
+        <legend>Kitchen #2</legend>
+        <h3>The C++ kitchen</h3>
+        <div class="tagline">the plate dispenser machine that takes care of itself</div>
+        <ul>
+          <li><b>The machine is the recipe + the ingredients.</b> A <code>class</code> bundles the data (private rack) AND the buttons (public methods) into one sealed unit. You cook by pressing buttons: <code>sta.push(5)</code>; the rack is inside, you never touch it.</li>
+          <li><b>Prep is automatic.</b> The <b>constructor</b> runs the moment you create a dispenser: it sets <code>tos = -1</code> and rents the shelf (<code>new int[size]</code>). You cannot forget the setup, because it happens on its own.</li>
+          <li><b>Cleanup is automatic.</b> The <b>destructor</b> runs when the object dies and returns the shelf (<code>delete[] sta.s</code>). No manual call, so the leak-prone step is hard to forget.</li>
+          <li><b>Locked doors.</b> <code>private:</code> hides the rack from everyone. Outsiders can only press <code>push</code>, <code>pop</code>, <code>display</code>. They physically cannot corrupt <code>tos</code> or grab a middle plate.</li>
+        </ul>
+      </div>
+    </div>
+
+    <table class="tbl">
+      <tr><th>Question</th><th>Kitchen #1 · C</th><th>Kitchen #2 · C++</th></tr>
+      <tr><td>Data container</td><td><code>struct</code> holds data only</td><td><code>class</code> holds data + functions</td></tr>
+      <tr><td>Who owns the operations</td><td>Free-standing functions</td><td>Member methods, they belong to the object</td></tr>
+      <tr><td>Calling style</td><td class="ccode">push(&amp;sta, 5)</td><td class="ccode">sta.push(5)</td></tr>
+      <tr><td>Preparation</td><td>Manual <code>init_stack()</code></td><td>Constructor, automatic</td></tr>
+      <tr><td>Cleanup</td><td>Manual <code>free_stack()</code></td><td>Destructor, automatic</td></tr>
+      <tr><td>Access control</td><td>none, everything public</td><td><code>private</code> / <code>public</code></td></tr>
+      <tr><td>Who keeps order</td><td>You, the programmer</td><td>The machine itself</td></tr>
+      <tr><td>Great for</td><td>Small, low-level code; total control</td><td>Bigger projects, safety and structure</td></tr>
+    </table>
+
+    <p style="margin-top:14px; font-size:15px; color:var(--muted)">Same plates, same pile, same LIFO. Only the <i>organization</i> changes: C trusts you to be careful, C++ locks the doors and sweeps the floor for you.</p>
+  </section>
+
+  <section>
+    <div class="kicker">The cheat sheet</div>
+    <h2>One-sentence glossary</h2>
+    <div class="gloss">
+      <div class="gitem"><b>stack</b><br><span>a pile of plates: add and remove only at the top</span></div>
+      <div class="gitem"><b>LIFO</b><br><span>last plate in is the first plate out</span></div>
+      <div class="gitem"><b>push</b><br><span>put a plate on top</span></div>
+      <div class="gitem"><b>pop</b><br><span>take the top plate off</span></div>
+      <div class="gitem"><b>tos</b><br><span>finger / index of the top plate, -1 = empty</span></div>
+      <div class="gitem"><b>size</b><br><span>how many plates the pile can hold (capacity)</span></div>
+      <div class="gitem"><b>s[]</b><br><span>the shelf: the actual array where plates sit</span></div>
+      <div class="gitem"><b>constructor</b><br><span>auto power-on: setup when the object is born</span></div>
+      <div class="gitem"><b>destructor</b><br><span>auto shutdown: cleanup when the object dies</span></div>
+      <div class="gitem"><b>delete[]</b><br><span>give the rented shelf back to the OS (no leak)</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="kicker">Prove you got it</div>
+    <h2>Five self-checks</h2>
+    <ol class="quiz">
+      <li>I push 10, 20, 30, then pop once. What number comes out, and what is left on the pile?</li>
+      <li>After pushing 3 plates onto an empty stack, what number is <code>tos</code>?</li>
+      <li>Why can <code>pop()</code> sometimes hand you back -999?</li>
+      <li>What exactly prints when you push onto a full stack?</li>
+      <li>In the C version with no destructor, what do you have to remember to do at the end, and what happens if you forget?</li>
+    </ol>
+    <details><summary>Peek at the answers</summary>
+      <p style="margin-top:8px">1. 30 comes out (the top). Plates left: 10, 20. 2. <code>tos</code> = 2 (the finger counts 0, 1, 2). 3. The pile was empty, so it returns the decoy sentinel -999 instead of a real plate. 4. &ldquo;stack is full&rdquo; (the <code>else</code> branch of push). 5. Call <code>free_stack()</code> / <code>free(sta.s)</code>. Forget it, and the memory is never returned: a memory leak.</p>
+    </details>
+  </section>
+
+  <div class="footer">
+    Built for your <code>stack2.h</code> + <code>stack1_main</code> lab, MUJ DSA. Open this file in any browser and click around.
+    <span class="pill">LIFO</span><span class="pill">tos = top of stack</span><span class="pill">encapsulation</span>
+  </div>
+</div>
+
+<script>
+var cap = 6, arr = [], tos = -1;
+
+function render(){
+  var rack = document.getElementById('stackEl');
+  rack.innerHTML = '';
+  for (var i = 0; i < arr.length; i++){
+    var p = document.createElement('div');
+    p.className = 'plate';
+    p.textContent = arr[i];
+    rack.appendChild(p);
+  }
+  var tl = document.getElementById('tosLabel');
+  if (arr.length === 0){
+    tos = -1;
+    tl.textContent = 'tos = -1  (no plates)';
+    tl.className = 'tos off';
+  } else {
+    tos = arr.length - 1;
+    tl.textContent = 'tos = ' + tos + '  (top plate: ' + arr[arr.length - 1] + ')';
+    tl.className = 'tos';
+  }
+  document.getElementById('countNum').textContent = arr.length;
+}
+
+function el(id){ return document.getElementById(id); }
+
+function echo(code){
+  var box = el('echoline');
+  box.innerHTML = '';
+  var pre = document.createElement('span');
+  pre.textContent = code;
+  box.appendChild(pre);
+  box.className = 'echoline';
+}
+function flash(msg){
+  var f = el('flash');
+  f.innerHTML = msg;
+  f.className = 'flash on';
+  clearTimeout(f._t);
+  f._t = setTimeout(function(){ f.className = 'flash'; }, 3400);
+}
+function readVal(){
+  var v = parseInt(el('valinput').value, 10);
+  if (isNaN(v)) v = Math.floor(Math.random() * 900) + 10;
+  return v;
+}
+function pushPlate(){
+  if (arr.length >= cap){
+    flash('FULL: push() hits the else branch and just prints "stack is full". The plate stays out.');
+    echo('if (!isfull())  ->  false  ::  cout << "stack is full";');
+    return;
+  }
+  var v = readVal();
+  arr.push(v);
+  echo('sta.s[++sta.tos] = ' + v + ';   // finger up, plate in');
+  render();
+}
+function popPlate(){
+  if (arr.length === 0){
+    flash('EMPTY: pop() returns the decoy -999. There simply is nothing to hand back.');
+    echo('int x = -999;  ->  stack empty, return -999');
+    return;
+  }
+  var v = arr.pop();
+  echo('x = sta.s[sta.tos--];   // took plate ' + v + ', finger moved down');
+  render();
+}
+function fillDemo(){
+  var guard = 0;
+  while (arr.length < cap && guard++ < 20) pushPlate();
+  pushPlate(); // one extra push attempt, to show the overflow message
+}
+function emptyDemo(){
+  var guard = 0;
+  while (arr.length > 0 && guard++ < 20) popPlate();
+  popPlate();
+}
+function resetSim(){
+  arr = [];
+  render();
+  echo('(station reset: tos = -1, pile empty)');
+  var f = el('flash'); f.className = 'flash';
+}
+
+var EX = {"1": {"name": "if (!isfull())", "code": "if (!isfull())", "text": "Before adding a plate, the machine asks its sensor: &lt;&lt;is there still room on this pile?&gt;&gt;. <b>!isfull()</b> means <i>not full</i>, so the check passes only when a slot is free. If the machine were full, it would refuse."}, "2": {"name": "sta.s[++sta.tos] = element", "code": "sta.s[++sta.tos] = element;", "text": "Two things happen in one line: first <b>++sta.tos</b> moves the finger up one slot, then we place the plate in that slot. So tos now points at the plate you just added. <i>Pre-increment:</i> finger moves FIRST, plate put down SECOND."}, "3": {"name": "cout &laquo; \\\"stack is full\\\"", "code": "cout << \"stack is full\\n\";", "text": "If the pile is already at capacity, the machine just shouts &lt;&lt;stack is full&gt;&gt; and refuses. It does NOT push. That else branch is the polite way to say no."}, "4": {"name": "int x = -999", "code": "int x = -999;", "text": "The machine pre-loads a decoy value. If the pile turns out to be empty, whoever called pop() gets -999 back: the code's way of saying &lt;&lt;nothing was there&gt;&gt; (a sentinel value, since no real plate is -999)."}, "5": {"name": "sta.s[sta.tos--]", "code": "x = sta.s[sta.tos--];", "text": "The top plate is copied out FIRST, then the finger moves down (<b>post-decrement</b>). Order matters: grab the plate at the current top, then lower tos to the plate below. This is the exact reverse of push."}, "6": {"name": "return x", "code": "return x;", "text": "Hand the plate over to whoever asked. If the pile was empty all along, x still holds the -999 decoy, which is what gets returned."}, "7": {"name": "~stack1()", "code": "stack1::~stack1()", "text": "This is the destructor: the machine's closing-time checklist. When the dispenser object is destroyed (program ends, or it goes out of scope), C++ runs this automatically. You never call it by hand."}, "8": {"name": "reset tos, size", "code": "sta.tos = -1;", "text": "Second-to-last sweep: wipe the chalk marks. tos goes back to -1 (empty pile) and size to 0, so the old numbers stop meaning anything. The station is declared closed."}, "9": {"name": "delete[] sta.s", "code": "delete[] sta.s;", "text": "Last sweep: the shelf (the array) was rented from the operating system with <b>new</b>, so it must be returned with <b>delete[]</b>. The <i>[]</i> matters, it means whole-array, not one element. Forget this line and you get a <b>memory leak</b>."}, "10": {"name": "for (int i = 0; i <= sta.tos; i++)", "code": "for (int i = 0; i <= sta.tos; i++)", "text": "display reads plates from the bottom (index 0) up to the top (index tos), printing each value with two spaces. Classic bottom-to-top read-out of the pile."}};
+function explain(key){
+  var menu = document.querySelectorAll('.lin[data-ex]');
+  for (var i = 0; i < menu.length; i++) menu[i].classList.remove('sel');
+  if (!key || !EX[key]) return;
+  for (var i = 0; i < menu.length; i++){
+    if (menu[i].getAttribute('data-ex') === key){ menu[i].classList.add('sel'); }
+  }
+  el('exname').textContent = EX[key].name;
+  el('extext').innerHTML = '<span class="code-mini">' + (EX[key].code || '') + '</span>' + EX[key].text;
+}
+</script>
+</body>
+</html>

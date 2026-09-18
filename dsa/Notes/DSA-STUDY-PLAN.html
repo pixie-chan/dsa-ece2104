@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Mastery Plan — ECE2104</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f5f5;--bg-alt:#ebebeb;--surface:#fff;--surface-2:#f0f0f0;--text:#111;--text-muted:#555;--text-faint:#999;--border:#d4d4d4;--border-strong:#999;--accent:#059669;--accent-soft:#d1fae5;--accent-dim:rgba(5,150,105,.12);--easy:#059669;--medium:#d97706;--hard:#dc2626;--easy-bg:#d1fae5;--medium-bg:#fef3c7;--hard-bg:#fee2e2;--font-body:'IBM Plex Sans',-apple-system,sans-serif;--font-mono:'IBM Plex Mono','SF Mono',monospace;--radius:6px;--radius-lg:10px;--shadow:0 1px 3px rgba(0,0,0,.08);--ease:cubic-bezier(.22,1,.36,1)}
+[data-theme="dark"]{--bg:#0a0a0a;--bg-alt:#111;--surface:#161616;--surface-2:#1e1e1e;--text:#e5e5e5;--text-muted:#a0a0a0;--text-faint:#555;--border:#262626;--border-strong:#333;--accent:#34d399;--accent-soft:rgba(52,211,153,.12);--accent-dim:rgba(52,211,153,.06);--easy:#34d399;--medium:#fbbf24;--hard:#f87171;--easy-bg:rgba(52,211,153,.12);--medium-bg:rgba(251,191,36,.12);--hard-bg:rgba(248,113,113,.12);--shadow:0 1px 3px rgba(0,0,0,.3)}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--text-faint) transparent}
+*::-webkit-scrollbar{width:6px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:var(--text-faint);border-radius:999px}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;min-height:100vh;transition:background-color .4s var(--ease),color .4s var(--ease)}
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* Header */
+.header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:12px 0;transition:background-color .4s var(--ease)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:0 auto;padding:0 24px}
+.header-title{font-family:var(--font-mono);font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--accent)}
+.header-meta{display:flex;align-items:center;gap:16px}
+.header-stat{font-family:var(--font-mono);font-size:11px;font-weight:500;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase}
+.header-stat span{color:var(--accent);font-weight:600}
+.theme-toggle{width:32px;height:32px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text-muted);cursor:pointer;display:grid;place-items:center;transition:border-color .2s,color .2s}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.theme-toggle svg{width:16px;height:16px}
+
+/* Hero */
+.hero{padding:80px 0 48px;border-bottom:1px solid var(--border)}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);padding:4px 12px;background:var(--accent-dim);border:1px solid var(--accent-soft);border-radius:999px;margin-bottom:24px}
+.hero-badge svg{width:12px;height:12px}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:16px;max-width:680px}
+.hero h1 .accent{color:var(--accent)}
+.hero-sub{font-size:16px;color:var(--text-muted);max-width:580px;line-height:1.6;margin-bottom:32px}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;max-width:720px}
+.stat-card{background:var(--surface);padding:20px 16px;text-align:center;transition:background-color .4s}
+.stat-num{font-family:var(--font-mono);font-size:28px;font-weight:600;color:var(--accent);line-height:1}
+.stat-label{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-top:6px}
+
+/* Phase Nav */
+.phase-nav{display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:57px;z-index:90;background:var(--bg);border-bottom:1px solid var(--border);margin:0 -24px;padding:12px 24px 16px;transition:background-color .4s}
+.phase-link{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding:6px 14px;border:1px solid var(--border);border-radius:999px;text-decoration:none;transition:all .2s var(--ease);cursor:pointer}
+.phase-link:hover,.phase-link.active{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
+
+/* Sections */
+.section{padding:56px 0}.section+.section{border-top:1px solid var(--border)}
+.section-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.section-label svg{width:14px;height:14px}
+.section-title{font-size:clamp(1.5rem,3vw,2rem);font-weight:700;line-height:1.2;margin-bottom:8px}
+.section-desc{color:var(--text-muted);font-size:15px;max-width:640px;margin-bottom:32px;line-height:1.6}
+
+/* Week Blocks */
+.week-block{margin-bottom:48px}
+.week-header{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.week-num{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-dim);padding:2px 10px;border-radius:var(--radius);border:1px solid var(--accent-soft);white-space:nowrap}
+.week-title{font-size:18px;font-weight:600}
+.week-lectures{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.04em}
+
+.week-body{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+@media(max-width:768px){.week-body{grid-template-columns:1fr}}
+
+/* Learn Panel */
+.learn-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:background-color .4s}
+.learn-title{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.learn-title svg{width:12px;height:12px}
+.learn-list{list-style:none}
+.learn-list li{font-size:13px;color:var(--text-muted);line-height:1.5;padding:4px 0 4px 12px;position:relative}
+.learn-list li::before{content:'';position:absolute;left:0;top:11px;width:4px;height:4px;background:var(--accent);border-radius:1px}
+.learn-list li strong{color:var(--text);font-weight:500}
+.learn-warning{margin-top:12px;padding:10px 12px;font-size:12px;background:var(--hard-bg);color:var(--hard);border-radius:var(--radius);border:1px solid rgba(220,38,38,.2);font-weight:500}
+
+/* Problem Table */
+.problem-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:background-color .4s}
+.problem-table-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)}
+.problem-table-title{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint)}
+.problem-count{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--accent)}
+table{width:100%;border-collapse:collapse}
+thead th{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);text-align:left;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--surface-2)}
+tbody tr{border-bottom:1px solid var(--border);transition:background-color .15s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--accent-dim)}
+tbody td{padding:10px 16px;font-size:13px;vertical-align:middle}
+td.num{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--text-faint);width:36px}
+td.problem-name{font-weight:500}
+td.problem-name a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--border);transition:border-color .15s,color .15s}
+td.problem-name a:hover{color:var(--accent);border-color:var(--accent)}
+.difficulty{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;display:inline-block}
+.diff-easy{color:var(--easy);background:var(--easy-bg)}
+.diff-medium{color:var(--medium);background:var(--medium-bg)}
+.diff-hard{color:var(--hard);background:var(--hard-bg)}
+td.pattern-cell{font-family:var(--font-mono);font-size:12px;color:var(--text-muted)}
+
+/* Checkpoint */
+.checkpoint{margin-top:16px;padding:14px 16px;background:var(--accent-dim);border:1px solid var(--accent-soft);border-radius:var(--radius);font-size:13px;color:var(--text);display:flex;align-items:flex-start;gap:10px}
+.checkpoint svg{width:16px;height:16px;color:var(--accent);flex-shrink:0;margin-top:2px}
+.checkpoint strong{color:var(--accent)}
+
+/* Exam Block */
+.exam-block{padding:24px 28px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 var(--radius-lg) var(--radius-lg) 0;margin:32px 0}
+.exam-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.exam-title{font-size:16px;font-weight:600;margin-bottom:4px}
+.exam-scope{font-size:13px;color:var(--text-muted)}
+
+/* Pattern Grid */
+.pattern-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+@media(max-width:640px){.pattern-grid{grid-template-columns:1fr}}
+.pattern-item{background:var(--surface);padding:16px 20px;transition:background-color .4s}
+.pattern-problem-type{font-size:13px;font-weight:600;margin-bottom:2px}
+.pattern-first-thought{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.pattern-ds{font-family:var(--font-mono);font-size:11px;color:var(--accent)}
+
+/* Tracker */
+.tracker-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.tracker-grid{grid-template-columns:1fr}}
+.tracker-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .2s var(--ease);user-select:none}
+.tracker-item:hover{border-color:var(--accent)}
+.tracker-item.done{border-color:var(--accent);background:var(--accent-dim)}
+.tracker-check{width:20px;height:20px;border:2px solid var(--border-strong);border-radius:4px;display:grid;place-items:center;flex-shrink:0;transition:all .2s}
+.tracker-item.done .tracker-check{background:var(--accent);border-color:var(--accent)}
+.tracker-check svg{width:12px;height:12px;color:#fff;opacity:0;transition:opacity .2s}
+.tracker-item.done .tracker-check svg{opacity:1}
+.tracker-text{font-size:13px;font-weight:500}
+.tracker-week{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);margin-left:auto;flex-shrink:0}
+
+/* Schedule */
+.schedule-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;max-width:560px}
+.schedule-row{display:flex;align-items:center;gap:16px;padding:12px 20px;border-bottom:1px solid var(--border);font-size:13px}
+.schedule-row:last-child{border-bottom:none}
+.schedule-time{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--accent);min-width:52px}
+.schedule-task{color:var(--text-muted)}
+.schedule-task strong{color:var(--text);font-weight:500}
+
+/* Resources */
+.resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.resource-card{padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:all .2s var(--ease);text-decoration:none;color:inherit;display:block}
+.resource-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.resource-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.resource-desc{font-size:12px;color:var(--text-muted);line-height:1.4}
+.resource-tag{font-family:var(--font-mono);font-size:10px;font-weight:500;color:var(--accent);margin-top:8px;display:inline-block;letter-spacing:.06em;text-transform:uppercase}
+
+/* Footer */
+.footer{padding:48px 0;border-top:1px solid var(--border);font-size:12px;color:var(--text-faint);font-family:var(--font-mono);text-align:center;letter-spacing:.04em}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(20px);animation:fadeUp .6s var(--ease) forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.reveal:nth-child(2){animation-delay:.05s}.reveal:nth-child(3){animation-delay:.1s}.reveal:nth-child(4){animation-delay:.15s}.reveal:nth-child(5){animation-delay:.2s}
+.reveal-scroll{opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.reveal-scroll.visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){.reveal,.reveal-scroll{animation:none;opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<header class="header">
+<div class="header-inner">
+<div class="header-title">ECE2104 // DSA MASTERY</div>
+<div class="header-meta">
+<span class="header-stat">Weeks <span>18</span></span>
+<span class="header-stat">Problems <span>170</span></span>
+<span class="header-stat">Hrs/Day <span>3.5</span></span>
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+<svg id="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+<svg id="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+</button>
+</div>
+</header>
+
+<section class="hero">
+<div class="container">
+<div class="hero-badge">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+Manipal University Jaipur — B.Tech ECE — Jul-Nov 2026
+</div>
+<h1 class="reveal">Data Structures<br>& <span class="accent">Algorithms</span></h1>
+<p class="hero-sub reveal">18-week battle plan. From C++ basics to solving LeetCode Medium-Hard. Every problem mapped to your syllabus. No filler, no hype.</p>
+<div class="stats-row reveal">
+<div class="stat-card"><div class="stat-num" data-count="170">0</div><div class="stat-label">Problems</div></div>
+<div class="stat-card"><div class="stat-num" data-count="42">0</div><div class="stat-label">Lectures</div></div>
+<div class="stat-card"><div class="stat-num" data-count="5">0</div><div class="stat-label">Phases</div></div>
+<div class="stat-card"><div class="stat-num" data-count="250">0</div><div class="stat-label">Hours Min</div></div>
+</div>
+</div>
+</section>
+
+<nav class="phase-nav" id="phase-nav">
+<div class="container" style="display:flex;flex-wrap:wrap;gap:8px;padding:0">
+<a class="phase-link" href="#phase1">01 Foundations</a>
+<a class="phase-link" href="#phase2">02 Linear DS</a>
+<a class="phase-link" href="#phase3">03 Trees</a>
+<a class="phase-link" href="#phase4">04 Sort+Search</a>
+<a class="phase-link" href="#phase5">05 Graphs</a>
+<a class="phase-link" href="#phase6">06 DP+Review</a>
+</div>
+</nav>
+
+<main class="container" style="padding-top:32px;padding-bottom:80px;">
+
+<!-- ============ PHASE 1: FOUNDATIONS ============ -->
+<section class="section reveal-scroll" id="phase1">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Phase 01</div>
+<div class="section-title">Foundations</div>
+<div class="section-desc">C++ fluency, arrays, strings, two pointers, sliding window, and linked lists. This is where you build the muscle memory everything else depends on.</div>
+
+<div class="week-block reveal-scroll" id="week1">
+  <div class="week-header">
+    <span class="week-num">Week 1</span>
+    <span class="week-title">C++ Crash Course + Arrays</span>
+    <span class="week-lectures">Lect 1–5</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        Learn
+      </div>
+      <ul class="learn-list"><li><strong>C++ syntax:</strong> variables, data types, operators, I/O</li>
+<li>Control flow: if/else, switch, for, while</li>
+<li>Functions: pass by value, pass by reference (<code>&amp;</code>)</li>
+<li>Arrays: declaration, traversal, 2D arrays</li>
+<li><strong>CRITICAL:</strong> Pointers &amp; references — <code>*</code>, <code>&amp;</code>, pointer arithmetic</li>
+<li>Time complexity intro: O(1), O(n), O(n²)</li>
+</ul>
+      
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header">
+        <span class="problem-table-title">Practice Problems</span>
+        <span class="problem-count">10 problems</span>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead>
+        <tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/two-sum/" target="_blank" rel="noopener">Two Sum</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Hash Map</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/contains-duplicate/" target="_blank" rel="noopener">Contains Duplicate</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Hash Set</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/valid-anagram/" target="_blank" rel="noopener">Valid Anagram</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Frequency count</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/max-subarray/" target="_blank" rel="noopener">Max Subarray</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Kadane's algorithm</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/best-time-to-buy-sell-stock/" target="_blank" rel="noopener">Best Time to Buy Sell Stock</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Single pass</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/product-of-array-except-self/" target="_blank" rel="noopener">Product of Array Except Self</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Prefix/Suffix</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/two-sum-ii/" target="_blank" rel="noopener">Two Sum II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Two Pointers</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/sort-colors/" target="_blank" rel="noopener">Sort Colors</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Dutch National Flag</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/merge-sorted-array/" target="_blank" rel="noopener">Merge Sorted Array</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Two pointer reverse</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/move-zeroes/" target="_blank" rel="noopener">Move Zeroes</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Two pointer swap</td></tr>
+</tbody>
+      </table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you solve Two Sum variants without thinking? Can you explain O(n) vs O(n²)?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week2">
+  <div class="week-header">
+    <span class="week-num">Week 2</span>
+    <span class="week-title">Strings + Two Pointers + Sliding Window</span>
+    <span class="week-lectures">Lect 3–4</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        Learn
+      </div>
+      <ul class="learn-list"><li><strong>C++ string manipulation:</strong> string, substr, find, getline</li>
+<li>Two Pointers technique: opposite ends, same direction</li>
+<li>Sliding Window: fixed window, variable window</li>
+<li>Hash maps in C++: unordered_map, unordered_set</li>
+</ul>
+      
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header">
+        <span class="problem-table-title">Practice Problems</span>
+        <span class="problem-count">10 problems</span>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead>
+        <tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/valid-palindrome/" target="_blank" rel="noopener">Valid Palindrome</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Two Pointers</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/valid-palindrome-ii/" target="_blank" rel="noopener">Valid Palindrome II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Two Pointers + skip</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/container-with-most-water/" target="_blank" rel="noopener">Container With Most Water</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Two Pointers shrink</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/trapping-rain-water/" target="_blank" rel="noopener">Trapping Rain Water</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Two Pointers / Stack</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/longest-substring-without-repeating/" target="_blank" rel="noopener">Longest Substring Without Repeating</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sliding Window + Set</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/minimum-size-subarray-sum/" target="_blank" rel="noopener">Minimum Size Subarray Sum</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sliding Window</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank" rel="noopener">Longest Repeating Character Replacement</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sliding Window</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/permutation-in-string/" target="_blank" rel="noopener">Permutation in String</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Fixed Window + freq</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/group-anagrams/" target="_blank" rel="noopener">Group Anagrams</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sorted key hashmap</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/top-k-frequent-elements/" target="_blank" rel="noopener">Top K Frequent Elements</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Bucket sort</td></tr>
+</tbody>
+      </table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you look at a string problem and instantly know "sliding window" vs "two pointer" vs "hash map"?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week3">
+  <div class="week-header">
+    <span class="week-num">Week 3</span>
+    <span class="week-title">Linked Lists</span>
+    <span class="week-lectures">Lect 5–7</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        Learn
+      </div>
+      <ul class="learn-list"><li>What is a linked list and why it exists vs arrays</li>
+<li>Singly linked list: node structure, traversal</li>
+<li>Operations: insertion (head, tail, position), deletion, search</li>
+<li><strong>DUMMY NODE technique</strong> — solves 80% of linked list problems</li>
+<li>Fast &amp; Slow pointers (Floyd's cycle detection)</li>
+<li>C++ structs + dynamic memory: new, delete, →</li>
+</ul>
+      
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header">
+        <span class="problem-table-title">Practice Problems</span>
+        <span class="problem-count">10 problems</span>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead>
+        <tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/reverse-linked-list/" target="_blank" rel="noopener">Reverse Linked List</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Pointer manipulation</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/merge-two-sorted-lists/" target="_blank" rel="noopener">Merge Two Sorted Lists</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Dummy node</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/linked-list-cycle/" target="_blank" rel="noopener">Linked List Cycle</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Fast-slow pointer</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/middle-of-linked-list/" target="_blank" rel="noopener">Middle of Linked List</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Fast-slow pointer</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/remove-nth-from-end/" target="_blank" rel="noopener">Remove Nth From End</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Two pointer gap</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/reorder-list/" target="_blank" rel="noopener">Reorder List</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Find mid + reverse + merge</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/add-two-numbers/" target="_blank" rel="noopener">Add Two Numbers</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Dummy node + carry</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/copy-list-with-random-pointer/" target="_blank" rel="noopener">Copy List with Random Pointer</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">HashMap or interleaving</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/linked-list-cycle-ii/" target="_blank" rel="noopener">Linked List Cycle II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Floyd's detection</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/lru-cache/" target="_blank" rel="noopener">LRU Cache</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">HashMap + DLL</td></tr>
+</tbody>
+      </table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you reverse a linked list on paper in <2 min? Can you draw fast/slow pointer on cycle problems?</span>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ============ PHASE 2: LINEAR DS ============ -->
+<section class="section reveal-scroll" id="phase2">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Phase 02</div>
+<div class="section-title">Linear Data Structures</div>
+<div class="section-desc">Stacks, queues, and recursion. Week 6 is the hardest wall in the entire course — push through it and everything else becomes tractable.</div>
+
+<div class="week-block reveal-scroll" id="week4">
+  <div class="week-header">
+    <span class="week-num">Week 4</span>
+    <span class="week-title">Stacks</span>
+    <span class="week-lectures">Lect 11–12</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>Stack: LIFO</strong> — push/pop/peek/isEmpty</li>
+<li>Array-based vs linked-list-based stack</li>
+<li>When to use stack: matching, nested structures</li>
+<li><strong>Monotonic Stack</strong> — solves 60% of stack problems</li>
+<li>C++ std::stack, std::vector as stack</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/valid-parentheses/" target="_blank" rel="noopener">Valid Parentheses</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Matching stack</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/min-stack/" target="_blank" rel="noopener">Min Stack</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Auxiliary stack</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/evaluate-reverse-polish-notation/" target="_blank" rel="noopener">Evaluate Reverse Polish Notation</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Operand stack</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/daily-temperatures/" target="_blank" rel="noopener">Daily Temperatures</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Monotonic stack</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/largest-rectangle-in-histogram/" target="_blank" rel="noopener">Largest Rectangle in Histogram</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Monotonic stack</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/decode-string/" target="_blank" rel="noopener">Decode String</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Nested stack</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/asteroid-collision/" target="_blank" rel="noopener">Asteroid Collision</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Simulation stack</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/car-fleet/" target="_blank" rel="noopener">Car Fleet</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sort + monotonic stack</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/simplify-path/" target="_blank" rel="noopener">Simplify Path</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">String stack</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/basic-calculator-ii/" target="_blank" rel="noopener">Basic Calculator II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Number stack</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you draw a monotonic stack step-by-step? Can you solve "nested structure" problems without second-guessing?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week5">
+  <div class="week-header">
+    <span class="week-num">Week 5</span>
+    <span class="week-title">Queues + Deque + Circular Queue</span>
+    <span class="week-lectures">Lect 13–15</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>Queue: FIFO</strong> — enqueue/dequeue/peek</li>
+<li>Circular queue: no wasted space</li>
+<li>Deque (double-ended queue): std::deque</li>
+<li>Queue usage: BFS foundation, sliding window max, task scheduling</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/implement-queue-using-stacks/" target="_blank" rel="noopener">Implement Queue using Stacks</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Two-stack trick</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/implement-stack-using-queues/" target="_blank" rel="noopener">Implement Stack using Queues</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">One/two queue</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/sliding-window-maximum/" target="_blank" rel="noopener">Sliding Window Maximum</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Monotonic deque</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/number-of-recent-calls/" target="_blank" rel="noopener">Number of Recent Calls</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Queue as window</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/design-circular-deque/" target="_blank" rel="noopener">Design Circular Deque</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Array-based deque</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/task-scheduler/" target="_blank" rel="noopener">Task Scheduler</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Greedy + queue</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/first-unique-character/" target="_blank" rel="noopener">First Unique Character</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Queue + freq map</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/rotting-oranges/" target="_blank" rel="noopener">Rotting Oranges</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Multi-source BFS</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/open-the-lock/" target="_blank" rel="noopener">Open the Lock</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BFS on states</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/perfect-squares/" target="_blank" rel="noopener">Perfect Squares</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BFS levels</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you implement circular queue from scratch? Can you spot BFS just from reading a problem?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week6">
+  <div class="week-header">
+    <span class="week-num">Week 6</span>
+    <span class="week-title">Recursion</span>
+    <span class="week-lectures">Lect 16 → MID-TERM</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>THIS IS YOUR MOST IMPORTANT WEEK. DO NOT RUSH IT.</strong></li>
+<li>Recursion basics: base case, recursive case, call stack</li>
+<li>Think recursively: trust the function, don't trace every frame</li>
+<li>Patterns: linear recursion, tail recursion, divide-and-conquer, backtracking</li>
+<li><strong>Draw the call stack on paper</strong> for every problem until it clicks</li>
+<li>Time complexity: recurrence relations (for exam)</li>
+</ul><div class="learn-warning">MID-TERM PREP: Review weeks 1–6. Implement linked list, stack, queue from scratch in <15 min each. Write Big-O for every algorithm.</div>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/factorial--fibonacci/" target="_blank" rel="noopener">Factorial / Fibonacci</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Basic recursion</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/power-of-two/" target="_blank" rel="noopener">Power of Two</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Bit manipulation / recursion</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/reverse-string/" target="_blank" rel="noopener">Reverse String</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Two pointer recursion</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/merge-sort-implement/" target="_blank" rel="noopener">Merge Sort (implement)</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Divide & conquer</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/quick-sort-implement/" target="_blank" rel="noopener">Quick Sort (implement)</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Partition + recurse</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/subsets/" target="_blank" rel="noopener">Subsets</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/permutations/" target="_blank" rel="noopener">Permutations</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/combination-sum/" target="_blank" rel="noopener">Combination Sum</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking + reuse</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/combination-sum-ii/" target="_blank" rel="noopener">Combination Sum II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking no reuse</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/subsets-ii/" target="_blank" rel="noopener">Subsets II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking + dedup</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you solve Permutations (#46) without looking at any reference? Can you draw the call tree for subsets([1,2,3])?</span>
+  </div>
+</div>
+<!-- MID-TERM EXAM BLOCK -->
+<div class="exam-block reveal-scroll"><div class="exam-label">Mid-Term Examination</div><div class="exam-title">Closed-Book Exam — 30 Marks</div><div class="exam-scope">Covers: C++/Python basics, Linked Lists, Stacks, Queues, Recursion. Score 25+/30 to stay ahead.</div></div>
+
+</div>
+</section>
+
+<!-- ============ PHASE 3: TREES ============ -->
+<section class="section reveal-scroll" id="phase3">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Phase 03</div>
+<div class="section-title">Trees &amp; Heaps</div>
+<div class="section-desc">Binary trees, BSTs, Red-Black trees, heaps, Huffman. This is the hardest conceptual jump — everything becomes recursive.</div>
+
+<div class="week-block reveal-scroll" id="week7">
+  <div class="week-header">
+    <span class="week-num">Week 7</span>
+    <span class="week-title">Binary Trees</span>
+    <span class="week-lectures">Lect 17–19</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li>Tree terminology: root, leaf, height, depth, sibling</li>
+<li>Binary Tree: types (full, complete, perfect, balanced)</li>
+<li><strong>Three traversals:</strong> In-order, Pre-order, Post-order</li>
+<li>Level-order traversal (BFS with queue)</li>
+<li><strong>Recursive tree thinking:</strong> solve for left + solve for right + combine</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/invert-binary-tree/" target="_blank" rel="noopener">Invert Binary Tree</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Recursive swap</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/maximum-depth/" target="_blank" rel="noopener">Maximum Depth</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">DFS recursion</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/same-tree/" target="_blank" rel="noopener">Same Tree</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Compare two trees</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/subtree-of-another-tree/" target="_blank" rel="noopener">Subtree of Another Tree</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">DFS + compare</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/diameter-of-binary-tree/" target="_blank" rel="noopener">Diameter of Binary Tree</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">DFS + max tracking</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/balanced-binary-tree/" target="_blank" rel="noopener">Balanced Binary Tree</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">DFS height check</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/binary-tree-level-order-traversal/" target="_blank" rel="noopener">Binary Tree Level Order Traversal</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BFS with queue</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/binary-tree-right-side-view/" target="_blank" rel="noopener">Binary Tree Right Side View</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BFS last-node-per-level</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/lowest-common-ancestor/" target="_blank" rel="noopener">Lowest Common Ancestor</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Recursive post-order</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/binary-tree-maximum-path-sum/" target="_blank" rel="noopener">Binary Tree Maximum Path Sum</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">DFS + global max</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you write in-order/pre-order/post-order traversal from memory? Can you solve LCA without help?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week8">
+  <div class="week-header">
+    <span class="week-num">Week 8</span>
+    <span class="week-title">BSTs + Red-Black Trees</span>
+    <span class="week-lectures">Lect 20–21</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>BST property:</strong> left < root < right</li>
+<li>BST operations: search, insert, delete (3 cases!)</li>
+<li><strong>Red-Black Trees:</strong> memorize 5 properties, rotation cases</li>
+<li>Left rotation, right rotation, color flip</li>
+<li>Insert: at most 2 rotations. Delete: at most 3 rotations</li>
+<li>Why self-balancing matters: worst case O(n) → O(log n)</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/validate-bst/" target="_blank" rel="noopener">Validate BST</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Range validation</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/search-in-bst/" target="_blank" rel="noopener">Search in BST</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Recursive search</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/insert-into-bst/" target="_blank" rel="noopener">Insert into BST</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Recursive insert</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/delete-node-in-bst/" target="_blank" rel="noopener">Delete Node in BST</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">3-case delete</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/kth-smallest-element-in-bst/" target="_blank" rel="noopener">Kth Smallest Element in BST</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">In-order + count</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/inorder-successor-in-bst/" target="_blank" rel="noopener">Inorder Successor in BST</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Track predecessor</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/convert-sorted-array-to-bst/" target="_blank" rel="noopener">Convert Sorted Array to BST</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Binary search split</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/lowest-common-ancestor-of-bst/" target="_blank" rel="noopener">Lowest Common Ancestor of BST</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">BST property</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/range-sum-of-bst/" target="_blank" rel="noopener">Range Sum of BST</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Pruned DFS</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/serialize-and-deserialize-bst/" target="_blank" rel="noopener">Serialize and Deserialize BST</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Traversal + rebuild</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you delete from a BST and explain all 3 cases? Can you validate a BST in O(n)?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week9">
+  <div class="week-header">
+    <span class="week-num">Week 9</span>
+    <span class="week-title">Heaps + Priority Queues + Huffman</span>
+    <span class="week-lectures">Lect 22–25</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li>Min-heap vs Max-heap: parent ≤ children</li>
+<li>Heap as array: parent at i, children at 2i+1 and 2i+2</li>
+<li>Heap operations: insert (sift up), extract (sift down), heapify</li>
+<li>Priority Queue in C++: std::priority_queue</li>
+<li>Huffman coding: greedy + heap — build tree from frequencies</li>
+<li><strong>When to use heap:</strong> "top K", "median stream", "merge K sorted"</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/kth-largest-element-in-array/" target="_blank" rel="noopener">Kth Largest Element in Array</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Min-heap of size K</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/last-stone-weight/" target="_blank" rel="noopener">Last Stone Weight</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Max-heap simulation</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/k-closest-points-to-origin/" target="_blank" rel="noopener">K Closest Points to Origin</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Max-heap of size K</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/task-scheduler/" target="_blank" rel="noopener">Task Scheduler</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Greedy + heap</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/find-median-from-data-stream/" target="_blank" rel="noopener">Find Median from Data Stream</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Two heaps</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/merge-k-sorted-lists/" target="_blank" rel="noopener">Merge K Sorted Lists</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Min-heap + linked list</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/top-k-frequent-elements/" target="_blank" rel="noopener">Top K Frequent Elements</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Bucket sort / heap</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/reorganize-string/" target="_blank" rel="noopener">Reorganize String</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Greedy + heap</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/kth-largest-in-stream/" target="_blank" rel="noopener">Kth Largest in Stream</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Min-heap</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/implement-min-heap-from-scratch/" target="_blank" rel="noopener">Implement Min-Heap from scratch</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Heapify, insert, extract</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you implement a min-heap from scratch (insert + extract)? Can you solve Top K problems in <10 min?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week10">
+  <div class="week-header">
+    <span class="week-num">Week 10</span>
+    <span class="week-title">Trees Deep Dive + Trie</span>
+    <span class="week-lectures">Lect 21, 32–34</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li>Mixed tree problems — harder difficulty</li>
+<li><strong>Prefix Trees (Trie):</strong> string storage, autocomplete, word search</li>
+<li>Tree DP: when recursion alone isn't enough</li>
+<li>Student presentation prep</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/count-good-nodes/" target="_blank" rel="noopener">Count Good Nodes</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">DFS with max tracking</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/path-sum-iii/" target="_blank" rel="noopener">Path Sum III</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Prefix sum + DFS</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/flatten-bt-to-linked-list/" target="_blank" rel="noopener">Flatten BT to Linked List</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Reverse post-order</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/construct-bt-from-preorder-and-inorder/" target="_blank" rel="noopener">Construct BT from Preorder and Inorder</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Recursive build</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/serialize-and-deserialize-bt/" target="_blank" rel="noopener">Serialize and Deserialize BT</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Pre-order + null markers</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/binary-tree-cameras/" target="_blank" rel="noopener">Binary Tree Cameras</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Tree DP</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/vertical-order-traversal/" target="_blank" rel="noopener">Vertical Order Traversal</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">BFS + sorting</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/implement-trie/" target="_blank" rel="noopener">Implement Trie</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Trie node class</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/word-search-ii/" target="_blank" rel="noopener">Word Search II</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Trie + DFS backtracking</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/palindrome-partitioning/" target="_blank" rel="noopener">Palindrome Partitioning</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking + check</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you solve any "construct tree from traversals" problem? Can you implement a Trie from scratch?</span>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ============ PHASE 4: SORTING + SEARCHING ============ -->
+<section class="section reveal-scroll" id="phase4">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> Phase 04</div>
+<div class="section-title">Sorting &amp; Searching</div>
+<div class="section-desc">All major sorting algorithms, binary search mastery, and hashing. This phase teaches you to choose the right tool for the job.</div>
+
+<div class="week-block reveal-scroll" id="week11">
+  <div class="week-header">
+    <span class="week-num">Week 11</span>
+    <span class="week-title">Sorting I: Basic + Merge Sort</span>
+    <span class="week-lectures">Lect 26–27</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>Bubble Sort:</strong> O(n²), swap adjacent. Stable.</li>
+<li><strong>Selection Sort:</strong> O(n²), find min, put at front. Not stable.</li>
+<li><strong>Insertion Sort:</strong> O(n²), build sorted prefix. Good for small data.</li>
+<li><strong>Merge Sort:</strong> O(n log n), divide-conquer-merge. THE most important sort.</li>
+<li>Implement merge sort from scratch 3x until muscle memory</li>
+<li>Master the merge step — it appears in counting inversions, etc.</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/sort-an-array/" target="_blank" rel="noopener">Sort an Array</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Implement merge sort</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/merge-intervals/" target="_blank" rel="noopener">Merge Intervals</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sort + merge</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/insert-interval/" target="_blank" rel="noopener">Insert Interval</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Scan + merge</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/count-inversions/" target="_blank" rel="noopener">Count Inversions</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Modified merge sort</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/sort-colors/" target="_blank" rel="noopener">Sort Colors</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">One-pass 3-way</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/meeting-rooms-ii/" target="_blank" rel="noopener">Meeting Rooms II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sort + min-heap</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/non-overlapping-intervals/" target="_blank" rel="noopener">Non-overlapping Intervals</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Greedy + sort</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/minimum-number-of-arrows/" target="_blank" rel="noopener">Minimum Number of Arrows</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Interval scheduling</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/h-index/" target="_blank" rel="noopener">H-Index</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sort / counting</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/largest-number/" target="_blank" rel="noopener">Largest Number</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Custom comparator</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you implement merge sort in <5 min? Can you solve interval merge problems by identifying the sort-key instantly?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week12">
+  <div class="week-header">
+    <span class="week-num">Week 12</span>
+    <span class="week-title">Sorting II: Heap Sort + Quick Sort</span>
+    <span class="week-lectures">Lect 28–29</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>Heap Sort:</strong> O(n log n), in-place, not stable</li>
+<li><strong>Quick Sort:</strong> O(n log n) avg, O(n²) worst. In-place, not stable.</li>
+<li>Pivot selection: random, median-of-three</li>
+<li>Partition: Lomuto vs Hoare</li>
+<li><strong>Quick Select:</strong> O(n) avg — find Kth without full sort</li>
+<li>When to use which: space, stability, data distribution</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/kth-largest-element/" target="_blank" rel="noopener">Kth Largest Element</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Quick Select</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/sort-an-array/" target="_blank" rel="noopener">Sort an Array</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Implement quick sort</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/wiggle-sort/" target="_blank" rel="noopener">Wiggle Sort</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Single pass swap</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/wiggle-sort-ii/" target="_blank" rel="noopener">Wiggle Sort II</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Quick select + index map</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/array-of-doubled-pairs/" target="_blank" rel="noopener">Array of Doubled Pairs</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sort + greedy check</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/custom-sort-string/" target="_blank" rel="noopener">Custom Sort String</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Custom comparator</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/relative-sort-array/" target="_blank" rel="noopener">Relative Sort Array</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Counting sort</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/minimum-absolute-difference/" target="_blank" rel="noopener">Minimum Absolute Difference</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Sort + scan</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/3sum/" target="_blank" rel="noopener">3Sum</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sort + two pointers</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/4sum/" target="_blank" rel="noopener">4Sum</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Sort + two pointers</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you implement quicksort with random pivot? Can you explain when merge sort beats quicksort?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week13">
+  <div class="week-header">
+    <span class="week-num">Week 13</span>
+    <span class="week-title">Searching + Hashing</span>
+    <span class="week-lectures">Lect 30–31</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>Binary Search:</strong> O(log n) — the template to memorize</li>
+<li>Variants: find target, first/last, boundary, search on answer</li>
+<li><strong>Hash tables:</strong> hash functions, chaining, open addressing</li>
+<li>Hash map patterns: frequency counting, two-sum style, grouping</li>
+<li>C++: unordered_map, unordered_set — O(1) average</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/binary-search/" target="_blank" rel="noopener">Binary Search</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Classic template</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/search-insert-position/" target="_blank" rel="noopener">Search Insert Position</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Lower bound</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/first-bad-version/" target="_blank" rel="noopener">First Bad Version</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Binary search on answer</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank" rel="noopener">Search in Rotated Sorted Array</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Modified BS</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/find-minimum-in-rotated/" target="_blank" rel="noopener">Find Minimum in Rotated</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Modified BS</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/search-a-2d-matrix/" target="_blank" rel="noopener">Search a 2D Matrix</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BS on flattened</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/koko-eating-bananas/" target="_blank" rel="noopener">Koko Eating Bananas</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BS on answer</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/time-based-key-value-store/" target="_blank" rel="noopener">Time Based Key-Value Store</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BS + hash map</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/design-hashmap/" target="_blank" rel="noopener">Design HashMap</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">Hash + chaining</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/subarray-sum-equals-k/" target="_blank" rel="noopener">Subarray Sum Equals K</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Prefix sum + hashmap</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you binary search on rotated array? Can you identify "binary search on answer" problems?</span>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ============ PHASE 5: GRAPHS ============ -->
+<section class="section reveal-scroll" id="phase5">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 12l10-5M7 12l10 7"/></svg> Phase 05</div>
+<div class="section-title">Graphs</div>
+<div class="section-desc">Graph representations, BFS, DFS, Dijkstra, Union-Find. The final boss of DSA — everything you learned combines here.</div>
+
+<div class="week-block reveal-scroll" id="week14">
+  <div class="week-header">
+    <span class="week-num">Week 14</span>
+    <span class="week-title">Graph Foundations + BFS/DFS</span>
+    <span class="week-lectures">Lect 35–36</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li>Graph terminology: vertex, edge, directed/undirected, weighted</li>
+<li><strong>Adjacency matrix vs list</strong> — know when to use which</li>
+<li><strong>BFS:</strong> queue-based, level-by-level, shortest path in unweighted</li>
+<li><strong>DFS:</strong> stack/recursion, explore deep, good for cycles/connectivity</li>
+<li>Visited tracking: avoid infinite loops</li>
+<li>Connected components, cycle detection</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/number-of-islands/" target="_blank" rel="noopener">Number of Islands</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">DFS/BFS on grid</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/flood-fill/" target="_blank" rel="noopener">Flood Fill</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">DFS/BFS</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/clone-graph/" target="_blank" rel="noopener">Clone Graph</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BFS + hashmap</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/course-schedule/" target="_blank" rel="noopener">Course Schedule</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Topological sort (DFS)</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/course-schedule-ii/" target="_blank" rel="noopener">Course Schedule II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Topological sort</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/number-of-connected-components/" target="_blank" rel="noopener">Number of Connected Components</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">DFS/BFS union</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/graph-valid-tree/" target="_blank" rel="noopener">Graph Valid Tree</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">N-1 edges + connected</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/pacific-atlantic-water-flow/" target="_blank" rel="noopener">Pacific Atlantic Water Flow</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Reverse BFS from edges</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/rotting-oranges/" target="_blank" rel="noopener">Rotting Oranges</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Multi-source BFS</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/word-ladder/" target="_blank" rel="noopener">Word Ladder</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">BFS shortest path</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you build adjacency list from edge list? Can you solve cycle detection from memory?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week15">
+  <div class="week-header">
+    <span class="week-num">Week 15</span>
+    <span class="week-title">Dijkstra + Union-Find</span>
+    <span class="week-lectures">Lect 37–38</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>Dijkstra:</strong> O((V+E) log V) — shortest path, weighted, no negatives</li>
+<li>Uses min-heap (priority queue), greedy expansion</li>
+<li><strong>Bellman-Ford:</strong> handles negative weights (O(VE))</li>
+<li><strong>Union-Find:</strong> union by rank + path compression</li>
+<li>Used for: dynamic connectivity, Kruskal's MST</li>
+<li>MST: Prim's and Kruskal's — know the concepts</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/network-delay-time/" target="_blank" rel="noopener">Network Delay Time</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Dijkstra</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/cheapest-flights-within-k-stops/" target="_blank" rel="noopener">Cheapest Flights Within K Stops</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Modified Dijkstra</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/swim-in-rising-water/" target="_blank" rel="noopener">Swim in Rising Water</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Dijkstra on grid</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/path-with-minimum-effort/" target="_blank" rel="noopener">Path with Minimum Effort</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Dijkstra + binary search</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/accounts-merge/" target="_blank" rel="noopener">Accounts Merge</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Union-Find</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/redundant-connection/" target="_blank" rel="noopener">Redundant Connection</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Union-Find cycle</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/surrounded-regions/" target="_blank" rel="noopener">Surrounded Regions</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">DFS from borders</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/longest-consecutive-sequence/" target="_blank" rel="noopener">Longest Consecutive Sequence</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">HashSet / Union-Find</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/number-of-provinces/" target="_blank" rel="noopener">Number of Provinces</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">DFS / Union-Find</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/is-graph-bipartite?/" target="_blank" rel="noopener">Is Graph Bipartite?</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">BFS/DFS coloring</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you implement Dijkstra from scratch with a min-heap? Can you implement Union-Find with path compression?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week16">
+  <div class="week-header">
+    <span class="week-num">Week 16</span>
+    <span class="week-title">Algorithm Analysis + Review</span>
+    <span class="week-lectures">Lect 39–40</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>Big-O, Big-Omega, Big-Theta:</strong> master these for exam</li>
+<li>Amortized analysis: why push() is O(1) even when resize happens</li>
+<li>Time-space tradeoffs</li>
+<li><strong>The Decision Framework:</strong> "Find element" → Hash map. "Top K" → Heap. "Shortest path" → BFS/Dijkstra. "All combinations" → Backtracking. "Nested structures" → Stack. "Connected" → DFS/Union-Find.</li>
+</ul><div class="learn-warning">THIS IS A REVIEW WEEK. Redo weak problems. Don't add new problems — solidify what you know.</div>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">5 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/redo-5-problems-you-struggled-with-earlier/" target="_blank" rel="noopener">Redo 5 problems you struggled with earlier</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Spaced repetition</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/redo-5-more-weak-problems/" target="_blank" rel="noopener">Redo 5 more weak problems</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Spaced repetition</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/pick-5-random-medium-unseen-problems-timed/" target="_blank" rel="noopener">Pick 5 random Medium unseen problems, timed</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Pattern identification</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/implement-dijkstra-from-scratch/" target="_blank" rel="noopener">Implement Dijkstra from scratch</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Graph + heap</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/implement-union-find-from-scratch/" target="_blank" rel="noopener">Implement Union-Find from scratch</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Path compression</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you look at a new problem and identify the pattern in <2 min? Can you write Big-O for any algorithm?</span>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ============ PHASE 6: DP + BACKTRACKING ============ -->
+<section class="section reveal-scroll" id="phase6">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg> Phase 06</div>
+<div class="section-title">Backtracking + DP Foundations</div>
+<div class="section-desc">Round out hard problem types with backtracking patterns and dynamic programming foundations. Final review and end-term prep.</div>
+
+<div class="week-block reveal-scroll" id="week17">
+  <div class="week-header">
+    <span class="week-num">Week 17</span>
+    <span class="week-title">Backtracking</span>
+    <span class="week-lectures">Lect 41–42</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>Backtracking template:</strong> choose → explore → unchoose</li>
+<li>Subsets, Permutations, Combinations — the three pillars</li>
+<li>Constraint satisfaction: N-Queens, Sudoku solver</li>
+<li>Introducing DP: memoization (top-down) vs tabulation (bottom-up)</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/subsets/" target="_blank" rel="noopener">Subsets</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/subsets-ii/" target="_blank" rel="noopener">Subsets II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking + sort dedup</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/permutations/" target="_blank" rel="noopener">Permutations</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/permutations-ii/" target="_blank" rel="noopener">Permutations II</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking + freq map</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/combination-sum/" target="_blank" rel="noopener">Combination Sum</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking + reuse</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/letter-combinations/" target="_blank" rel="noopener">Letter Combinations</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/n-queens/" target="_blank" rel="noopener">N-Queens</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">Backtracking + pruning</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/word-search/" target="_blank" rel="noopener">Word Search</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">DFS + backtracking</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/palindrome-partitioning/" target="_blank" rel="noopener">Palindrome Partitioning</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Backtracking + palindrome</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/climbing-stairs/" target="_blank" rel="noopener">Climbing Stairs</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">DP intro</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you solve Permutations II (#47) with a frequency map? Can you write the N-Queens backtracking template?</span>
+  </div>
+</div>
+<div class="week-block reveal-scroll" id="week18">
+  <div class="week-header">
+    <span class="week-num">Week 18</span>
+    <span class="week-title">DP Foundations + FINAL REVIEW</span>
+    <span class="week-lectures">End of course</span>
+  </div>
+  <div class="week-body">
+    <div class="learn-panel">
+      <div class="learn-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Learn</div>
+      <ul class="learn-list"><li><strong>DP thought process:</strong> Can I break this into subproblems?</li>
+<li>Top-down (memoization) vs Bottom-up (tabulation)</li>
+<li>Classic DP patterns: 1D, 2D, knapsack variants</li>
+<li>Review ALL patterns from the entire semester</li>
+<li>Implement every data structure from scratch one more time</li>
+</ul>
+    </div>
+    <div class="problem-table-wrap">
+      <div class="problem-table-header"><span class="problem-table-title">Practice Problems</span><span class="problem-count">10 problems</span></div>
+      <table><thead><tr><th>#</th><th>Problem</th><th>Diff</th><th>Pattern</th></tr></thead><tbody><tr><td class="num">1</td><td class="problem-name"><a href="https://leetcode.com/problems/climbing-stairs/" target="_blank" rel="noopener">Climbing Stairs</a></td><td><span class="difficulty diff-easy">Easy</span></td><td class="pattern-cell">1D DP</td></tr>
+<tr><td class="num">2</td><td class="problem-name"><a href="https://leetcode.com/problems/house-robber/" target="_blank" rel="noopener">House Robber</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">1D DP</td></tr>
+<tr><td class="num">3</td><td class="problem-name"><a href="https://leetcode.com/problems/coin-change/" target="_blank" rel="noopener">Coin Change</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">Unbounded knapsack</td></tr>
+<tr><td class="num">4</td><td class="problem-name"><a href="https://leetcode.com/problems/longest-increasing-subsequence/" target="_blank" rel="noopener">Longest Increasing Subsequence</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">1D DP / patience sort</td></tr>
+<tr><td class="num">5</td><td class="problem-name"><a href="https://leetcode.com/problems/word-break/" target="_blank" rel="noopener">Word Break</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">DP + dictionary</td></tr>
+<tr><td class="num">6</td><td class="problem-name"><a href="https://leetcode.com/problems/unique-paths/" target="_blank" rel="noopener">Unique Paths</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">2D DP grid</td></tr>
+<tr><td class="num">7</td><td class="problem-name"><a href="https://leetcode.com/problems/minimum-path-sum/" target="_blank" rel="noopener">Minimum Path Sum</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">2D DP grid</td></tr>
+<tr><td class="num">8</td><td class="problem-name"><a href="https://leetcode.com/problems/decode-ways/" target="_blank" rel="noopener">Decode Ways</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">1D DP</td></tr>
+<tr><td class="num">9</td><td class="problem-name"><a href="https://leetcode.com/problems/maximum-product-subarray/" target="_blank" rel="noopener">Maximum Product Subarray</a></td><td><span class="difficulty diff-medium">Medium</span></td><td class="pattern-cell">DP min/max tracking</td></tr>
+<tr><td class="num">10</td><td class="problem-name"><a href="https://leetcode.com/problems/edit-distance/" target="_blank" rel="noopener">Edit Distance</a></td><td><span class="difficulty diff-hard">Hard</span></td><td class="pattern-cell">2D DP classic</td></tr>
+</tbody></table>
+    </div>
+  </div>
+  <div class="checkpoint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span><strong>Checkpoint:</strong> Can you solve random LeetCode Medium in <25 min? Can you implement all DS from scratch?</span>
+  </div>
+</div>
+<!-- CLASS TEST 3 + END-TERM -->
+<div class="exam-block reveal-scroll"><div class="exam-label">Class Test 3</div><div class="exam-title">Graphs + Algorithm Analysis</div><div class="exam-scope">Covers: Graph representations, BFS, DFS, Dijkstra, Big-O notation, algorithm analysis.</div></div>
+<div class="exam-block reveal-scroll"><div class="exam-label">End-Term Examination</div><div class="exam-title">Closed-Book Exam — 40 Marks</div><div class="exam-scope">Comprehensive: Trees, Heaps, Sorting, Searching, Graphs, Algorithm Analysis. Score 32+/40.</div></div>
+
+</div>
+</section>
+
+<!-- ============ PATTERN REFERENCE ============ -->
+<section class="section reveal-scroll" id="patterns">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Reference</div>
+<div class="section-title">Pattern Decision Matrix</div>
+<div class="section-desc">When you see a new problem, scan this table first. Pattern recognition is what separates Medium from Hard solvers.</div>
+<div class="pattern-grid">
+<div class="pattern-item"><div class="pattern-problem-type">Find element in collection</div><div class="pattern-first-thought">Hash map or binary search</div><div class="pattern-ds">HashMap / BST</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Top K elements</div><div class="pattern-first-thought">Heap or quickselect</div><div class="pattern-ds">Min-heap of size K</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Sorted order needed</div><div class="pattern-first-thought">Sort first, then process</div><div class="pattern-ds">Merge / Quick sort</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Shortest path (unweighted)</div><div class="pattern-first-thought">BFS level traversal</div><div class="pattern-ds">Queue</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Shortest path (weighted)</div><div class="pattern-first-thought">Dijkstra's algorithm</div><div class="pattern-ds">Min-heap + adj list</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Check all combinations</div><div class="pattern-first-thought">Backtracking with pruning</div><div class="pattern-ds">Recursion tree</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Interval scheduling</div><div class="pattern-first-thought">Sort by end point, greedy</div><div class="pattern-ds">Greedy + sort</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Connected components</div><div class="pattern-first-thought">DFS/BFS or Union-Find</div><div class="pattern-ds">Both viable</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Nested/matching structures</div><div class="pattern-first-thought">Stack</div><div class="pattern-ds">Monotonic stack</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Subarray sum / range query</div><div class="pattern-first-thought">Prefix sum + hashmap</div><div class="pattern-ds">HashMap + prefix</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">String matching + trie</div><div class="pattern-first-thought">Prefix tree</div><div class="pattern-ds">Trie + DFS</div></div>
+<div class="pattern-item"><div class="pattern-problem-type">Minimize/maximize with constraints</div><div class="pattern-first-thought">Binary search on answer</div><div class="pattern-ds">BS + feasibility check</div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ MILESTONE TRACKER ============ -->
+<section class="section reveal-scroll" id="tracker">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Progress</div>
+<div class="section-title">Milestone Tracker</div>
+<div class="section-desc">Click each milestone when you hit it. Progress saved in localStorage.</div>
+<div class="tracker-grid" id="tracker-grid">
+<div class="tracker-item" data-id="ms0" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">Solve any Easy array/string in <5 min</span>
+<span class="tracker-week">Week 3</span>
+</div>
+<div class="tracker-item" data-id="ms1" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">Solve Permutations/Backtracking from scratch</span>
+<span class="tracker-week">Week 6</span>
+</div>
+<div class="tracker-item" data-id="ms2" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">MID-TERM READY (25+/30)</span>
+<span class="tracker-week">Week 6</span>
+</div>
+<div class="tracker-item" data-id="ms3" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">Solve tree problems without drawing tree first</span>
+<span class="tracker-week">Week 10</span>
+</div>
+<div class="tracker-item" data-id="ms4" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">Implement merge sort + quicksort from memory</span>
+<span class="tracker-week">Week 13</span>
+</div>
+<div class="tracker-item" data-id="ms5" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">Implement Dijkstra from scratch</span>
+<span class="tracker-week">Week 15</span>
+</div>
+<div class="tracker-item" data-id="ms6" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">Identify problem pattern in <2 min</span>
+<span class="tracker-week">Week 16</span>
+</div>
+<div class="tracker-item" data-id="ms7" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">Solve random LC Medium in <25 min</span>
+<span class="tracker-week">Week 18</span>
+</div>
+<div class="tracker-item" data-id="ms8" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">END-TERM READY (32+/40)</span>
+<span class="tracker-week">Week 18</span>
+</div>
+<div class="tracker-item" data-id="ms9" onclick="toggleTracker(this)">
+<div class="tracker-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+<span class="tracker-text">Can implement ALL data structures from scratch</span>
+<span class="tracker-week">Week 18</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ DAILY SCHEDULE ============ -->
+<section class="section reveal-scroll" id="schedule">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Daily</div>
+<div class="section-title">Daily Routine</div>
+<div class="section-desc">3.5 hours/day, 6 days/week. Sunday = rest or light review only.</div>
+<div class="schedule-box">
+<div class="schedule-row"><span class="schedule-time">30 min</span><span class="schedule-task"><strong>Review</strong> yesterday's problems (spaced repetition)</span></div>
+<div class="schedule-row"><span class="schedule-time">30 min</span><span class="schedule-task"><strong>Read theory</strong> for today's topic</span></div>
+<div class="schedule-row"><span class="schedule-time">60 min</span><span class="schedule-task"><strong>Solve 2-3</strong> new LeetCode problems</span></div>
+<div class="schedule-row"><span class="schedule-time">30 min</span><span class="schedule-task"><strong>Implement</strong> DS/algorithm from scratch</span></div>
+<div class="schedule-row"><span class="schedule-time">30 min</span><span class="schedule-task"><strong>Review + notes</strong> — write down the pattern you learned</span></div>
+<div class="schedule-row"><span class="schedule-time">10 min</span><span class="schedule-task"><strong>Log progress</strong> — solved/time/thoughts</span></div>
+</div>
+</div>
+</section>
+
+<!-- ============ RESOURCES ============ -->
+<section class="section reveal-scroll" id="resources">
+<div class="container">
+<div class="section-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Resources</div>
+<div class="section-title">Reference Materials</div>
+<div class="resources-grid">
+<a class="resource-card" href="https://neetcode.io" target="_blank" rel="noopener"><div class="resource-name">NeetCode 150</div><div class="resource-desc">Curated problem list + video explanations for every problem</div><div class="resource-tag">neetcode.io</div></a>
+<a class="resource-card" href="https://seanprashad.com/leetcode-patterns" target="_blank" rel="noopener"><div class="resource-name">Sean Prashad Patterns</div><div class="resource-desc">Problems grouped by pattern — perfect companion to this plan</div><div class="resource-tag">seanprashad.com</div></a>
+<a class="resource-card" href="https://leetcode.com" target="_blank" rel="noopener"><div class="resource-name">LeetCode</div><div class="resource-desc">Practice platform — track your submissions and streak</div><div class="resource-tag">leetcode.com</div></a>
+<a class="resource-card" href="https://visualgo.net" target="_blank" rel="noopener"><div class="resource-name">Visualgo</div><div class="resource-desc">Visualize algorithms in real-time — essential for trees/graphs</div><div class="resource-tag">visualgo.net</div></a>
+<a class="resource-card" href="https://programiz.com/cpp-programming" target="_blank" rel="noopener"><div class="resource-name">Programiz C++</div><div class="resource-desc">Clean C++ reference — syntax, pointers, STL containers</div><div class="resource-tag">programiz.com</div></a>
+<a class="resource-card" href="#" target="_blank" rel="noopener"><div class="resource-name">Kanetkar Textbook</div><div class="resource-desc">Indian exam-oriented problems — your primary course textbook</div><div class="resource-tag">BPB Publications</div></a>
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="container">
+  <p>DSA Mastery Plan — ECE2104 — Jul–Nov 2026</p>
+  <p style="margin-top:4px">170 problems · 18 weeks · 250+ hours</p>
+</div>
+</footer>
+
+</main>
+
+<script>
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const dark = document.getElementById('theme-icon-dark');
+  const light = document.getElementById('theme-icon-light');
+  if (html.dataset.theme === 'dark') {
+    html.dataset.theme = 'light';
+    dark.style.display = 'block';
+    light.style.display = 'none';
+    localStorage.setItem('theme', 'light');
+  } else {
+    html.dataset.theme = 'dark';
+    dark.style.display = 'none';
+    light.style.display = 'block';
+    localStorage.setItem('theme', 'dark');
+  }
+}
+// Restore theme
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.documentElement.dataset.theme = 'light';
+    document.getElementById('theme-icon-dark').style.display = 'block';
+    document.getElementById('theme-icon-light').style.display = 'none';
+  }
+})();
+
+// Scroll reveal
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+    else entry.target.classList.remove('visible');
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal-scroll').forEach(el => revealObserver.observe(el));
+
+// Counter animation
+function animateCounters() {
+  document.querySelectorAll('.stat-num[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count);
+    const duration = 1200;
+    const start = performance.now();
+    function update(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased);
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+// Trigger counters when hero is visible
+const heroObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounters();
+      heroObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+const statsRow = document.querySelector('.stats-row');
+if (statsRow) heroObserver.observe(statsRow);
+
+// Phase nav active state
+const phaseLinks = document.querySelectorAll('.phase-link');
+const sections = document.querySelectorAll('[id^="phase"]');
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      phaseLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-100px 0px -60% 0px' });
+sections.forEach(s => navObserver.observe(s));
+
+// Milestone tracker with localStorage
+function toggleTracker(el) {
+  el.classList.toggle('done');
+  const id = el.dataset.id;
+  const done = el.classList.contains('done');
+  const state = JSON.parse(localStorage.getItem('dsa-tracker') || '{}');
+  state[id] = done;
+  localStorage.setItem('dsa-tracker', JSON.stringify(state));
+}
+// Restore tracker state
+(function() {
+  const state = JSON.parse(localStorage.getItem('dsa-tracker') || '{}');
+  Object.entries(state).forEach(([id, done]) => {
+    if (done) {
+      const el = document.querySelector(`.tracker-item[data-id="${id}"]`);
+      if (el) el.classList.add('done');
+    }
+  });
+})();
+</script>
+</body>
+</html>

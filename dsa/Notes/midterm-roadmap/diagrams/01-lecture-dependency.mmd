@@ -1,0 +1,23 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"IBM Plex Mono, monospace","fontSize":"16px","primaryColor":"#f7f4ef","primaryTextColor":"#1c1917","primaryBorderColor":"#1b4d7a","lineColor":"#8a8375","secondaryColor":"#e8e3d9","tertiaryColor":"#ffffff"}}}%%
+flowchart LR
+  classDef c1 fill:#e7eef7,stroke:#1b4d7a,color:#12324f
+  classDef c2 fill:#eaf0e6,stroke:#4a6b3c,color:#2b3f22
+  classDef gate fill:#f6e9e2,stroke:#8c4a2f,color:#4a2415,stroke-dasharray:4 3
+  classDef exam fill:#f3e7ee,stroke:#7a3355,color:#4a1f34
+  subgraph A["CO1, lectures 1 to 10"]
+    direction TB
+    L1["1 briefing"]:::c1 --> L2["2 C++ and Python ramp"]:::c1
+    L2 --> L3["3 variables, types, IO"]:::c1 --> L4["4 control flow, functions"]:::c1
+    L4 --> L5["5 DS and memory representation"]:::c1 --> L6["6 list concept and node"]:::c1
+    L6 --> L7["7 list operations"]:::c1 --> L8["8 list search and numericals"]:::c1
+    L8 --> L9["9 tutorial"]:::c1 --> T10["class test 1"]:::gate
+  end
+  subgraph B["CO2, lectures 11 to 16"]
+    direction TB
+    L11["11 stack, array"]:::c2 --> L12["12 stack linked, apps"]:::c2
+    L12 --> L13["13 queue, array"]:::c2 --> L14["14 queue linked, circular"]:::c2
+    L14 --> L15["15 queue applications"]:::c2 --> L16["16 recursion"]:::c2
+  end
+  T10 --> L11
+  L16 --> MID["MID SEMESTER EXAMINATION
+  30 marks, closed book"]:::exam

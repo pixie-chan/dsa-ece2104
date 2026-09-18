@@ -1,0 +1,9 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"IBM Plex Mono, monospace","fontSize":"14px","primaryColor":"#e8ecf1","primaryTextColor":"#16202b","primaryBorderColor":"#1d4ed8","lineColor":"#55636f","tertiaryColor":"#f4f6f8"}}}%%
+flowchart TD
+  B["1 bit: one switch, 0 or 1"] --> Y["1 byte = 8 bits: values 0 to 255, THE unit of addressing"]
+  Y --> N["address: the byte's own number, values written in hex"]
+  N --> W["word = 8 bytes here: char 1, short 2, int 4, double 8, pointer 8"]
+  W --> C["contiguous block: n elements of the same type, stride = sizeof T"]
+  C --> S["structure: a decided layout along the lane"]
+  S --> A["array: base + i x sizeof T, access O 1"]
+  S --> L["linked list: each node stores the next node's address, access O n"]

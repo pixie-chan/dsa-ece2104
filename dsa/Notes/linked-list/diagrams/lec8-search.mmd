@@ -1,0 +1,18 @@
+flowchart LR
+  H(["head"]) --> N1["10"] --> N2["20"] --> N3["30"] --> N4["40"] --> N5["50"] --> NUL["NULL"]
+
+  N3 -. "search 30: comparison 3, found here" .-> FOUND["position 3"]
+  NUL -. "search 35: 5 comparisons,<br/>list ran out, absent" .-> MISS["position minus 1"]
+
+  subgraph COST["Linear search cost"]
+    direction TB
+    C1["best case: 1 comparison<br/>key sits at head"]
+    C2["worst case: n comparisons<br/>key at the tail or absent"]
+    C3["average: n plus 1 over 2<br/>for n = 5 that is 3"]
+  end
+
+  NUL --> COST
+
+  style FOUND fill:#e8f4ea,stroke:#3d7a4a
+  style MISS fill:#f7e7e7,stroke:#a04a4a
+  style COST fill:#eef2f7,stroke:#5b6b7f

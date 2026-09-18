@@ -1,0 +1,26 @@
+flowchart TB
+  subgraph BEG["Insert at beginning, O of 1"]
+    direction LR
+    b1["make node n"] --> b2["n next = head"] --> b3["head = n"]
+  end
+
+  subgraph END["Insert at end, O of n"]
+    direction LR
+    e1["make node n"] --> e2["cur = head"] --> e3["while cur next not NULL<br/>cur = cur next"] --> e4["cur next = n"]
+  end
+
+  subgraph POS["Insert at position k, O of k"]
+    direction LR
+    p1["walk k minus 1 nodes<br/>with cur"] --> p2["n next = cur next"] --> p3["cur next = n"]
+  end
+
+  BEG --- BW["order matters:<br/>link first, move head second.<br/>Swap them and the node points at itself"]
+  END --- EW["empty list guard first:<br/>if head is NULL then head = n and return"]
+  POS --- PW["k is 1 based here.<br/>k = 1 is the same as insert at beginning"]
+
+  style BEG fill:#e8f4ea,stroke:#3d7a4a
+  style END fill:#fdf1e7,stroke:#b5713a
+  style POS fill:#eef2f7,stroke:#5b6b7f
+  style BW fill:#ffffff,stroke:#3d7a4a,stroke-dasharray: 4 3
+  style EW fill:#ffffff,stroke:#b5713a,stroke-dasharray: 4 3
+  style PW fill:#ffffff,stroke:#5b6b7f,stroke-dasharray: 4 3

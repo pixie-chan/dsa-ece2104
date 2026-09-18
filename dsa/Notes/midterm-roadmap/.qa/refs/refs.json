@@ -1,0 +1,76 @@
+{
+  "build": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/DSA-MIDTERM-ROADMAP.html",
+  "viewport": "1280x900",
+  "refs": [
+    {
+      "url": "https://ciechanow.ski/",
+      "status": 200,
+      "class": "REAL",
+      "note": "ok",
+      "page_load": false,
+      "title": "Bartosz Ciechanowski",
+      "final_url": "https://ciechanow.ski/",
+      "consent_dismissed": null,
+      "screenshot": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ref-01-ciechanow.ski.png",
+      "ab": {
+        "A_build_left": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/01-A-build-left.png",
+        "B_ref_left": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/01-B-ref-left.png"
+      }
+    },
+    {
+      "url": "https://teenage.engineering/",
+      "status": 200,
+      "class": "REAL",
+      "note": "ok",
+      "page_load": true,
+      "title": "teenage engineering",
+      "final_url": "https://teenage.engineering/",
+      "consent_dismissed": null,
+      "screenshot": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ref-02-teenage.engineering.png",
+      "ab": {
+        "A_build_left": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/02-A-build-left.png",
+        "B_ref_left": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/02-B-ref-left.png"
+      }
+    },
+    {
+      "url": "https://samwho.dev/memory-allocation/",
+      "status": 200,
+      "class": "REAL",
+      "note": "ok",
+      "page_load": true,
+      "title": "Memory Allocation",
+      "final_url": "https://samwho.dev/memory-allocation/",
+      "consent_dismissed": null,
+      "screenshot": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ref-03-samwho.dev-memory-allocation.png",
+      "ab": {
+        "A_build_left": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/03-A-build-left.png",
+        "B_ref_left": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/03-B-ref-left.png"
+      }
+    }
+  ],
+  "generated_by": "ui-refs.py",
+  "build_shot": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/ui-gate-01-1280x900.png",
+  "ab_pairs": [
+    {
+      "a": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/01-A-build-left.png",
+      "b": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/01-B-ref-left.png"
+    },
+    {
+      "a": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/02-A-build-left.png",
+      "b": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/02-B-ref-left.png"
+    },
+    {
+      "a": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/03-A-build-left.png",
+      "b": "/home/zen/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/.qa/refs/ab/03-B-ref-left.png"
+    }
+  ],
+  "summary": {
+    "refs_given": 3,
+    "refs_resolved": 3,
+    "screenshots": 3,
+    "ab_pairs": 3,
+    "check_only": false,
+    "verdict": "PASS",
+    "verdict_note": "references resolved and shot"
+  }
+}

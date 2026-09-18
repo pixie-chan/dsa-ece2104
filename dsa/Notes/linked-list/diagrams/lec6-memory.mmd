@@ -1,0 +1,21 @@
+flowchart TB
+  subgraph CONTIG["Array of nodes: one allocation, 16 bytes apart"]
+    direction LR
+    A0["block 0<br/>addr base<br/>data 10<br/>next 0"] --> A1["block 1<br/>addr base+16<br/>data 20<br/>next 0"] --> A2["block 2<br/>addr base+32<br/>data 30<br/>next 0"]
+  end
+
+  subgraph SCAT["Linked nodes: scattered, one heap call each"]
+    direction LR
+    B0["node 1<br/>addr 0x...030<br/>data 10<br/>next 0x...050"] --> B1["node 2<br/>addr 0x...050<br/>data 20<br/>next 0x...070"] --> B2["node 3<br/>addr 0x...070<br/>data 30<br/>next 0 NULL"]
+  end
+
+  HEAD(["head pointer<br/>the only way in"]) --> B0
+
+  CONTIG --- NOTE1["index i is instant:<br/>base + i*16<br/>but the size is frozen at compile time"]
+  SCAT --- NOTE2["reaching node i costs i hops<br/>but the list grows without limit"]
+
+  style CONTIG fill:#eef2f7,stroke:#5b6b7f
+  style SCAT fill:#fdf1e7,stroke:#b5713a
+  style HEAD fill:#e8f4ea,stroke:#3d7a4a
+  style NOTE1 fill:#ffffff,stroke:#5b6b7f,stroke-dasharray: 4 3
+  style NOTE2 fill:#ffffff,stroke:#b5713a,stroke-dasharray: 4 3

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Cover card: Where data actually lives, DSA Lecture 5 memory representation">
+  <defs>
+    <pattern id="g" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0v28" fill="none" stroke="#e4e9ee" stroke-width="1"/>
+    </pattern>
+    <pattern id="h" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#b3bfcc" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#f4f6f8"/>
+  <rect x="0" y="0" width="760" height="630" fill="url(#g)"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#b3bfcc" stroke-width="2"/>
+  <text x="80" y="112" font-family="monospace" font-size="20" letter-spacing="3" fill="#55636f">ECE2104 DATA STRUCTURES AND ALGORITHMS / LECTURE 5</text>
+  <text x="80" y="196" font-family="sans-serif" font-size="62" font-weight="700" fill="#16202b">Where data actually lives</text>
+  <text x="80" y="248" font-family="sans-serif" font-size="26" fill="#3d4a5a">bytes, addresses, stride, padding, stack vs heap</text>
+  <g>
+    <rect x="80" y="300" width="70" height="70" fill="#dbe7fb" stroke="#1d4ed8" stroke-width="2"/>
+    <rect x="150" y="300" width="70" height="70" fill="#dbe7fb" stroke="#1d4ed8" stroke-width="2"/>
+    <rect x="220" y="300" width="70" height="70" fill="#dbe7fb" stroke="#1d4ed8" stroke-width="2"/>
+    <rect x="290" y="300" width="70" height="70" fill="#dbe7fb" stroke="#1d4ed8" stroke-width="2"/>
+    <rect x="360" y="300" width="70" height="70" fill="#dbe7fb" stroke="#1d4ed8" stroke-width="2"/>
+    <rect x="430" y="300" width="70" height="70" fill="url(#h)" stroke="#b3bfcc" stroke-width="2"/>
+    <text x="115" y="345" font-family="monospace" font-size="24" fill="#16202b" text-anchor="middle">a[0]</text>
+    <text x="185" y="345" font-family="monospace" font-size="24" fill="#16202b" text-anchor="middle">a[1]</text>
+    <text x="255" y="345" font-family="monospace" font-size="24" fill="#16202b" text-anchor="middle">a[2]</text>
+    <text x="325" y="345" font-family="monospace" font-size="24" fill="#16202b" text-anchor="middle">a[3]</text>
+    <text x="395" y="345" font-family="monospace" font-size="24" fill="#16202b" text-anchor="middle">a[4]</text>
+    <text x="465" y="345" font-family="monospace" font-size="20" fill="#55636f" text-anchor="middle">next</text>
+    <path d="M80 388h70M150 388h70M220 388h70M290 388h70M360 388h70M430 388h70" stroke="#b3bfcc" stroke-width="2"/>
+    <path d="M80 420V392M500 420V392M80 420h420" fill="none" stroke="#c81742" stroke-width="2"/>
+    <text x="80" y="446" font-family="monospace" font-size="22" fill="#c81742">20 bytes = 5 x sizeof(int), stride 4</text>
+  </g>
+  <text x="80" y="510" font-family="monospace" font-size="24" fill="#1d4ed8">addr(&amp;a[i]) = base + i x sizeof(T)   =   one multiply, O(1)</text>
+  <text x="80" y="556" font-family="monospace" font-size="20" fill="#55636f">every number measured on a real run: g++ 15.2.0, -O2, x86-64</text>
+  <text x="1132" y="556" font-family="monospace" font-size="18" fill="#55636f" text-anchor="end">sheet 04 of 10</text>
+</svg>

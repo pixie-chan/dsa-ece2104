@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where data actually lives: memory representation of data structures (DSA Lecture 5)</title>
+<meta name="description" content="A visual learning guide to ECE2104 DSA Lecture 5: bytes, addresses, stack and heap, struct padding, array stride and why memory shape decides the cost of every operation. Every number measured on a real run.">
+<meta name="theme-color" content="#f4f6f8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Where data actually lives: memory representation of data structures">
+<meta property="og:description" content="Bytes, addresses, stride, padding, stack vs heap, and the one multiply that makes indexed access O(1). Built from a real run on this machine.">
+<meta property="og:image" content="og-card.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231d4ed8'/%3E%3Crect x='4' y='4' width='10' height='10' fill='%23ffffff'/%3E%3Crect x='18' y='4' width='10' height='10' fill='%23ffffff' opacity='.45'/%3E%3Crect x='4' y='18' width='10' height='10' fill='%23ffffff' opacity='.45'/%3E%3Crect x='18' y='18' width='10' height='10' fill='%23ffffff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- NOSTATE: static single-file study sheet with no async data, no fetches and no server. The only empty case is the self-test before a reveal, which prints the explicit line "nothing revealed yet", and the heap lane which starts empty and says so in its caption. Loading and error states therefore do not exist on this page by design. -->
+<!--
+  CONCEPT: the drawn address space. Memory is a long numbered lane of bytes; a data structure is
+           a way of laying data along that lane, and the layout decides what every operation costs.
+  DIRECTION: Industrial (2.8), developed as a memory DATASHEET / drafting sheet.
+  Bank recipe: light #f4f6f8 / #16202b / #1d4ed8 / #dbe1e8, dark #0e141b / #e6ecf3 / #60a5fa / #233042,
+  fonts Archivo + IBM Plex Sans + IBM Plex Mono, spec tables with right-aligned numbers, ruler dividers,
+  status dots, blueprint grid in the hero only, flat elsewhere.
+
+  DIRECTION WHY: the topic is literally byte addresses and layout, so the artifact is the drawing an
+  engineer would make of an address space: a spec sheet for memory. Not a titled card gallery.
+
+  CONCEPT (creative protocol): "the drawn address space"
+    CONCEPT: memory is a long numbered lane of bytes; every data structure is a way of laying
+             your data along that lane, and the layout decides what each operation costs.
+    METAPHOR: an engineering drawing sheet. Ruler ticks, dimension lines, hatching for wasted
+             bytes, a title block, red markup pencil for pointers.
+    SIGNATURE: THE ADDRESS LANE (sheet 04), a scroll meter on one scrubbable byte lane: the index slider moves a
+             real byte window, a dimension line measures base to target, and the formula
+             base + i x sizeof(T) is evaluated live against addresses captured on this machine.
+             Flip one switch and the same lane becomes the scattered heap list: hops 1 becomes
+             hops i+1 and the cost meter jumps by the measured factor.
+    LOAD: the lane draws itself cell by cell on first scroll into view, addresses ticking upward.
+    MICRO: every byte cell is hoverable and focusable with a live address readout;
+             pointer rows skip a beat before the pointer line lands; the padding hatch breathes on hover.
+    EASING: cubic-bezier(0.22, 1, 0.36, 1) only, deliberate.
+
+  PROVENANCE: every number here comes from one compiled run on this machine
+  (g++ 15.2.0, -Wall -Wextra -std=c++17 -O2, x86-64, Ubuntu 26.04). Addresses change per run
+  because of ASLR; sizes, offsets and strides do not. Raw output: ../exercises/lec05_run_output.txt
+  Re-verify: python3 ~/learning/cpp/exercises/verify_ds_memory_lec5.py
+
+  NOSTATE: static single-file study sheet. No async data, no network calls, no server. The only
+  empty case is the self-test before anything is revealed, which renders an explicit empty line
+  ("nothing revealed yet"), and the heap simulator which starts with an empty lane and says so.
+-->
+
+
+<style>
+/* ===== tokens (same file as tokens.css, audited by contrast-check.py and craft-audit.py) ===== */
+:root{
+  --bg:#f4f6f8; --surface:#ffffff; --surface-2:#e8ecf1; --surface-3:#d9e0e8;
+  --line:#dbe1e8; --line-2:#b3bfcc; --line-draft:#7f8b9f; --grid:#e4e9ee;
+  --text:#16202b; --text-2:#3d4a5a; --text-3:#55636f;
+  --accent:#1d4ed8; --signal:#c81742; --ok:#12633f; --warn:#7d5100;
+  --font-display:"Archivo","Segoe UI",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --text-xs:0.75rem; --text-sm:0.875rem; --text-base:1rem; --text-md:1.125rem;
+  --text-lg:1.375rem; --text-xl:1.75rem; --text-2xl:2.25rem; --text-3xl:clamp(2.5rem,5.5vw,3.9rem);
+  --w-reg:400; --w-med:500; --w-semi:600; --w-bold:700;
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+  --r-1:2px; --r-2:4px; --r-3:4px;
+  --shadow-1:0 1px 0 var(--line);
+  --shadow-2:0 2px 0 var(--line-2),0 10px 26px -18px rgba(22,32,43,.4);
+  --dur-1:120ms; --dur-2:200ms; --dur-3:420ms;
+  --ease:cubic-bezier(0.22,1,0.36,1);
+}
+[data-theme="dark"]{
+  --bg:#0e141b; --surface:#151e28; --surface-2:#1c2836; --surface-3:#24313f;
+  --line:#233042; --line-2:#3a4a60; --line-draft:#5f70a8; --grid:#1b2531;
+  --text:#e6ecf3; --text-2:#b3c1d1; --text-3:#8b9aab;
+  --accent:#60a5fa; --signal:#ff7aa2; --ok:#4fd39a; --warn:#f0b64a;
+  --shadow-1:0 1px 0 var(--line);
+  --shadow-2:0 2px 0 var(--line-2),0 10px 26px -18px rgba(0,0,0,.65);
+}
+
+/* ===== base ===== */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font-body),system-ui,sans-serif;
+  font-size:var(--text-base); font-weight:400; line-height:1.65;
+  font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-display),var(--font-body),sans-serif; line-height:1.15; margin:0; letter-spacing:-0.01em}
+h1{font-size:var(--text-3xl); font-weight:700}
+h2{font-size:var(--text-2xl); font-weight:600}
+h3{font-size:var(--text-lg); font-weight:600}
+h4{font-size:var(--text-md); font-weight:600}
+p{margin:0 0 var(--s-4); max-width:72ch}
+a{color:var(--accent); text-decoration:none; border-bottom:1px solid color-mix(in oklab,var(--accent) 40%,transparent)}
+a:hover{border-bottom-color:var(--accent)}
+code,kbd,samp,pre,.mono{font-family:var(--font-mono),ui-monospace,monospace; font-variant-numeric:tabular-nums}
+code{overflow-wrap:anywhere; font-size:1em; background:color-mix(in oklab,var(--accent) 8%,var(--surface)); padding:2px 4px; border-radius:var(--r-1); border:1px solid var(--line)}
+ul,ol{margin:0 0 var(--s-4); padding-left:var(--s-5); max-width:72ch}
+li{margin-bottom:var(--s-2)}
+strong{font-weight:600}
+hr{border:0; border-top:1px solid var(--line); margin:var(--s-7) 0}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--r-1)}
+.skip{position:absolute; left:-9999px; top:0; background:var(--surface); color:var(--text); padding:var(--s-3) var(--s-4); z-index:20; border:1px solid var(--line-2)}
+.skip:focus{left:var(--s-3); top:var(--s-3)}
+.eyebrow{
+  font-family:var(--font-mono),monospace; font-size:var(--text-xs); font-weight:500;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); margin:0 0 var(--s-2);
+}
+
+/* ===== page frame: rail + content ===== */
+.wrap{max-width:1240px; margin:0 auto; padding:0 var(--s-5) var(--s-9);
+  display:grid; grid-template-columns:236px minmax(0,1fr); gap:var(--s-8); align-items:start}
+@media (max-width:980px){ .wrap{grid-template-columns:minmax(0,1fr); gap:var(--s-6)} }
+
+/* ===== title block (drawing sheet header) ===== */
+.titleblock{
+  grid-column:1/-1; margin:var(--s-6) 0 var(--s-7); border:1px solid var(--line-2);
+  background:var(--surface); box-shadow:var(--shadow-2); position:relative; overflow:hidden;
+}
+.titleblock__grid{
+  position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  -webkit-mask-image:linear-gradient(120deg,#000 0%,transparent 62%);
+  mask-image:linear-gradient(120deg,#000 0%,transparent 62%);
+}
+.titleblock__inner{position:relative; padding:var(--s-7) var(--s-7) var(--s-6); display:grid;
+  grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:var(--s-7); align-items:end}
+@media (max-width:820px){ .titleblock__inner{grid-template-columns:minmax(0,1fr); padding:var(--s-6) var(--s-5) var(--s-5)} }
+.titleblock h1{margin:0 0 var(--s-4)}
+.titleblock .lede{font-size:var(--text-md); color:var(--text-2); max-width:60ch; margin:0 0 var(--s-4)}
+.spec-table{width:100%; border-collapse:collapse; font-size:var(--text-sm)}
+.spec-table th,.spec-table td{text-align:left; padding:var(--s-2) var(--s-3); border-bottom:1px solid var(--line); vertical-align:top}
+.spec-table th{width:37%; color:var(--text-3); font-weight:500; font-family:var(--font-mono),monospace; font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.06em}
+.spec-table td{color:var(--text-2)}
+.spec-table tr:last-child th,.spec-table tr:last-child td{border-bottom:0}
+.dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--ok); margin-right:var(--s-2); vertical-align:1px}
+.dot--accent{background:var(--accent)}
+.dot--signal{background:var(--signal)}
+
+/* ===== rail ===== */
+.rail{position:sticky; top:var(--s-4); align-self:start; border-left:1px solid var(--line); padding-left:var(--s-4)}
+.rail__list{list-style:none; margin:0 0 var(--s-5); padding:0; counter-reset:sheet}
+.rail__list li{margin:0}
+.rail__list a{display:flex; gap:var(--s-3); align-items:baseline; padding:8px var(--s-2); border:0; border-radius:var(--r-1);
+  color:var(--text-2); font-size:var(--text-sm); min-height:44px}
+.rail__list a:hover{background:color-mix(in oklab,var(--accent) 8%,var(--surface)); color:var(--text)}
+.rail__list a[aria-current="true"]{background:color-mix(in oklab,var(--accent) 12%,var(--surface)); color:var(--text); font-weight:500}
+.rail__num{font-family:var(--font-mono),monospace; font-size:var(--text-xs); color:var(--text-3); min-width:1.6em}
+.rail__list a[aria-current="true"] .rail__num{color:var(--accent)}
+.rail__meter{font-size:var(--text-xs); color:var(--text-3); font-family:var(--font-mono),monospace}
+.meter{height:4px; background:var(--surface-3); margin:var(--s-2) 0 var(--s-3); overflow:hidden}
+.meter__fill{height:100%; width:0; background:var(--accent); transition:width var(--dur-3) var(--ease)}
+.rail__btns{display:flex; flex-direction:column; gap:var(--s-2); align-items:flex-start}
+@media (max-width:980px){
+  .rail{position:static; border-left:0; border-top:1px solid var(--line); padding:var(--s-3) 0 0; margin-bottom:var(--s-5)}
+  .rail__list{display:flex; gap:var(--s-2); overflow-x:auto; padding-bottom:var(--s-2)}
+  .rail__list a{white-space:nowrap; border:1px solid var(--line)}
+  .rail__btns{flex-direction:row; flex-wrap:wrap}
+}
+
+
+
+/* ===== title block: a real strip along the bottom edge of the hero sheet ===== */
+.titleblock__inner{display:block; position:relative; padding:var(--s-8) var(--s-7) var(--s-6)}
+.tb{position:relative; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px;
+  margin:0 var(--s-7); background:var(--line-2); border:1px solid var(--line-2)}
+.tb__field{display:grid; gap:var(--s-1); align-content:start; padding:var(--s-4); background:var(--surface)}
+.tb__span2{grid-column:span 2}
+.tb__k{font-family:var(--font-mono),monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-2)}
+.tb__v{font-size:14px; font-weight:500; color:var(--text); line-height:1.5}
+.tb__v.mono{font-family:var(--font-mono),monospace; font-size:12px}
+.legendrow{display:grid; grid-template-columns:16px minmax(0,1fr); gap:var(--s-2); align-items:start}
+.legendrow .dot{margin-top:6px}
+.tb__legend{gap:var(--s-2)}
+.tb__scalebar{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:var(--s-4);
+  align-items:center; margin:var(--s-3) var(--s-7) 0}
+.tb__scalebar__ticks{height:10px; background:
+    repeating-linear-gradient(90deg,var(--line-2) 0 1px,transparent 1px 24px),
+    repeating-linear-gradient(90deg,var(--text-3) 0 1px,transparent 1px 96px);
+  opacity:.9}
+@media (max-width:820px){
+  .tb{grid-template-columns:repeat(2,minmax(0,1fr)); margin:0 var(--s-5)}
+  .tb__span2{grid-column:span 2}
+  .tb__field{border-right:0}
+  .tb__caption{margin:var(--s-2) var(--s-5) var(--s-5)}
+}
+
+/* ===== sheets: ruled sections ===== */
+.sheet{grid-column:2; border:1px solid var(--line-2); padding:var(--s-7) var(--s-6) var(--s-8); position:relative}
+@media (max-width:980px){ .sheet{grid-column:1} }
+.sheet::before{
+  content:""; position:absolute; top:-1px; left:-1px; width:48px; height:2px; background:var(--line-2);
+}
+.sheet::after{
+  content:""; position:absolute; inset:8px; border:1px solid var(--line); pointer-events:none;
+}
+.sheet__head{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--s-5); align-items:start; margin-bottom:var(--s-5)}
+@media (max-width:700px){ .sheet__head{grid-template-columns:minmax(0,1fr)} }
+.sheet__stamp{font-family:var(--font-mono),monospace; font-size:var(--text-xs); color:var(--text-3); text-align:right; line-height:1.9; white-space:nowrap}
+@media (max-width:700px){ .sheet__stamp{text-align:left} }
+.sheet__purpose{color:var(--text-2); font-size:var(--text-md); max-width:66ch; margin:var(--s-3) 0 0}
+.cols{display:grid; gap:var(--s-6)}
+.cols--wide-left{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.cols--narrow-left{grid-template-columns:minmax(0,1fr) minmax(0,1.55fr)}
+.cols--halves{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:900px){ .cols{grid-template-columns:minmax(0,1fr)} }
+
+/* ===== panels ===== */
+.panel{background:var(--surface); border:1px solid var(--line); padding:var(--s-5); box-shadow:var(--shadow-1)}
+.panel--tight{padding:var(--s-4)}
+.panel__title{font-family:var(--font-mono),monospace; font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.07em; color:var(--text-3); margin:0 0 var(--s-3); display:flex; gap:var(--s-2); align-items:center}
+.panel--figure{background:var(--surface-2); border-color:var(--line-2)}
+.hint{font-size:var(--text-sm); color:var(--text-3); margin:var(--s-3) 0 0}
+.hint--tight{margin-top:var(--s-2)}
+
+/* ===== callouts (one shape language) ===== */
+.callout{border:1px solid var(--line); border-left-width:3px; background:var(--surface); padding:var(--s-4) var(--s-5); margin:var(--s-5) 0}
+.callout__label{font-family:var(--font-mono),monospace; font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.07em; display:flex; align-items:center; gap:var(--s-2); margin-bottom:var(--s-2)}
+.callout p:last-child{margin-bottom:0}
+.callout--trap{border-left-color:var(--signal); background:color-mix(in oklab,var(--signal) 6%,var(--surface))}
+.callout--trap .callout__label{color:var(--signal)}
+.callout--exam{border-left-color:var(--ok); background:color-mix(in oklab,var(--ok) 6%,var(--surface))}
+.callout--exam .callout__label{color:var(--ok)}
+.callout--note{border-left-color:var(--accent); background:color-mix(in oklab,var(--accent) 6%,var(--surface))}
+.callout--note .callout__label{color:var(--accent)}
+.icon{width:15px; height:15px; flex:none}
+
+/* ===== spec tables ===== */
+.table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+table.spec{width:100%; border-collapse:collapse; font-size:var(--text-sm)}
+table.spec caption{text-align:left; font-family:var(--font-mono),monospace; font-size:var(--text-xs); text-transform:uppercase;
+  letter-spacing:.07em; color:var(--text-3); padding-bottom:var(--s-3)}
+table.spec th,table.spec td{padding:var(--s-3) var(--s-4); border-bottom:1px solid var(--line); text-align:left; vertical-align:top; overflow-wrap:anywhere}
+table.spec thead th{font-family:var(--font-mono),monospace; font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.05em;
+  color:var(--text-3); border-bottom:1px solid var(--line-2); font-weight:500}
+table.spec tbody tr:hover{background:color-mix(in oklab,var(--accent) 5%,var(--surface))}
+table.spec td.num,table.spec th.num{text-align:right; font-family:var(--font-mono),monospace}
+table.spec td.k{color:var(--text); font-weight:500; white-space:nowrap}
+table.spec td.v{color:var(--text-2)}
+.legend{display:flex; flex-wrap:wrap; gap:var(--s-2) var(--s-5); font-size:var(--text-xs); color:var(--text-3); margin-top:var(--s-3)}
+.legend span{display:flex; align-items:center; gap:var(--s-2)}
+.swatch{width:11px; height:11px; border:1px solid var(--line-2); flex:none}
+.swatch--data{background:color-mix(in oklab,var(--accent) 32%,var(--surface))}
+.swatch--target{background:color-mix(in oklab,var(--accent) 46%,var(--surface)); border-color:var(--line-draft)}
+.swatch--pad{background:repeating-linear-gradient(45deg,var(--line-2) 0 2px,transparent 2px 4px)}
+.swatch--ptr{background:color-mix(in oklab,var(--signal) 32%,var(--surface))}
+.swatch--free{background:var(--surface-3)}
+
+/* ===== code ===== */
+pre{margin:0 0 var(--s-4); padding:var(--s-4); background:var(--surface-2); border:1px solid var(--line);
+  overflow-x:auto; font-size:var(--text-sm); line-height:1.6; color:var(--text)}
+pre code{background:none; border:0; padding:0; font-size:1em}
+.out{background:var(--surface); border:1px dashed var(--line-2); padding:var(--s-4); font-family:var(--font-mono),monospace;
+  font-size:var(--text-sm); color:var(--text-2); overflow-x:auto; margin:0 0 var(--s-4)}
+.out b{color:var(--text); font-weight:600}
+
+/* ===== the byte lane (shared by sheets 01/03/04/07) ===== */
+.lane-wrap{overflow-x:auto; padding-bottom:var(--s-2); position:relative;
+  scrollbar-color:var(--line-draft) transparent; scrollbar-width:thin}
+.lane-wrap::-webkit-scrollbar{height:8px}
+.lane-wrap::-webkit-scrollbar-track{background:transparent}
+.lane-wrap::-webkit-scrollbar-thumb{background:var(--line-draft); border-radius:var(--r-1)}
+.lane-scrollhint{font-family:var(--font-mono),monospace; font-size:12px; color:var(--text-3); margin:var(--s-2) 0 var(--s-3)}
+.lane-scrollhint[hidden]{display:none}
+.lane{display:grid; grid-template-columns:repeat(var(--cells,32),44px); gap:2px; background:var(--line-draft);
+  border:1px solid var(--line-2); width:max-content; position:relative}
+.lane--narrow{--cells:24}
+.cell{background:var(--surface); position:relative; height:44px; border:0; padding:0; cursor:pointer;
+  display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center;
+  font-family:var(--font-mono),monospace;
+  font-size:12px; color:var(--text-3); transition:background var(--dur-2) var(--ease),color var(--dur-1) linear}
+.cell:hover{background:color-mix(in oklab,var(--accent) 14%,var(--surface)); color:var(--text)}
+.cell--owner-data{background:color-mix(in oklab,var(--accent) 30%,var(--surface)); color:var(--text)}
+.cell--owner-even{background:color-mix(in oklab,var(--accent) 22%,var(--surface)); color:var(--text)}
+.cell--targetfill{background:color-mix(in oklab,var(--accent) 46%,var(--surface)); color:var(--text); font-weight:500}
+.cell--owner-odd{background:color-mix(in oklab,var(--accent) 9%,var(--surface)); color:var(--text)}
+.cell__t{font-size:12px; color:var(--text-2)}
+.cell__v{font-size:12px; color:var(--text)}
+.cell__off{font-size:12px; color:var(--text-2)}
+.cell--owner-ptr{background:color-mix(in oklab,var(--signal) 30%,var(--surface)); color:var(--text)}
+.cell--owner-pad{background:repeating-linear-gradient(45deg,var(--line-2) 0 2px,var(--surface) 2px 5px); color:var(--text-3)}
+.cell--owner-free{background:var(--surface-3); color:var(--text-3)}
+.cell--target{box-shadow:inset 0 0 0 2px var(--accent); color:var(--text); font-weight:600}
+.cell--elemstart{border-left:2px solid var(--line-draft)}
+.cell--off{color:var(--text-3)}
+.cell--ptrhead{box-shadow:inset 0 0 0 2px var(--signal); color:var(--text)}
+.cell--draw{animation:drawIn var(--dur-3) var(--ease) both}
+@keyframes drawIn{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+.lane-addr{display:grid; grid-template-columns:repeat(var(--cells,32),44px); gap:2px; width:max-content; margin-top:var(--s-2)}
+.lane-addr span{font-family:var(--font-mono),monospace; font-size:12px; color:var(--text-3); text-align:center; writing-mode:horizontal-tb}
+.lane-scale{display:flex; justify-content:space-between; font-family:var(--font-mono),monospace; font-size:var(--text-xs); color:var(--text-3); margin-top:var(--s-2); width:calc(var(--cells,32) * 46px - 2px)}
+
+/* dimension line under the lane */
+.dim{position:relative; height:80px; margin-top:var(--s-3); width:calc(var(--cells,32) * 46px - 2px)}
+.dim__line{position:absolute; top:10px; height:8px; border-left:1px solid var(--signal); border-right:1px solid var(--signal)}
+.dim__rule{position:absolute; top:14px; height:1px; background:var(--signal); left:0; transition:all var(--dur-2) var(--ease)}
+.dim__rule::before,.dim__rule::after{content:""; position:absolute; top:-4px; width:0; height:0;
+  border-top:4px solid transparent; border-bottom:4px solid transparent}
+.dim__rule::before{left:0; border-left:8px solid var(--signal)}
+.dim__rule::after{right:0; border-right:8px solid var(--signal)}
+.dim__label{position:absolute; top:20px; font-family:var(--font-mono),monospace; font-size:14px; color:var(--signal); white-space:nowrap}
+.dim__label--right{left:auto; right:0}
+.dim__label::before,.dim__spanlabel::before{content:""; position:absolute; left:0; top:-6px; width:1px; height:6px;
+  background:currentColor; opacity:.6}
+.dim__span{position:absolute; top:8px; height:12px; border-left:2px solid var(--signal);
+  border-right:2px solid var(--signal); background:color-mix(in oklab,var(--signal) 14%,transparent)}
+.dim__spanlabel{position:absolute; top:48px; font-family:var(--font-mono),monospace; font-size:14px;
+  color:var(--signal); white-space:nowrap}
+.readout__item--addr{grid-column:span 2}
+.readout__item--addr .readout__v{white-space:nowrap}
+@media (max-width:560px){ .readout__item--addr{grid-column:span 1} }
+
+/* ===== controls ===== */
+.controls{display:flex; flex-wrap:wrap; gap:var(--s-4) var(--s-5); align-items:flex-end; margin-bottom:var(--s-4)}
+.field{display:flex; flex-direction:column; gap:var(--s-1); min-height:44px; justify-content:flex-end; flex:1 1 auto; min-width:0}
+.field > label{font-family:var(--font-mono),monospace; font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.06em; color:var(--text-3)}
+input[type="range"]{width:min(340px,60vw); accent-color:var(--accent); min-height:44px}
+select{appearance:none; padding-right:var(--s-6);
+  background-image:linear-gradient(45deg,transparent 50%,var(--text-2) 50%),linear-gradient(135deg,var(--text-2) 50%,transparent 50%);
+  background-size:6px 6px,6px 6px; background-position:right 12px center,right 16px center; background-repeat:no-repeat}
+input[type="text"],input[type="number"],select{
+  font-family:var(--font-mono),monospace; font-size:var(--text-sm); color:var(--text); background:var(--surface);
+  border:1px solid var(--line-2); border-radius:var(--r-1); padding:8px var(--s-3); min-height:44px; min-width:120px}
+.btn{
+  font-family:var(--font-mono),monospace; font-size:var(--text-sm); font-weight:500; color:var(--text);
+  background:var(--surface); border:1px solid var(--line-2); border-radius:var(--r-2); padding:12px var(--s-4);
+  min-height:44px; cursor:pointer; transition:transform var(--dur-1) var(--ease),background var(--dur-2) var(--ease),box-shadow var(--dur-1) var(--ease)}
+.btn:hover{background:color-mix(in oklab,var(--accent) 10%,var(--surface)); box-shadow:0 2px 0 var(--line-2)}
+.btn:active{transform:translateY(1px); box-shadow:none}
+.btn--primary{background:var(--accent); color:var(--surface); border-color:var(--accent)}
+.btn--primary:hover{filter:brightness(1.08); box-shadow:0 2px 0 var(--line-2)}
+.btn--ghost{background:transparent}
+.btn[aria-pressed="true"]{background:color-mix(in oklab,var(--accent) 18%,var(--surface)); border-color:var(--accent)}
+.seg{display:inline-flex; border:1px solid var(--line-2); border-radius:var(--r-2); overflow:hidden}
+.seg .btn{border:0; border-radius:0; border-right:1px solid var(--line)}
+.seg .btn:last-child{border-right:0}
+
+/* readout strip */
+.readout{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:var(--s-3); background:var(--surface-2);
+  border:1px solid var(--line); padding:var(--s-4); margin-bottom:var(--s-4)}
+.readout__item{min-width:0}
+.readout__k{font-family:var(--font-mono),monospace; font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.06em; color:var(--text-3); display:block}
+.readout__v{font-family:var(--font-mono),monospace; font-size:var(--text-lg); font-weight:600; color:var(--text); word-break:break-all; display:block}
+.readout__v--accent{color:var(--accent)}
+.readout__v--signal{color:var(--signal)}
+.workline{font-family:var(--font-mono),monospace; font-size:var(--text-sm); color:var(--text-2); margin:0}
+.workline b{color:var(--text)}
+
+/* ===== cost bars ===== */
+.bars{list-style:none; margin:0; padding:0}
+.bars li{display:grid; grid-template-columns:minmax(0,1fr) 84px; gap:var(--s-3); align-items:center; padding:var(--s-3) 0; border-bottom:1px solid var(--line)}
+.bars li:last-child{border-bottom:0}
+.bars .lbl{font-size:var(--text-sm); color:var(--text-2)}
+.bars .lbl b{color:var(--text); font-weight:500; display:block}
+.bars .val{font-family:var(--font-mono),monospace; font-size:var(--text-sm); text-align:right; color:var(--text)}
+.bar{height:10px; background:var(--surface-3); position:relative; margin-top:var(--s-2)}
+.bar__fill{position:absolute; inset:0 auto 0 0; width:0; background:var(--accent); transition:width var(--dur-3) var(--ease)}
+.bar__fill--signal{background:var(--signal)}
+.bar__fill--ok{background:var(--ok)}
+
+/* ===== heap strip (sheet 05) ===== */
+.heapstrip{display:flex; flex-wrap:wrap; gap:var(--s-2); min-height:70px; padding:var(--s-3); background:var(--surface);
+  border:1px dashed var(--line-2)}
+.heapchunk{width:74px; height:62px; border:1px solid var(--line-2); background:var(--surface-2); display:flex;
+  flex-direction:column; align-items:center; justify-content:center; gap:var(--s-1); font-family:var(--font-mono),monospace; font-size:12px}
+.heapchunk--live{border-color:var(--accent); background:color-mix(in oklab,var(--accent) 16%,var(--surface)); color:var(--text)}
+.heapchunk--free{background:repeating-linear-gradient(45deg,var(--line) 0 2px,var(--surface) 2px 5px); color:var(--text-3)}
+.heapchunk__off{color:var(--text-3); font-size:12px}
+.heapchunk--live .heapchunk__addr{color:var(--text); font-weight:500}
+.heapchunk__addr{font-size:12px}
+
+/* ===== taxonomy board ===== */
+.chips{display:flex; flex-wrap:wrap; gap:var(--s-2); margin-top:var(--s-3)}
+.chip{font-family:var(--font-mono),monospace; font-size:var(--text-xs); border:1px solid var(--line-2); padding:4px var(--s-2); color:var(--text-2); background:var(--surface-2)}
+.chip--live{border-color:var(--accent); color:var(--accent)}
+
+/* ===== quiz ===== */
+.quiz{list-style:none; margin:0; padding:0; counter-reset:q}
+.quiz li{counter-increment:q; border-bottom:1px solid var(--line); padding:var(--s-4) 0}
+.quiz li:last-child{border-bottom:0}
+.quiz .q{position:relative; padding-left:var(--s-6); margin-bottom:var(--s-3); max-width:74ch}
+.quiz .q::before{content:"Q" counter(q); position:absolute; left:0; top:4px; font-family:var(--font-mono),monospace; font-size:var(--text-xs); color:var(--accent)}
+details.ans{border:1px solid var(--line); background:var(--surface-2); padding:var(--s-3) var(--s-4); margin-left:var(--s-5)}
+details.ans summary{cursor:pointer; font-family:var(--font-mono),monospace; font-size:var(--text-sm); color:var(--accent); min-height:24px}
+details.ans[open] summary{margin-bottom:var(--s-3)}
+details.ans p:last-child{margin-bottom:0}
+.score{font-family:var(--font-mono),monospace; font-size:var(--text-sm); color:var(--text-2); margin-bottom:var(--s-3)}
+.answers{border-top:3px double var(--line-2); margin-top:var(--s-7); padding-top:var(--s-5)}
+
+/* ===== footer ===== */
+.foot{grid-column:2; border-top:1px solid var(--line-2); padding:var(--s-6) 0 var(--s-8); color:var(--text-3); font-size:var(--text-sm)}
+@media (max-width:980px){ .foot{grid-column:1} }
+.foot ul{padding-left:var(--s-5)}
+.foot code{font-size:var(--text-xs)}
+
+/* ===== motion preferences ===== */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important; scroll-behavior:auto !important}
+}
+.taxo{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:var(--s-6); align-items:start}
+@media (max-width:900px){ .taxo{grid-template-columns:minmax(0,1fr)} }
+.taxo .detail h3{font-size:var(--text-lg); margin-bottom:var(--s-3)}
+.taxo .detail ul{margin:0 0 var(--s-3) var(--s-5); color:var(--text-2)}
+.taxo .detail li{margin-bottom:var(--s-1)}
+.map{display:grid; gap:var(--s-3)}
+.map__row{display:grid; gap:var(--s-3)}
+.map__row--1{grid-template-columns:minmax(0,1fr)}
+.map__row--2{grid-template-columns:minmax(0,0.75fr) minmax(0,1.25fr)}
+.map__row--3{grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr)}
+.map__row--4{grid-template-columns:minmax(0,1.15fr) minmax(0,0.95fr) minmax(0,0.9fr)}
+.map__group{display:grid; gap:var(--s-3)}
+.map__kids{display:grid; gap:var(--s-3); border-left:1px solid var(--line-2); padding-left:var(--s-4)}
+.mapnode{display:flex; flex-direction:column; gap:2px; align-items:flex-start; text-align:left; min-height:52px;
+  padding:var(--s-3); background:var(--surface); border:1px solid var(--line-2); border-radius:var(--r-2);
+  cursor:pointer; transition:background var(--dur-2) var(--ease),border-color var(--dur-2) var(--ease)}
+.mapnode:hover{background:color-mix(in oklab,var(--accent) 8%,var(--surface))}
+.mapnode[aria-pressed="true"]{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent);
+  background:color-mix(in oklab,var(--accent) 10%,var(--surface))}
+.mapnode--root{min-height:64px; background:color-mix(in oklab,var(--accent) 10%,var(--surface))}
+.mapnode--root .mapnode__t{font-size:16px; font-weight:600}
+.mapnode--branch{min-height:56px; background:var(--surface-2)}
+.mapnode--leaf{min-height:52px}
+.mapnode__t{font-family:var(--font-mono),monospace; font-size:14px; color:var(--text)}
+.mapnode__s{font-size:12px; color:var(--text-3); line-height:1.4}
+@media (max-width:760px){.map__row--2,.map__row--3,.map__row--4{grid-template-columns:minmax(0,1fr)}}
+
+/* prose links carry a 44px hit area without stretching the line box:
+   inline-block line boxes use the margin box, so the negative margin cancels
+   the padding for layout while the touch target stays 44px tall. */
+p a,li a,.callout a,.footnote a{display:inline-block; min-height:44px; padding:8px 0; margin:-8px 0}
+.readout--wide{grid-column:span 2}
+.btn:disabled,button:disabled{opacity:.45; cursor:not-allowed; filter:grayscale(.5); box-shadow:none}
+.trail{list-style:none; margin:var(--s-2) 0 0; padding:0 0 0 var(--s-4); max-height:180px; overflow-y:auto;
+  border-left:1px solid var(--line); font-family:var(--font-mono),monospace; font-size:12px; color:var(--text-2)}
+.trail li{padding:2px 0}
+.trail li:last-child{color:var(--text)}
+/* narrow screens: the segmented controls stack instead of forcing a wide row,
+   and long mono paths are allowed to break anywhere */
+@media (max-width:560px){
+  .seg{display:grid; grid-template-columns:minmax(0,1fr); width:100%}
+  .seg .btn{border-right:0; border-bottom:1px solid var(--line); justify-content:flex-start}
+  .seg .btn:last-child{border-bottom:0}
+}
+@media print{
+  .rail,.skip,.theme-toggle,.controls,.seg{display:none !important}
+  body{background:#fff; color:#000; font-size:12pt}
+  .wrap{display:block; max-width:none; padding:0}
+  .sheet{page-break-inside:avoid; padding:var(--s-5) 0}
+  .titleblock{box-shadow:none; margin-bottom:var(--s-5)}
+  details.ans{display:block}
+  details.ans > *{display:block !important}
+  pre,.out,.panel{break-inside:avoid}
+  a{color:#000; border-bottom:0}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#sheet-01">Skip to the first sheet</a>
+<div class="wrap">
+
+  <header class="titleblock" id="top">
+    <div class="titleblock__grid" aria-hidden="true"></div>
+    <div class="titleblock__inner">
+      <p class="eyebrow">ECE2104 / VDT2104 Data Structures and Algorithms&nbsp;&middot;&nbsp;Lecture 5&nbsp;&middot;&nbsp;MUJ&nbsp;Sem&nbsp;3</p>
+      <h1>Where data actually lives</h1>
+      <p class="lede">A long lane of numbered bytes, that is all memory is. Every data structure is a
+      decision about how to lay your data along that lane, and the layout decides what every
+      operation costs. Built from the basics up, with every number measured on this machine.</p>
+      <p class="hint hint--tight">Three ways to read it: <strong>read</strong> the drawings,
+      <strong>drag</strong> the controls on sheets 01, 03, 04, 05, 07, 08 and 09, then take the
+      <a href="#self-test">self-test</a> with the answers hidden.</p>
+    </div>
+    <div class="tb" role="group" aria-label="Title block: what this sheet is, where the numbers came from, and what is checked">
+      <div class="tb__field tb__span2">
+        <span class="tb__k">Session outcome</span>
+        <span class="tb__v">Define basic data structures and explain their memory allocation</span>
+      </div>
+      <div class="tb__field">
+        <span class="tb__k">Course outcome</span>
+        <span class="tb__v">CO1</span>
+      </div>
+      <div class="tb__field">
+        <span class="tb__k">Verified by</span>
+        <span class="tb__v mono">verify_ds_memory_lec5.py</span>
+      </div>
+      <div class="tb__field tb__span2">
+        <span class="tb__k">Source run</span>
+        <span class="tb__v mono">05_ds_memory_representation.cpp &middot; g++ 15.2.0 &middot; -O2 &middot; x86-64</span>
+      </div>
+      <div class="tb__field tb__span2 tb__legend">
+        <span class="tb__k">How to read every number here</span>
+        <span class="legendrow"><i class="dot" aria-hidden="true"></i><span class="tb__v mono">MEASURED: sizes, strides, offsets and timings, one real run on this machine</span></span>
+        <span class="legendrow"><i class="dot dot--signal" aria-hidden="true"></i><span class="tb__v mono">VOLATILE: raw addresses change per run (ASLR); each one carries its run</span></span>
+      </div>
+    </div>
+    <div class="tb__scalebar">
+      <span class="tb__k">Scale</span>
+      <span class="tb__scalebar__ticks" aria-hidden="true"></span>
+      <span class="tb__k">24 px grid, 96 px major division</span>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="Sheets in this guide">
+    <p class="eyebrow">Sheets</p>
+    <ul class="rail__list">
+      <li><a href="#sheet-01" aria-current="true"><span class="rail__num">01</span> The cell</a></li>
+      <li><a href="#sheet-02"><span class="rail__num">02</span> The address</a></li>
+      <li><a href="#sheet-03"><span class="rail__num">03</span> Types and alignment</a></li>
+      <li><a href="#sheet-04"><span class="rail__num">04</span> The array (address lane)</a></li>
+      <li><a href="#sheet-05"><span class="rail__num">05</span> The heap</a></li>
+      <li><a href="#sheet-06"><span class="rail__num">06</span> Stack vs heap</a></li>
+      <li><a href="#sheet-07"><span class="rail__num">07</span> Structs and padding</a></li>
+      <li><a href="#sheet-08"><span class="rail__num">08</span> Classify structures</a></li>
+      <li><a href="#sheet-09"><span class="rail__num">09</span> ADT vs implementation</a></li>
+      <li><a href="#sheet-10"><span class="rail__num">10</span> Cost is the shape</a></li>
+      <li><a href="#self-test"><span class="rail__num">Q</span> Self-test</a></li>
+    </ul>
+    <div class="rail__meter">
+      <span id="rail-count">0 of 11 sheets seen</span>
+      <div class="meter" role="img" aria-label="Sight progress through the sheets"><div class="meter__fill" id="rail-fill"></div></div>
+    </div>
+    <p class="eyebrow" style="margin-top:var(--s-5)">Session trail</p>
+    <ol id="trail" class="trail" aria-live="polite"><li>0. opened the sheet</li></ol>
+    <div class="rail__btns">
+      <button class="btn btn--ghost theme-toggle" id="theme-btn" type="button" aria-pressed="false">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"/><g stroke="currentColor" stroke-width="1.4"><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M12.8 3.2l-1.4 1.4M4.6 11.4l-1.4 1.4"/></g></svg>
+        <span id="theme-label">Blueprint (dark)</span>
+      </button>
+      <a class="btn" href="#self-test">Jump to self-test</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+  <!-- ============ SHEET 01 ============ -->
+  <section class="sheet" id="sheet-01" aria-labelledby="s01h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 01 &middot; the cell</p>
+        <h2 id="s01h">Memory is a lane of numbered bytes</h2>
+        <p class="sheet__purpose">Before any data structure exists, there is one thing: a byte. A byte holds a
+        number from 0 to 255. Memory is a very long row of them, and each one has a number of its own,
+        its address. Click any cell below and follow it.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 01 / 10<br>run output: section 3b<br>capture: <span class="mono">0x7ffe7c3131b0</span></p>
+    </div>
+
+    <div class="cols cols--wide-left">
+      <div class="panel panel--figure">
+        <p class="panel__title"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 12h12M4 12V6M8 12V3M12 12V8" stroke="currentColor" stroke-width="1.4" fill="none"/></svg> 32 real bytes from the demo run</p>
+        <div class="lane-wrap">
+          <div class="lane" id="lane1" role="group" aria-label="32 bytes starting at address 0x7ffe7c3131b0, click a byte"></div>
+        <div class="lane-scale" aria-hidden="true"><span>+0</span><span>+8</span><span>+16</span><span>+24</span><span>+31</span></div>
+        </div>
+        <div class="legend">
+          <span><i class="swatch swatch--data"></i>bytes owned by the demo array <code>int a[5]</code></span>
+          <span><i class="swatch swatch--free"></i>neighbouring frame bytes, not part of this array</span>
+          <span><i class="swatch swatch--pad"></i>click a cell, or use arrow keys</span>
+        </div>
+        <!-- EQUAL-WEIGHT-OK: these four boxes are one data record (address, value, offset, hops),
+           not a card grid. Equal weight is the point of a spec readout. -->
+      <div class="readout" style="margin-top:16px">
+          <div class="readout__item"><span class="readout__k">byte offset</span><span class="readout__v" id="l1-off">+0</span></div>
+          <div class="readout__item"><span class="readout__k">address</span><span class="readout__v readout__v--accent" id="l1-addr">0x7ffe7c3131b0</span></div>
+          <div class="readout__item"><span class="readout__k">hex value</span><span class="readout__v" id="l1-hex">0a</span></div>
+          <div class="readout__item"><span class="readout__k">decimal</span><span class="readout__v" id="l1-dec">10</span></div>
+          <div class="readout__item"><span class="readout__k">who owns it</span><span class="readout__v" id="l1-own" style="font-size:var(--text-sm)">a[0], byte 0 of 4</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="callout callout--exam">
+          <p class="callout__label"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg> Write this in the exam</p>
+          <p><strong>Memory</strong> is a linear array of addressable bytes. Each byte has a unique
+          address, and the address of a byte is just an integer. A variable is a named piece of that
+          lane, and its value is stored in the bytes it occupies.</p>
+        </div>
+
+        <div class="panel panel--tight">
+          <p class="panel__title">The units, with their real sizes here</p>
+          <div class="table-scroll">
+          <table class="spec">
+            <thead><tr><th>Unit</th><th>What it means</th><th class="num">Bytes</th></tr></thead>
+            <tbody>
+              <tr><td class="k">bit</td><td class="v">one 0 or 1, the hardware's smallest switch</td><td class="num">1/8</td></tr>
+              <tr><td class="k">nibble</td><td class="v">4 bits, exactly one hexadecimal digit</td><td class="num">1/2</td></tr>
+              <tr><td class="k">byte</td><td class="v">8 bits, values 0 to 255, the unit of addressing</td><td class="num">1</td></tr>
+              <tr><td class="k">short</td><td class="v">2 bytes on this machine</td><td class="num">2</td></tr>
+              <tr><td class="k">int</td><td class="v">the workhorse, also what <code>a[i]</code> strides by here</td><td class="num">4</td></tr>
+              <tr><td class="k">word</td><td class="v">hardware term for the natural register width: 8 bytes here</td><td class="num">8</td></tr>
+              <tr><td class="k">double, pointer</td><td class="v">both 8 bytes on a 64-bit machine</td><td class="num">8</td></tr>
+              <tr><td class="k">KiB, MiB, GiB</td><td class="v">1024 bytes, 1024 KiB, 1024 MiB</td><td class="num">1024x</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="hint">Measured: <code>sizeof(int)=4</code>, <code>sizeof(void*)=8</code>,
+          <code>sizeof(double)=8</code> on this g++ 15.2.0 / x86-64 build. A pointer is 8 bytes
+          because addresses are 64-bit, which is exactly why a linked node costs more than the number it holds.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel--tight" style="margin-top:24px">
+      <p class="panel__title">The same five bytes read as raw memory, little-endian</p>
+      <div class="table-scroll">
+      <table class="spec">
+        <thead><tr><th>Bytes at</th><th>Raw bytes on disk</th><th class="num">Value read back</th></tr></thead>
+        <tbody>
+          <tr><td class="k">base + 0</td><td class="v mono">0a 00 00 00</td><td class="num">10</td></tr>
+          <tr><td class="k">base + 4</td><td class="v mono">14 00 00 00</td><td class="num">20</td></tr>
+          <tr><td class="k">base + 8</td><td class="v mono">1e 00 00 00</td><td class="num">30</td></tr>
+          <tr><td class="k">base + 12</td><td class="v mono">28 00 00 00</td><td class="num">40</td></tr>
+          <tr><td class="k">base + 16</td><td class="v mono">32 00 00 00</td><td class="num">50</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="hint">A string is the same story with a terminator the compiler adds:
+      <code>char s[] = "DSA"</code> occupies four bytes, <code>44 53 41 00</code>, and the last one is the
+      <code>0x00</code> that ends the string. The bytes above are printed by the capture program, not typed by hand.</p>
+    </div>
+
+    <div class="callout callout--note">
+      <p class="callout__label"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 7v4M8 5v.9" stroke="currentColor" stroke-width="1.5"/></svg> Why hexadecimal</p>
+      <p>One byte needs exactly two hex digits (16 x 16 = 256), so hex is a compact, lossless way to
+      write bytes. Read a real one: <code>0a</code> means 0 x 16 + 10 = 10. Addresses are written in hex
+      for the same reason, and the <code>0x</code> prefix is how C++ says "this is hex, not decimal".
+      In the capture above, <code>0a 00 00 00</code> are four bytes of one <code>int</code>: value 10,
+      written smallest byte first because x86-64 is little-endian.</p>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 02 ============ -->
+  <section class="sheet" id="sheet-02" aria-labelledby="s02h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 02 &middot; the address</p>
+        <h2 id="s02h">An address is a number, so address arithmetic is just arithmetic</h2>
+        <p class="sheet__purpose">Because the address of a byte is an integer, you can compute the address of a
+        thing you have never visited. That single idea is the whole reason indexed access is fast. Set a base,
+        a stride and an index below and watch the address fall out of the formula.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 02 / 10<br>run output: sections 2, 3<br>formula: base + i x sizeof(T)</p>
+    </div>
+
+    <div class="cols cols--narrow-left">
+      <div>
+        <div class="callout callout--trap">
+          <p class="callout__label"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2.5l6 11H2z" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 6.5v4M8 11.7v.6" stroke="currentColor" stroke-width="1.4"/></svg> Trap: address arithmetic is type-aware</p>
+          <p><code>(char*)p + 1</code> moves one byte. <code>(int*)p + 1</code> moves four bytes, because
+          the compiler multiplies by <code>sizeof(int)</code> for you. Writing
+          <code>&amp;a[0] + i</code> and <code>&amp;a[i]</code> are the same address; writing
+          <code>(char*)&amp;a[0] + i</code> is not, and that off-by-stride mistake is a classic
+          exam and viva question.</p>
+        </div>
+        <div class="panel panel--tight">
+          <p class="panel__title">The three things an address tells you</p>
+          <table class="spec">
+            <tbody>
+              <tr><td class="k">Which byte</td><td class="v">the address itself, e.g. <code>0x7ffe7c3131b4</code></td></tr>
+              <tr><td class="k">Which object</td><td class="v">which variable or block it belongs to</td></tr>
+              <tr><td class="k">How far in</td><td class="v">offset from that object's base, in bytes</td></tr>
+            </tbody>
+          </table>
+          <p class="hint">Real offset from the capture: <code>&amp;a[3]</code> is at
+          <code>0x7ffe7c3131bc</code>, and <code>0x...bc - 0x...b0 = 12 = 3 x 4</code>. The offset is not a
+          guess, it is the index times the element size.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="panel__title"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="2" y="3" width="12" height="10" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4 6h3M4 9h6" stroke="currentColor" stroke-width="1.3"/></svg> Address calculator</p>
+        <div class="controls">
+          <div class="field">
+            <label for="c-base">base address (hex)</label>
+            <input type="text" id="c-base" value="0x7ffe7c3131b0" spellcheck="false" size="18">
+          </div>
+          <div class="field">
+            <label for="c-stride">element type</label>
+            <select id="c-stride">
+              <option value="1">char (1 byte)</option>
+              <option value="2">short (2 bytes)</option>
+              <option value="4" selected>int (4 bytes)</option>
+              <option value="8">double or pointer (8 bytes)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="c-index">index i</label>
+            <input type="number" id="c-index" value="3" min="0" max="9999" step="1" style="min-width:90px">
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout__item"><span class="readout__k">address</span><span class="readout__v readout__v--accent" id="c-out">computing</span></div>
+          <div class="readout__item"><span class="readout__k">byte offset</span><span class="readout__v" id="c-off">-</span></div>
+        </div>
+        <p class="workline" id="c-work">base + i x sizeof(T) = ?</p>
+        <p class="hint">Type any base you like, including a wrong one. The formula does not check whether
+        the address is yours: that is the language's job only if you stay inside the array.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 03 ============ -->
+  <section class="sheet" id="sheet-03" aria-labelledby="s03h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 03 &middot; types and alignment</p>
+        <h2 id="s03h">Types decide how many bytes, alignment decides where</h2>
+        <p class="sheet__purpose">A type is a promise about two numbers: how many bytes the value needs, and
+        which byte addresses it is allowed to start on. The hardware loads 4-byte and 8-byte values fastest
+        when they sit on a 4-byte or 8-byte boundary, so the compiler quietly inserts empty bytes to make
+        that true. Move the start offset and watch the ghosts appear.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 03 / 10<br>run output: sections 1, 3b<br><code>alignof(double) = 8</code></p>
+    </div>
+
+    <div class="cols cols--wide-left">
+      <div class="panel panel--figure">
+        <p class="panel__title">Place one value, see the padding it forces</p>
+        <div class="controls">
+          <div class="field">
+            <label for="t3-type">type</label>
+            <select id="t3-type">
+              <option value="char">char</option>
+              <option value="short">short</option>
+              <option value="int" selected>int</option>
+              <option value="double">double</option>
+              <option value="ptr">int* (pointer)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="t3-start">start offset: <span class="mono" id="t3-start-lbl">0</span></label>
+            <input type="range" id="t3-start" min="0" max="12" value="0" step="1">
+          </div>
+        </div>
+        <div class="lane-wrap">
+          <div class="lane lane--narrow" id="t3-lane" role="img" aria-label="A 24 byte lane showing where the chosen type lands and which bytes are skipped"></div>
+        <div class="lane-scale" aria-hidden="true"><span>+0</span><span>+6</span><span>+12</span><span>+18</span><span>+23</span></div>
+        </div>
+        <div class="legend">
+          <span><i class="swatch swatch--data"></i>bytes the value occupies</span>
+          <span><i class="swatch swatch--pad"></i>bytes skipped to satisfy alignment</span>
+          <span><i class="swatch swatch--free"></i>free space in the lane</span>
+        </div>
+        <div class="readout" style="margin-top:16px">
+          <div class="readout__item"><span class="readout__k">sizeof</span><span class="readout__v" id="t3-size">4</span></div>
+          <div class="readout__item"><span class="readout__k">alignof</span><span class="readout__v" id="t3-align">4</span></div>
+          <div class="readout__item"><span class="readout__k">starts at</span><span class="readout__v" id="t3-at">+0</span></div>
+          <div class="readout__item"><span class="readout__k">padding forced</span><span class="readout__v readout__v--signal" id="t3-pad">0 bytes</span></div>
+        </div>
+        <p class="workline" id="t3-work">Ask for offset 0: 0 is divisible by 4, so no padding, the value sits at 0.</p>
+      </div>
+
+      <div>
+        <div class="panel panel--tight">
+          <p class="panel__title">Measured on this machine</p>
+          <div class="table-scroll">
+          <table class="spec">
+            <thead><tr><th>Type</th><th class="num">sizeof</th><th class="num">Aligns to</th></tr></thead>
+            <tbody>
+              <tr><td class="k">char</td><td class="num">1</td><td class="num">1</td></tr>
+              <tr><td class="k">short</td><td class="num">2</td><td class="num">2</td></tr>
+              <tr><td class="k">int</td><td class="num">4</td><td class="num">4</td></tr>
+              <tr><td class="k">float</td><td class="num">4</td><td class="num">4</td></tr>
+              <tr><td class="k">double</td><td class="num">8</td><td class="num">8</td></tr>
+              <tr><td class="k">pointer (any type)</td><td class="num">8</td><td class="num">8</td></tr>
+              <tr><td class="k">struct Node (int + pointer)</td><td class="num">16</td><td class="num">8</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="hint">Real evidence from the run: the compiler put a local
+          <code>double</code> at <code>0x7ffe7c3131a8</code>, which ends in 8, so it is divisible by 8.
+          That is not luck, it is the alignment rule doing its job.</p>
+        </div>
+        <div class="callout callout--note">
+          <p class="callout__label">Two numbers, two jobs</p>
+          <p><strong>sizeof</strong> answers "how far apart are consecutive elements", so it sets the stride.
+          <strong>alignof</strong> answers "where may this type legally start", so it sets the gaps.
+          Stride and gap together are why a struct is often bigger than the sum of its fields.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 04 : THE ADDRESS LANE (signature) ============ -->
+  <section class="sheet" id="sheet-04" aria-labelledby="s04h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 04 &middot; the array &middot; signature drawing</p>
+        <h2 id="s04h">The address lane: why <code>a[i]</code> costs one step and the list costs i + 1</h2>
+        <p class="sheet__purpose">This is the whole lecture in one drawing. The lane below holds exactly the 20 bytes of the captured <code>int a[5]</code>, four bytes per
+        element. Drag the index and the dimension line measures the distance from the first element to the one
+        you asked for, while the second bracket marks the element itself. The address is never searched for, it is computed, in one multiply. Flip the switch and
+        the same data becomes a scattered list where you must walk every hop.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 04 / 10<br>run output: sections 3, 6<br>capture: <span class="mono">int a[5]</span> at <span class="mono">0x7ffe7c3131b0</span></p>
+    </div>
+
+    <div class="panel panel--figure">
+      <div class="controls">
+        <div class="field">
+          <label>layout</label>
+          <div class="seg" role="group" aria-label="Choose contiguous array or scattered list">
+            <button class="btn" type="button" id="l4-contig" aria-pressed="true">contiguous array</button>
+            <button class="btn" type="button" id="l4-scatter" aria-pressed="false">scattered list</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="l4-index">index i: <span class="mono" id="l4-index-lbl">0</span></label>
+          <input type="range" id="l4-index" min="0" max="4" value="0" step="1">
+        </div>
+        <div class="field">
+          <label for="l4-type">what-if element type</label>
+          <select id="l4-type">
+            <option value="1">char (1 byte)</option>
+            <option value="4" selected>int (4 bytes)</option>
+            <option value="8">double (8 bytes)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="lane-wrap" style="--cells:20">
+        <div class="lane" id="l4-lane" role="img" aria-label="The address lane: bytes belonging to the array, with the target element highlighted"></div>
+        <div class="dim" id="l4-dim">
+          <div class="dim__rule" id="l4-rule"></div>
+          <div class="dim__span" id="l4-span" style="left:0; width:0"></div>
+          <div class="dim__line" id="l4-tick" style="left:0; width:0"></div>
+          <div class="dim__label" id="l4-dimlabel" style="left:0">0 bytes</div>
+          <div class="dim__spanlabel" id="l4-spanlabel" style="left:0">element 0 = bytes 0 to 3</div>
+        </div>
+        <div class="lane-scale" aria-hidden="true" id="l4-scale"><span>base +0</span><span>+4</span><span>+8</span><span>+12</span><span>+19</span></div>
+      </div>
+      <p class="hint hint--tight" id="l4-modal">contiguous array: 20 bytes, stride 4</p>
+      <div class="legend">
+        <span><i class="swatch swatch--data"></i>one band = one 4 byte element, a[0] to a[4]; every cell prints a real captured byte</span>
+        <span><i class="swatch swatch--target"></i>the element the index picked</span>
+      </div>
+      <p class="lane-scrollhint" id="l4-scrollhint" hidden>scroll the lane sideways to see every element</p>
+
+      <div class="readout" style="margin-top:16px">
+        <div class="readout__item readout__item--addr"><span class="readout__k">address of element i</span><span class="readout__v readout__v--accent" id="l4-addr">0x7ffe7c3131b0</span></div>
+        <div class="readout__item"><span class="readout__k">value</span><span class="readout__v" id="l4-val">10</span></div>
+        <div class="readout__item"><span class="readout__k">hops needed</span><span class="readout__v readout__v--signal" id="l4-hops">1</span></div>
+        <div class="readout__item"><span class="readout__k">work</span><span class="readout__v" id="l4-work" style="font-size:var(--text-base)">1 multiply</span></div>
+      </div>
+      <p class="workline" id="l4-formula">0x7ffe7c3131b0 + 0 x 4 = 0x7ffe7c3131b0</p>
+      <p class="hint" id="l4-note">Captured run: all five addresses below come straight from the printout, not from my arithmetic.</p>
+    </div>
+
+    <div class="cols cols--halves">
+      <div class="callout callout--exam">
+        <p class="callout__label"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg> The exam answer, in one line</p>
+        <p>Address of the i-th element of a contiguous block: <code>base + i x sizeof(element)</code>.
+        That is one multiplication and one addition, independent of i, so <strong>indexed access is O(1)</strong>.
+        A linked list stores no such arithmetic pattern: the next node's address is inside the current one,
+        so reaching element i is <strong>i dependent loads, O(n)</strong>.</p>
+      </div>
+      <div class="callout callout--trap">
+        <p class="callout__label"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2.5l6 11H2z" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 6.5v4M8 11.7v.6" stroke="currentColor" stroke-width="1.4"/></svg> Trap: O(1) is not "one nanosecond"</p>
+        <p>O(1) counts steps, not seconds. A cache miss on a scattered access can make a constant-time
+        access slower than a sequential scan of the same array: measured here, the same array walked in
+        scattered order ran 12.7x slower per element than the sequential walk (sheet 10). The complexity
+        class tells you how the cost grows, not what it is.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 05 ============ -->
+  <section class="sheet" id="sheet-05" aria-labelledby="s05h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 05 &middot; the heap</p>
+        <h2 id="s05h">The heap hands out addresses, it does not lay out rows</h2>
+        <p class="sheet__purpose">A contiguous array is one decision made once: here is a block of n x sizeof(T)
+        bytes. A linked structure is a decision made n times: ask the allocator for a node, keep the address it
+        returns, link it from the previous node. Press the button and watch where the nodes actually land.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 05 / 10<br>run output: section 6<br>stride measured: 32 bytes</p>
+    </div>
+
+    <div class="panel panel--figure">
+      <div class="controls">
+        <button class="btn btn--primary" type="button" id="h-new">new Node</button>
+        <button class="btn" type="button" id="h-free">delete the last node</button>
+        <button class="btn btn--ghost" type="button" id="h-reset">reset the lane</button>
+      </div>
+      <div class="heapstrip" id="h-strip" aria-label="Heap chunks handed out by the allocator"></div>
+      <p class="workline" id="h-chain" style="margin-top:16px">head -&gt; NULL</p>
+      <div class="readout" style="margin-top:16px">
+        <div class="readout__item"><span class="readout__k">nodes allocated</span><span class="readout__v" id="h-count">0</span></div>
+        <div class="readout__item"><span class="readout__k">bytes requested</span><span class="readout__v" id="h-req">0</span></div>
+        <div class="readout__item"><span class="readout__k">bytes the allocator charges</span><span class="readout__v readout__v--signal" id="h-charged">0</span></div>
+        <div class="readout__item"><span class="readout__k">last address</span><span class="readout__v" id="h-last">none yet</span></div>
+      </div>
+      <p class="hint" id="h-note">Empty lane: no node allocated yet. Press <strong>new Node</strong> to ask the
+      allocator for 16 bytes, which is <code>sizeof(Node)</code> for an <code>int</code> plus a pointer.</p>
+    </div>
+
+    <div class="cols cols--wide-left">
+      <div class="panel panel--tight">
+        <p class="panel__title">What the run measured about this allocator</p>
+        <div class="table-scroll">
+        <table class="spec">
+          <tbody>
+            <tr><td class="k">requested per node</td><td class="v">16 bytes, which is what <code>new Node</code> asks for</td></tr>
+            <tr><td class="k">usable bytes handed back</td><td class="v">24, the allocator rounds up and hands you more than you asked for</td></tr>
+            <tr><td class="k">distance between nodes</td><td class="v">32 bytes, measured on five consecutive allocations</td></tr>
+            <tr><td class="k">where the 16 extra bytes go</td><td class="v">the allocator's own bookkeeping plus alignment padding</td></tr>
+            <tr><td class="k">real addresses from the capture</td><td class="v mono">0x57a2bc523050, ...070, ...090, ...0b0, ...0d0</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="hint">Notice the pattern: the addresses DO increase evenly here, because this is a fresh heap
+        where nothing has been freed yet. That is exactly the case that goes wrong later: free the middle node,
+        allocate again, and the next node may take that hole. Scattered is the normal state, tidiness is the
+        lucky first minute.</p>
+      </div>
+      <div>
+        <div class="callout callout--trap">
+          <p class="callout__label">Trap: <code>delete</code> does not empty the memory</p>
+          <p><code>delete p</code> tells the allocator that the block is available again. It does not wipe the
+          bytes and it does not change your pointer, so a use after delete still reads plausible garbage.
+          Set the link to <code>nullptr</code> as you unlink a node, and remember that losing the head of a
+          chain leaks every node behind it with no way back.</p>
+        </div>
+        <div class="callout callout--note">
+          <p class="callout__label">Why a linked node costs double</p>
+          <p>A node holding one <code>int</code> occupies 16 bytes of payload but 32 bytes of real memory,
+          spent as 16 payload + 16 allocator overhead and padding. Put the same five ints in an array and you
+          spend 20 bytes total. That is the price of being able to insert anywhere in O(1).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 06 ============ -->
+  <section class="sheet" id="sheet-06" aria-labelledby="s06h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 06 &middot; stack vs heap</p>
+        <h2 id="s06h">Two ends of the same address space, growing towards each other</h2>
+        <p class="sheet__purpose">Locals are placed by the compiler in a frame on the stack. Dynamic things are
+        placed by the allocator on the heap. Both are in the same address space, at opposite ends, and the gap
+        between them in the capture was 41326 GiB. This is where "static" and "dynamic" in a data-structure
+        question actually come from.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 06 / 10<br>run output: section 2<br>frames: 48 bytes apart</p>
+    </div>
+
+    <div class="cols cols--wide-left">
+      <div class="panel panel--figure">
+        <p class="panel__title">The address space of one real process, drawn to scale in meaning, not in bytes</p>
+        <svg viewBox="0 0 620 340" role="img" aria-label="Address space map: data segment low, heap growing upward, stack at the top growing downward, with real captured addresses">
+          <defs>
+            <pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+            </pattern>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <rect x="1" y="1" width="618" height="338" fill="none" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+          <text x="16" y="26" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity="0.75">LOW ADDRESS  0x0000000000000000</text>
+          <rect x="16" y="36" width="230" height="34" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1"/>
+          <text x="26" y="58" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">text: the machine code</text>
+          <rect x="16" y="76" width="230" height="34" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1"/>
+          <text x="26" y="98" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">data: globals, static</text>
+          <text x="256" y="98" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">&amp;g_global = 0x57a29ecd4010</text>
+          <rect x="16" y="116" width="230" height="96" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1"/>
+          <text x="26" y="138" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">heap: new / malloc</text>
+          <text x="26" y="156" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">node 0 = 0x57a2bc523050</text>
+          <text x="26" y="172" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">node 1 = 0x57a2bc523070</text>
+          <text x="26" y="188" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">...one 32 byte chunk each</text>
+          <path d="M126 214 L126 244" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)" fill="none"/>
+          <text x="134" y="234" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.85">grows up</text>
+          <rect x="16" y="250" width="230" height="40" fill="url(#hatch)" stroke="currentColor" stroke-width="1"/>
+          <text x="26" y="274" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.85">unmapped gap: 41326 GiB measured</text>
+          <rect x="16" y="298" width="230" height="30" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1"/>
+          <text x="26" y="318" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">stack: locals, one frame per call</text>
+          <path d="M126 296 L126 276" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)" fill="none"/>
+          <text x="134" y="290" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.85">grows down</text>
+          <text x="16" y="336" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity="0.75">HIGH ADDRESS  0x7fffffffffff</text>
+          <text x="300" y="56" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity="0.85">A stack frame, four nested calls:</text>
+          <text x="300" y="78" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">depth 3  &amp;local = 0x7ffe7c313154</text>
+          <text x="300" y="96" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">depth 2  &amp;local = 0x7ffe7c313124</text>
+          <text x="300" y="114" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">depth 1  &amp;local = 0x7ffe7c3130f4</text>
+          <text x="300" y="132" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">depth 0  &amp;local = 0x7ffe7c3130c4  (lowest)</text>
+          <text x="300" y="158" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">Each frame ate 48 bytes, and the</text>
+          <text x="300" y="174" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">address DECREASES as calls go deeper.</text>
+          <text x="300" y="200" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">Recursion depth x 48 bytes = stack use,</text>
+          <text x="300" y="216" font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity="0.8">which is why infinite recursion dies.</text>
+        </svg>
+      </div>
+
+      <div>
+        <div class="panel panel--tight">
+          <p class="panel__title">One fact per row: the two homes compared</p>
+          <div class="table-scroll">
+          <table class="spec">
+            <tbody>
+              <tr><td class="k">Who places it</td><td class="v">compiler, for stack. Allocator, for heap</td></tr>
+              <tr><td class="k">When</td><td class="v">compile time vs run time</td></tr>
+              <tr><td class="k">Lifetime</td><td class="v">until the frame returns vs until you free it</td></tr>
+              <tr><td class="k">Growth</td><td class="v">stack grows down, heap grows up here</td></tr>
+              <tr><td class="k">Size limit</td><td class="v">small and fixed (MBs) vs large, bounded by RAM</td></tr>
+              <tr><td class="k">Speed to place</td><td class="v">one subtract on a register vs a search for a free chunk</td></tr>
+              <tr><td class="k">Failure mode</td><td class="v">stack overflow vs a failed allocation or a leak</td></tr>
+              <tr><td class="k">Who frees it</td><td class="v">automatic vs you, with <code>delete</code></td></tr>
+              <tr><td class="k">Real address here</td><td class="v mono">0x7ffe7c3131b0 vs 0x57a2bc523050</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+        <div class="callout callout--trap">
+          <p class="callout__label">The bug this demo really hit</p>
+          <p>The first version of the capture program returned the address of a local variable, and
+          <code>-Wall</code> refused it: <em>warning: address of local variable returned</em>. That is not
+          pedantry. A stack address stops being yours the moment the frame returns, while a heap address
+          survives until you free it. Return <code>new</code>, never <code>&amp;local</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 07 ============ -->
+  <section class="sheet" id="sheet-07" aria-labelledby="s07h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 07 &middot; structs and padding</p>
+        <h2 id="s07h">Same four fields, two different sizes, one reordering</h2>
+        <p class="sheet__purpose">Padding is the visible price of alignment. Three structs below hold the same
+        kinds of fields in different orders and cost 8, 12 and 8 bytes. Pick one and read the bytes it really
+        occupies, hatched cells are bytes you pay for and never use.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 07 / 10<br>run output: section 5<br>real <code>offsetof</code> values</p>
+    </div>
+
+    <div class="panel panel--figure">
+      <div class="controls">
+        <div class="field">
+          <label>struct</label>
+          <div class="seg" role="group" aria-label="Choose a struct to inspect">
+            <button class="btn" type="button" id="p7-P1" data-struct="P1" aria-pressed="true">int, char, char</button>
+            <button class="btn" type="button" id="p7-P2" data-struct="P2" aria-pressed="false">char, int, char</button>
+            <button class="btn" type="button" id="p7-P3" data-struct="P3" aria-pressed="false">char, char, int</button>
+            <button class="btn" type="button" id="p7-Node" data-struct="Node" aria-pressed="false">int + pointer</button>
+          </div>
+        </div>
+      </div>
+      <div class="lane-wrap">
+        <div class="lane lane--narrow" id="p7-lane" role="img" aria-label="Bytes of the selected struct, with hatched padding"></div>
+      <div class="lane-scale" aria-hidden="true"><span>+0</span><span>+3</span><span>+6</span><span>+9</span><span>+12</span><span>+15</span></div>
+      </div>
+      <div class="legend">
+        <span><i class="swatch swatch--data"></i>a field</span>
+        <span><i class="swatch swatch--pad"></i>padding, paid for and never used</span>
+      </div>
+      <div class="readout" style="margin-top:16px">
+        <div class="readout__item"><span class="readout__k">sizeof</span><span class="readout__v" id="p7-size">8</span></div>
+        <div class="readout__item"><span class="readout__k">sum of fields</span><span class="readout__v" id="p7-sum">6</span></div>
+        <div class="readout__item"><span class="readout__k">padding paid</span><span class="readout__v readout__v--signal" id="p7-pad">2 bytes</span></div>
+        <div class="readout__item"><span class="readout__k">definition</span><span class="readout__v mono" id="p7-def" style="font-size:var(--text-sm)">struct P1 {int a; char b; char c;}</span></div>
+      </div>
+      <p class="workline" id="p7-work">int a at offset 0, char b at 4, char c at 5, then 2 padding bytes so the
+      struct's total size is a multiple of its largest alignment (4).</p>
+    </div>
+
+    <div class="cols cols--wide-left">
+      <div class="panel panel--tight">
+        <p class="panel__title">All four, as the compiler reported them</p>
+        <div class="table-scroll">
+        <table class="spec">
+          <thead><tr><th>Struct</th><th>Fields and offsets</th><th class="num">sizeof</th></tr></thead>
+          <tbody>
+            <tr><td class="k mono">P1</td><td class="v mono">a@0 (int), b@4 (char), c@5 (char)</td><td class="num">8</td></tr>
+            <tr><td class="k mono">P2</td><td class="v mono">a@0 (char), b@4 (int), c@8 (char)</td><td class="num">12</td></tr>
+            <tr><td class="k mono">P3</td><td class="v mono">a@0 (char), b@1 (char), c@4 (int)</td><td class="num">8</td></tr>
+            <tr><td class="k mono">Node</td><td class="v mono">data@0 (int), next@8 (pointer)</td><td class="num">16</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="hint">Exactly what the capture printed: <code>P1 sizeof=8</code>, <code>P2 sizeof=12</code>,
+        <code>P3 sizeof=8</code>, <code>Node sizeof=16 offsetof(next)=8</code>.</p>
+      </div>
+      <div>
+        <div class="callout callout--exam">
+          <p class="callout__label">Rule worth memorising</p>
+          <p>Each field starts at an offset that is a multiple of its own alignment. The struct's total size is
+          a multiple of the largest field alignment. Reorder fields from largest to smallest and the padding
+          usually disappears: that is why <code>P2</code> costs 12 and <code>P1</code> costs 8.</p>
+        </div>
+        <div class="callout callout--note">
+          <p class="callout__label">Where this shows up in DSA</p>
+          <p>The linked-list node in your lab is the canonical case: 4 bytes of data, 4 bytes of padding,
+          8 bytes of pointer. The pointer is twice the payload, so the "one node" cost of a linked list is
+          never just the data. This is also why arrays win on memory density for the same n values.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 08 ============ -->
+  <section class="sheet" id="sheet-08" aria-labelledby="s08h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 08 &middot; classify the structures</p>
+        <h2 id="s08h">Every basic data structure fits on one small map</h2>
+        <p class="sheet__purpose">Lecture 5 asks you to define basic data structures and explain their memory
+        allocation. The definitions come in three questions: is it one value or many, is it arranged in a line or
+        in a hierarchy, and is its size fixed at compile time or grown at run time. Click a box for the definition
+        and the memory fact that goes with it.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 08 / 10<br>classification: exam wording<br>click a box on the left</p>
+    </div>
+
+    <div class="taxo">
+      <div class="panel panel--figure">
+        <p class="panel__title">Click any box for the definition and the memory fact behind it</p>
+        <div class="map" role="group" aria-label="Classification of basic data structures: primitive and composite, then linear and non-linear, with tree and graph as the non-linear branch">
+        <div class="map__row map__row--1">
+          <button class="mapnode mapnode--root" id="taxo-all" type="button" data-topic="all" aria-pressed="true">
+            <span class="mapnode__t">Data structures</span>
+            <span class="mapnode__s">one value or many, a line or a hierarchy, fixed size or grown</span>
+          </button>
+        </div>
+        <div class="map__row map__row--2">
+          <button class="mapnode mapnode--branch" id="taxo-primitive" type="button" data-topic="primitive" aria-pressed="false">
+            <span class="mapnode__t">Primitive</span>
+            <span class="mapnode__s">one value, one slot: int, char, float, pointer</span>
+          </button>
+          <div class="map__group">
+            <button class="mapnode mapnode--branch" id="taxo-composite" type="button" data-topic="composite" aria-pressed="false">
+              <span class="mapnode__t">Composite</span>
+              <span class="mapnode__s">many values as one unit: array, struct, linked list, stack, queue, tree</span>
+            </button>
+            <div class="map__kids">
+              <div class="map__row map__row--3">
+                <button class="mapnode mapnode--leaf" id="taxo-linear" type="button" data-topic="linear" aria-pressed="false">
+                  <span class="mapnode__t">Linear</span>
+                  <span class="mapnode__s">one predecessor, one successor</span>
+                </button>
+                <button class="mapnode mapnode--leaf" id="taxo-nonlinear" type="button" data-topic="nonlinear" aria-pressed="false">
+                  <span class="mapnode__t">Non-linear</span>
+                  <span class="mapnode__s">tree, graph: one element, many successors</span>
+                </button>
+              </div>
+              <div class="map__row map__row--4">
+                <button class="mapnode mapnode--leaf" id="taxo-array" type="button" data-topic="array" aria-pressed="false">
+                  <span class="mapnode__t">Array</span>
+                  <span class="mapnode__s">contiguous, stride sizeof(T)</span>
+                </button>
+                <button class="mapnode mapnode--leaf" id="taxo-list" type="button" data-topic="list" aria-pressed="false">
+                  <span class="mapnode__t">Linked list</span>
+                  <span class="mapnode__s">scattered, one pointer per node</span>
+                </button>
+                <button class="mapnode mapnode--leaf" id="taxo-stackq" type="button" data-topic="stackq" aria-pressed="false">
+                  <span class="mapnode__t">Stack, queue</span>
+                  <span class="mapnode__s">a linear order with a discipline</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="detail" id="taxo-detail" aria-live="polite">
+        <p class="eyebrow">Selected</p>
+        <h3 id="taxo-title">Data structures</h3>
+        <p id="taxo-body" style="color:var(--text-2); margin-bottom:12px">A data structure is a way of
+        organising data in memory so that the operations you need are cheap. Click a box in the map to see the
+        definition, the memory fact and the exam wording.</p>
+        <ul id="taxo-facts">
+          <li>Is it one value or many: primitive vs composite</li>
+          <li>Is it a line or a hierarchy: linear vs non-linear</li>
+          <li>Is the size fixed or grown: static vs dynamic</li>
+        </ul>
+        <div class="chips" id="taxo-chips">
+          <span class="chip">all are addressable</span>
+          <span class="chip">all cost memory</span>
+          <span class="chip">all trade time for space</span>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div class="panel panel--tight" style="margin-top:24px">
+      <p class="panel__title">The third axis, which examiners love: static vs dynamic</p>
+      <div class="table-scroll">
+      <table class="spec">
+        <thead><tr><th>Axis</th><th>Static (array of fixed size)</th><th>Dynamic (linked nodes)</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Size decided</td><td class="v">at compile time, before the program runs</td><td class="v">at run time, node by node</td></tr>
+          <tr><td class="k">Memory source</td><td class="v">stack frame or a single block</td><td class="v">heap, one allocation per node</td></tr>
+          <tr><td class="k">Growth</td><td class="v">impossible beyond the declared size</td><td class="v">until the allocator says no</td></tr>
+          <tr><td class="k">Access to element i</td><td class="v">O(1), address arithmetic</td><td class="v">O(n), follow the links</td></tr>
+          <tr><td class="k">Insert in the middle</td><td class="v">O(n), shift the tail</td><td class="v">O(1), relink two pointers</td></tr>
+          <tr><td class="k">Overhead per element</td><td class="v">none (or unused slots at the end)</td><td class="v">a link plus allocator bookkeeping</td></tr>
+          <tr><td class="k">Real measured cost</td><td class="v mono">20 bytes for 5 ints</td><td class="v mono">32 bytes per node, see sheet 05</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 09 ============ -->
+  <section class="sheet" id="sheet-09" aria-labelledby="s09h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 09 &middot; ADT vs implementation</p>
+        <h2 id="s09h">A stack is a contract, an array is one way to keep it</h2>
+        <p class="sheet__purpose">An abstract data type names the operations and the rules, and says nothing about
+        memory. Two honest implementations of one ADT can have wildly different memory behaviour. Pick an
+        implementation and the cost table tells you what you bought and what you paid.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 09 / 10<br>ADT: interface only<br>implementation: your choice</p>
+    </div>
+
+    <div class="cols cols--narrow-left">
+      <div class="panel">
+        <p class="panel__title">The ADT is the socket, not the device</p>
+        <h3 style="margin-bottom:8px">Abstract data type</h3>
+        <p style="color:var(--text-2)">A specification of the values it can hold, the operations it allows, and
+        the rules those operations must obey. The user is allowed to assume the contract and forbidden to assume
+        anything about the storage.</p>
+        <ul>
+          <li><strong>Operations:</strong> create, insert, delete, search, traverse</li>
+          <li><strong>Invariants:</strong> the rules that must stay true after every operation</li>
+          <li><strong>Cost:</strong> quoted in terms of n, never in bytes</li>
+        </ul>
+        <p class="hint">An ADT hides the layout. That is exactly why the same stack can be an array with a top
+        index, or a chain of nodes, and still be the same stack to its user.</p>
+      </div>
+      <div class="panel panel--tight">
+        <p class="panel__title">Pick an implementation, read the real memory cost</p>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Choose an implementation">
+            <button class="btn" type="button" id="i9-array" aria-pressed="true">array backed</button>
+            <button class="btn" type="button" id="i9-list" aria-pressed="false">linked backed</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+        <table class="spec" id="i9-table" data-impl="array">
+          <thead><tr><th>Operation</th><th class="num col-array">array backed</th><th class="num col-list">linked backed</th></tr></thead>
+          <tbody>
+            <tr><td class="k">insert at front</td><td class="num col-array">O(n), shift everything</td><td class="num col-list">O(1), new head</td></tr>
+            <tr><td class="k">insert at back</td><td class="num col-array">O(1) amortised</td><td class="num col-list">O(1) with a tail pointer</td></tr>
+            <tr><td class="k">delete at front</td><td class="num col-array">O(n), shift back</td><td class="num col-list">O(1), move the head</td></tr>
+            <tr><td class="k">access element i</td><td class="num col-array">O(1), base + i x sizeof(T)</td><td class="num col-list">O(n), walk the links</td></tr>
+            <tr><td class="k">search a value</td><td class="num col-array">O(n)</td><td class="num col-list">O(n)</td></tr>
+            <tr><td class="k">memory per element</td><td class="num col-array">4 bytes (an int)</td><td class="num col-list">32 bytes measured</td></tr>
+            <tr><td class="k">extra structure</td><td class="num col-array">a capacity and a count</td><td class="num col-list">a head pointer per list</td></tr>
+            <tr><td class="k">weak at</td><td class="num col-array">inserting at the front</td><td class="num col-list">accessing the middle</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="line" id="i9-note" style="font-family:var(--font-mono),monospace; font-size:var(--text-sm); color:var(--text-2); margin:16px 0 0">
+        Array backed: you pay in shifting when you insert at the front, and you get O(1) access to any index.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHEET 10 ============ -->
+  <section class="sheet" id="sheet-10" aria-labelledby="s10h">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Sheet 10 &middot; cost is the shape</p>
+        <h2 id="s10h">The memory layout you chose last lecture is the complexity you get</h2>
+        <p class="sheet__purpose">Sequence matters. Every big-O statement in this course is a statement about
+        memory shape: contiguous with a stride gives arithmetic, scattered with links gives walking. Here is the
+        same array and the same list, timed on a real machine.</p>
+      </div>
+      <p class="sheet__stamp">SHEET 10 / 10<br>run output: section 7<br>2 million elements, 8 passes</p>
+    </div>
+
+    <div class="cols cols--wide-left">
+      <div class="panel panel--figure">
+        <p class="panel__title">Measured nanoseconds per element, same n, same work</p>
+        <ul class="bars" id="bars">
+          <li>
+            <div class="lbl"><b>Array, sequential</b>arr[i] for i in order, prefetcher helps<span class="bar"><span class="bar__fill bar__fill--ok" data-w="8"></span></span></div>
+            <div class="val">0.19 ns</div>
+          </li>
+          <li>
+            <div class="lbl"><b>Array, scattered order</b>same array, index jumps by a prime stride<span class="bar"><span class="bar__fill" data-w="100"></span></span></div>
+            <div class="val">2.46 ns</div>
+          </li>
+          <li>
+            <div class="lbl"><b>Linked list</b>cur = cur-&gt;next, one dependent load per hop<span class="bar"><span class="bar__fill bar__fill--signal" data-w="99"></span></span></div>
+            <div class="val">2.45 ns</div>
+          </li>
+        </ul>
+        <p class="hint">Bars are scaled to the slowest row. Both slower rows are 12.6x to 12.7x the sequential
+        walk: the scattered array loses the hardware prefetcher, the list loses it AND adds a pointer chase.
+        Different data structures, the same wall: the layout decides.</p>
+      </div>
+      <div>
+        <div class="panel panel--tight">
+          <p class="panel__title">The complexity ladder, with the shape that causes each rung</p>
+          <table class="spec">
+            <thead><tr><th>Cost</th><th>Shape that produces it</th><th>Example here</th></tr></thead>
+            <tbody>
+              <tr><td class="k mono">O(1)</td><td class="v">address arithmetic, one stride</td><td class="v"><code>a[i]</code></td></tr>
+              <tr><td class="k mono">O(log n)</td><td class="v">halving the range each step</td><td class="v">binary search on a sorted array</td></tr>
+              <tr><td class="k mono">O(n)</td><td class="v">visiting every byte once, or following n links</td><td class="v">the linked walk</td></tr>
+              <tr><td class="k mono">O(n log n)</td><td class="v">log n passes over n elements</td><td class="v">merge sort</td></tr>
+              <tr><td class="k mono">O(n^2)</td><td class="v">every element compared with every other</td><td class="v">bubble sort</td></tr>
+            </tbody>
+          </table>
+          <p class="hint">Big-O counts steps as n grows. It deliberately hides the constant, and the constant is
+          where the memory layout lives: 0.19 vs 2.45 ns is a 12.6x constant, invisible in the notation.</p>
+        </div>
+        <div class="callout callout--exam">
+          <p class="callout__label">Definitions to write exactly</p>
+          <ul style="margin-bottom:0">
+            <li><strong>Data structure:</strong> a way of organising data in memory so that the required
+            operations can be performed efficiently.</li>
+            <li><strong>Static structure:</strong> size and memory fixed at compile time, contiguous block.</li>
+            <li><strong>Dynamic structure:</strong> size grows at run time, memory obtained from the heap.</li>
+            <li><strong>Abstract data type:</strong> the logical description of the data and operations, with
+            the implementation hidden.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout--trap">
+      <p class="callout__label">Traps that cost marks in this topic</p>
+      <ol style="margin-bottom:0">
+        <li>Saying "the array stores the address of each element". It does not. It stores the elements
+        back to back, and the address is computed from the base plus i x sizeof(T).</li>
+        <li>Writing "linked list access is O(1) because you have the pointer". You have the pointer to the head.</li>
+        <li>Confusing <code>sizeof(struct)</code> with the sum of its fields. Padding is real memory.</li>
+        <li>Calling a heap allocation contiguous. Two consecutive <code>new</code> calls are two unrelated
+        chunks that happen to be adjacent while the heap is fresh.</li>
+        <li>Treating O(1) as fast. It means the step count does not grow with n, not that the step is cheap.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ SELF TEST ============ -->
+  <section class="sheet" id="self-test" aria-labelledby="sth">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Self check &middot; answers hidden</p>
+        <h2 id="sth">Eight questions, then look</h2>
+        <p class="sheet__purpose">Answer on paper first. The keys live in a separate section further down, so you
+        can test yourself without seeing the answers, exactly the way a viva goes.</p>
+      </div>
+      <p class="sheet__stamp">NO MARKS, ALL SIGNAL<br>reveal one at a time<br>or reveal all</p>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn--primary" type="button" id="q-all">reveal all answers</button>
+      <button class="btn" type="button" id="q-none">hide all answers</button>
+    </div>
+    <p class="score" id="q-score" aria-live="polite">nothing revealed yet</p>
+
+    <ol class="quiz" id="quiz">
+      <li>
+        <p class="q">A byte is described as addressable. What exactly does that mean, in one sentence?</p>
+        <details class="ans"><summary>show answer</summary>
+        <p>Every byte has its own number (address), and any byte can be read or written independently of the others.</p></details>
+      </li>
+      <li>
+        <p class="q"><code>int a[5]</code> starts at <code>0x7ffe7c3131b0</code> and <code>sizeof(int)=4</code>.
+        What is the address of <code>a[3]</code>, and how many memory accesses does it take?</p>
+        <details class="ans"><summary>show answer</summary>
+        <p><code>0x7ffe7c3131b0 + 3 x 4 = 0x7ffe7c3131bc</code>, one multiply and one add, so one step:
+        O(1). The capture printed exactly <code>0x7ffe7c3131bc</code>.</p></details>
+      </li>
+      <li>
+        <p class="q">Why does <code>struct Node {int data; Node* next;}</code> measure 16 bytes and not 12?</p>
+        <details class="ans"><summary>show answer</summary>
+        <p>Because <code>next</code> is 8 bytes and must start on an 8-byte boundary, so 4 padding bytes sit
+        between <code>data</code> and <code>next</code>. Measured: <code>offsetof(next)=8</code>.</p></details>
+      </li>
+      <li>
+        <p class="q">Two structures hold the same five integers. One costs 20 bytes, the other costs 160 bytes
+        as measured here. Which layout is which, and what does the extra memory buy?</p>
+        <details class="ans"><summary>show answer</summary>
+        <p>The array is 20 bytes (5 x 4). The linked list is 5 nodes x 32 bytes charged, because each 16-byte
+        node costs 32 bytes under this allocator. The extra memory buys O(1) insertion and deletion at a held
+        position, at the cost of O(n) access.</p></details>
+      </li>
+      <li>
+        <p class="q">What is the difference between a stack and a heap as memory regions?</p>
+        <details class="ans"><summary>show answer</summary>
+        <p>The stack is where the compiler places local variables and call frames, it grows downward here, it is
+        freed automatically when the function returns and it is small. The heap is where <code>new</code> and
+        <code>malloc</code> place objects, it grows upward, it lives until you free it and it is large.</p></details>
+      </li>
+      <li>
+        <p class="q">Classify: a static array of records, and a binary tree. Give the axis you used.</p>
+        <details class="ans"><summary>show answer</summary>
+        <p>The array is composite and linear, and static because its size is fixed at compile time. The tree is
+        composite and non-linear (hierarchical), and usually dynamic because nodes are allocated as it grows.
+        The axes are: one value or many, linear or hierarchical, fixed or grown.</p></details>
+      </li>
+      <li>
+        <p class="q">A friend says a linked list is always better than an array because insertion is O(1).
+        Give the two-part correction.</p>
+        <details class="ans"><summary>show answer</summary>
+        <p>One: reaching the position costs O(n) unless you already hold the predecessor, so insertion into a
+        list is only O(1) at a known position. Two: access and memory density are worse, measured here as 32
+        bytes per node against 4 bytes per array element, and 12.6x slower per element in a walk.</p></details>
+      </li>
+      <li>
+        <p class="q">Define an abstract data type and explain why "stack" is one while "array" is not.</p>
+        <details class="ans"><summary>show answer</summary>
+        <p>An ADT is the logical specification of data plus operations plus the rules they obey, with the
+        implementation hidden. A stack is an ADT because it is fully described by push, pop, top and LIFO order,
+        and can be implemented by an array or by nodes. An array is a concrete memory layout, not a contract:
+        it fixes the storage in its definition.</p></details>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ ANSWER KEY (kept separate on purpose) ============ -->
+  <section class="sheet answers" id="answer-key" aria-labelledby="akh">
+    <div class="sheet__head">
+      <div>
+        <p class="eyebrow">Answer key &middot; read only after attempting</p>
+        <h2 id="akh">Compact keys for the eight questions</h2>
+        <p class="sheet__purpose">One line each, in the shape you would write in a 3-mark answer: state, reason,
+        consequence.</p>
+      </div>
+      <p class="sheet__stamp">KEYS<br>8 of 8<br>cross-check sheet</p>
+    </div>
+    <div class="table-scroll">
+      <table class="spec">
+        <thead><tr><th>Q</th><th>Key point</th><th>Backed by</th></tr></thead>
+        <tbody>
+          <tr><td class="k">1</td><td class="v">each byte has its own address and can be touched independently</td><td class="v">sheet 01</td></tr>
+          <tr><td class="k">2</td><td class="v"><code>0x7ffe7c3131bc</code>, one step, O(1)</td><td class="v">sheet 02, 04</td></tr>
+          <tr><td class="k">3</td><td class="v">4 padding bytes so the 8-byte pointer sits on an 8-byte boundary</td><td class="v">sheet 03, 07</td></tr>
+          <tr><td class="k">4</td><td class="v">array 20 bytes, list 160 bytes charged; extra memory buys O(1) insert</td><td class="v">sheet 05</td></tr>
+          <tr><td class="k">5</td><td class="v">stack: automatic, downward, small. heap: new, upward, large, manual free</td><td class="v">sheet 06</td></tr>
+          <tr><td class="k">6</td><td class="v">array composite linear static; tree composite non-linear dynamic</td><td class="v">sheet 08</td></tr>
+          <tr><td class="k">7</td><td class="v">insert is O(1) only at a known position, and access plus memory are worse</td><td class="v">sheet 05, 09, 10</td></tr>
+          <tr><td class="k">8</td><td class="v">ADT is a contract without storage; stack is one, array is a layout</td><td class="v">sheet 09</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="foot">
+    <h3 style="margin-bottom:12px">Provenance: where every number came from</h3>
+    <p>One compiled run on this machine, no borrowed figures. Addresses change on every run because of ASLR,
+    which is itself the point: the lane is real, the numbering is not fixed. Sizes, offsets and strides are
+    deterministic and identical on any x86-64 Linux with the same compiler.</p>
+    <div class="table-scroll">
+      <table class="spec">
+        <thead><tr><th>Sheet</th><th>Source in the run output</th><th>What it proves</th></tr></thead>
+        <tbody>
+          <tr><td class="k">01, 03</td><td class="v">section 1 and 3b</td><td class="v">unit sizes, raw bytes of an array, little-endian order</td></tr>
+          <tr><td class="k">02, 04</td><td class="v">section 3</td><td class="v">stride equals sizeof(T), index arithmetic matches <code>&amp;a[i]</code></td></tr>
+          <tr><td class="k">05</td><td class="v">section 6</td><td class="v">allocator stride 32 bytes for a 16-byte request</td></tr>
+          <tr><td class="k">06</td><td class="v">section 2</td><td class="v">stack below-heap gap, frames 48 bytes apart and descending</td></tr>
+          <tr><td class="k">07</td><td class="v">section 5</td><td class="v">real <code>offsetof</code> and <code>sizeof</code> for four structs</td></tr>
+          <tr><td class="k">10</td><td class="v">section 7</td><td class="v">nanoseconds per element for three layouts</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h4 style="margin:24px 0 8px">Reproduce or verify it</h4>
+    <ul>
+      <li>Lesson program: <code>~/learning/cpp/lessons/05_ds_memory_representation.cpp</code></li>
+      <li>Raw output kept at: <code>~/learning/cpp/exercises/lec05_run_output.txt</code></li>
+      <li>Compile and run: <code>g++ -Wall -Wextra -std=c++17 -O2 -o /tmp/lec05 05_ds_memory_representation.cpp &amp;&amp; /tmp/lec05</code></li>
+      <li>Full verifier (recompiles, re-runs and checks the numbers in this guide): <code>python3 ~/learning/cpp/exercises/verify_ds_memory_lec5.py</code></li>
+      <li>Companion study notes: <code>INTRO-MEMORY-STUDY-NOTES.md</code> in this folder</li>
+      <li>Diagram sources: <code>diagrams/*.mmd</code> with rendered <code>.png</code> beside each one</li>
+    </ul>
+    <p>Course mapping: ECE2104 / VDT2104, Lecture 5, Introduction to Data Structures and Memory
+    Representation, session outcome CO1. Built as a single self-contained file, no network calls, works offline
+    except for the webfonts.</p>
+  </footer>
+
+</div>
+<script>
+/* Every number in this script is copied from one real run:
+   ~/learning/cpp/exercises/lec05_run_output.txt (g++ 15.2.0, -O2, x86-64). */
+(function () {
+  "use strict";
+  var CAP = {
+    arrayBase: "0x7ffe7c3131b0",
+    array: [
+      { v: 10, addr: "0x7ffe7c3131b0", bytes: ["0a", "00", "00", "00"] },
+      { v: 20, addr: "0x7ffe7c3131b4", bytes: ["14", "00", "00", "00"] },
+      { v: 30, addr: "0x7ffe7c3131b8", bytes: ["1e", "00", "00", "00"] },
+      { v: 40, addr: "0x7ffe7c3131bc", bytes: ["28", "00", "00", "00"] },
+      { v: 50, addr: "0x7ffe7c3131c0", bytes: ["32", "00", "00", "00"] }
+    ],
+    heap: ["0x57a2bc523050", "0x57a2bc523070", "0x57a2bc523090", "0x57a2bc5230b0", "0x57a2bc5230d0"],
+    heapStride: 32,
+    heapRequest: 16,
+    heapUsable: 24,
+    sizes: { char: { size: 1, align: 1 }, short: { size: 2, align: 2 }, int: { size: 4, align: 4 }, double: { size: 8, align: 8 }, ptr: { size: 8, align: 8 } },
+    structs: {
+      P1: { def: "struct P1 {int a; char b; char c;}", size: 8, sum: 6, cells: [["data", 4, "int a"], ["data", 1, "char b"], ["data", 1, "char c"], ["pad", 2, "pad 2"]] },
+      P2: { def: "struct P2 {char a; int b; char c;}", size: 12, sum: 6, cells: [["data", 1, "char a"], ["pad", 3, "pad 3"], ["data", 4, "int b"], ["data", 1, "char c"], ["pad", 3, "pad 3"]] },
+      P3: { def: "struct P3 {char a; char b; int c;}", size: 8, sum: 6, cells: [["data", 1, "char a"], ["data", 1, "char b"], ["pad", 2, "pad 2"], ["data", 4, "int c"]] },
+      Node: { def: "struct Node {int data; Node* next;}", size: 16, sum: 12, cells: [["data", 4, "int data"], ["pad", 4, "pad 4"], ["data", 8, "Node* next"]] }
+    }
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  function updateScrollHints() {
+    var wraps = document.querySelectorAll(".lane-wrap");
+    for (var i = 0; i < wraps.length; i++) {
+      var w = wraps[i], host = w.parentElement;
+      var hint = host ? host.querySelector(".lane-scrollhint") : null;
+      if (hint) hint.hidden = w.scrollWidth <= w.clientWidth + 4;
+    }
+  }
+  window.addEventListener("resize", updateScrollHints);
+  /* session trail: every control writes one line here. It is the page's own
+     "what have I tried" record, and it is also what proves a click did something. */
+  var TRAIL = $("trail"), TRAIL_N = 0;
+  function log(msg) {
+    TRAIL_N++;
+    if (!TRAIL) return;
+    var li = document.createElement("li");
+    li.textContent = TRAIL_N + ". " + msg;
+    TRAIL.appendChild(li);
+  }
+  function hex(n) { return "0x" + n.toString(16); }
+  function pad(b) { return (b.length < 2 ? "0" : "") + b; }
+
+  /* ---------- theme ---------- */
+  var themeBtn = $("theme-btn"), themeLabel = $("theme-label");
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    var dark = t === "dark";
+    themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
+    themeLabel.textContent = dark ? "Sheet (light)" : "Blueprint (dark)";
+    try { localStorage.setItem("dsa-l5-theme", t); } catch (e) {}
+  }
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem("dsa-l5-theme"); } catch (e) {}
+  if (!savedTheme && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) savedTheme = "dark";
+  applyTheme(savedTheme === "dark" ? "dark" : "light");
+  themeBtn.addEventListener("click", function () {
+    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+    log("theme: " + (next === "dark" ? "blueprint negative" : "paper sheet"));
+  });
+
+  /* ---------- sheet 01: the byte lane ---------- */
+  (function () {
+    var lane = $("lane1");
+    if (!lane) return;
+    var cells = [];
+    for (var i = 0; i < 32; i++) {
+      var owned = i < 20;
+      var el = {
+        i: i, b: owned ? pad(CAP.array[Math.floor(i / 4)].bytes[i % 4]) : "--",
+        own: owned ? "a[" + Math.floor(i / 4) + "], byte " + (i % 4) + " of 4" : "neighbouring frame byte, not part of this array",
+        val: owned ? null : null
+      };
+      cells.push(el);
+    }
+    lane.innerHTML = "";
+    cells.forEach(function (c, idx) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "cell" + (idx < 20 ? " cell--owner-data" : " cell--owner-free") + " cell--draw";
+      b.style.animationDelay = (idx * 12) + "ms";
+      b.textContent = c.b === "--" ? "" : c.b;
+      b.id = "cell1-" + idx;
+      b.setAttribute("data-i", String(idx));
+      b.setAttribute("aria-label", "byte at offset plus " + idx + ", address " + hex(parseInt(CAP.arrayBase, 16) + idx) + ", value " + (c.b === "--" ? "not owned by this array" : c.b));
+      b.addEventListener("click", function () { show(idx); });
+      b.addEventListener("focus", function () { show(idx); });
+      lane.appendChild(b);
+    });
+    function show(idx) {
+      var base = parseInt(CAP.arrayBase, 16);
+      var c = cells[idx];
+      var all = lane.querySelectorAll(".cell");
+      for (var k = 0; k < all.length; k++) all[k].classList.remove("cell--target");
+      all[idx].classList.add("cell--target");
+      $("l1-off").textContent = "+" + idx;
+      $("l1-addr").textContent = hex(base + idx);
+      $("l1-hex").textContent = c.b;
+      $("l1-dec").textContent = c.b === "--" ? "not ours" : String(parseInt(c.b, 16));
+      $("l1-own").textContent = c.own;
+      log("inspected byte " + (idx < 20 ? "a[" + Math.floor(idx / 4) + "]+" + (idx % 4) : "offset +" + idx) +
+          " at " + hex(base + idx));
+    }
+    lane.addEventListener("keydown", function (ev) {
+      var cur = parseInt(lane.getAttribute("data-cur") || "0", 10);
+      var next = null;
+      if (ev.key === "ArrowRight") next = Math.min(31, cur + 1);
+      if (ev.key === "ArrowLeft") next = Math.max(0, cur - 1);
+      if (next === null) return;
+      ev.preventDefault();
+      lane.setAttribute("data-cur", String(next));
+      var all = lane.querySelectorAll(".cell");
+      all[next].focus();
+      show(next);
+    });
+    show(0);
+  })();
+
+  /* ---------- sheet 02: address calculator ---------- */
+  (function () {
+    var baseIn = $("c-base"), typeIn = $("c-stride"), idxIn = $("c-index");
+    if (!baseIn) return;
+    function calc() {
+      var raw = baseIn.value.trim().replace(/^0x/i, "");
+      var base = parseInt(raw, 16);
+      var stride = parseInt(typeIn.value, 10);
+      var i = parseInt(idxIn.value, 10);
+      if (isNaN(base) || isNaN(i) || i < 0) {
+        $("c-out").textContent = "need a hex base and i >= 0";
+        $("c-off").textContent = "-";
+        $("c-work").textContent = "base + i x sizeof(T) = ?";
+        return;
+      }
+      var addr = base + i * stride;
+      $("c-out").textContent = hex(addr);
+      $("c-off").textContent = (i * stride) + " bytes (i x " + stride + ")";
+      $("c-work").textContent = "0x" + raw.toLowerCase() + " + " + i + " x " + stride + " = " + hex(addr) +
+        "   (decimal offset " + (i * stride) + ")";
+    }
+    [baseIn, typeIn].forEach(function (el) {
+      el.addEventListener("input", calc);
+      el.addEventListener("change", function () { calc(); log("calculator: base " + baseIn.value + ", stride " + typeIn.value); });
+    });
+    idxIn.addEventListener("input", calc); idxIn.addEventListener("change", calc); idxIn.addEventListener("keyup", calc);
+    calc();
+  })();
+
+  /* ---------- sheet 03: alignment bench ---------- */
+  (function () {
+    var lane = $("t3-lane"), typeIn = $("t3-type"), startIn = $("t3-start");
+    if (!lane) return;
+    function draw() {
+      var t = CAP.sizes[typeIn.value];
+      var start = parseInt(startIn.value, 10);
+      var skipped = (t.align - (start % t.align)) % t.align;
+      var at = start + skipped;
+      $("t3-start-lbl").textContent = String(start);
+      lane.innerHTML = "";
+      for (var c = 0; c < 24; c++) {
+        var kind = "free";
+        if (c >= start && c < at) kind = "pad";
+        else if (c >= at && c < at + t.size) kind = "data";
+        var d = document.createElement("div");
+        d.className = "cell cell--owner-" + kind;
+        d.style.cursor = "default";
+        d.textContent = kind === "data" ? String(c - at) : "";
+        lane.appendChild(d);
+      }
+      $("t3-size").textContent = String(t.size);
+      $("t3-align").textContent = String(t.align);
+      $("t3-at").textContent = "+" + at;
+      $("t3-pad").textContent = skipped + (skipped === 1 ? " byte" : " bytes");
+      $("t3-work").textContent = skipped === 0
+        ? "Ask for offset " + start + ": " + start + " is divisible by " + t.align + ", so no padding, the value sits at " + at + "."
+        : "Ask for offset " + start + ": " + start + " is not divisible by " + t.align +
+          ", so the compiler skips " + skipped + " byte" + (skipped === 1 ? "" : "s") + " and starts at " + at + ".";
+    }
+    typeIn.addEventListener("change", function () { draw(); log("alignment bench: " + typeIn.value + " at offset " + startIn.value); });
+    startIn.addEventListener("input", draw);
+    draw();
+  })();
+
+  /* ---------- sheet 04: the address lane (signature) ---------- */
+  (function () {
+    var lane = $("l4-lane");
+    if (!lane) return;
+    var contigBtn = $("l4-contig"), scatterBtn = $("l4-scatter"), idxIn = $("l4-index"), typeIn = $("l4-type");
+    var state = { mode: "contig", i: 0, stride: 4 };
+    function scale() {
+      var n = state.mode === "contig" ? state.stride * 5 : 5;
+      var marks = [0, Math.round(n * 0.25), Math.round(n * 0.5), Math.round(n * 0.75), n - 1];
+      var box = $("l4-scale");
+      $("l4-modal").textContent = state.mode === "contig"
+        ? "contiguous array: " + n + " bytes, stride " + state.stride
+        : "scattered list: 5 nodes, one pointer each";
+      box.innerHTML = marks.map(function (m, k) {
+        return "<span>" + (k === 0 ? "base +0" : "+" + m) + "</span>";
+      }).join("");
+    }
+    function render() {
+      var isInt = state.stride === 4;
+      var captured = state.mode === "contig" && isInt;
+      var n = state.mode === "contig" ? state.stride * 5 : 5;
+      lane.parentElement.style.setProperty("--cells", String(n));
+      lane.innerHTML = "";
+      var cells = [];
+      if (state.mode === "contig") {
+        for (var c = 0; c < n; c++) {
+          var elem = Math.floor(c / state.stride);
+          var inElem = c % state.stride;
+          var isTarget = elem === state.i;
+          var d = document.createElement("div");
+          d.className = "cell " + (isTarget ? "cell--targetfill" : (elem % 2 ? "cell--owner-odd" : "cell--owner-even"))
+            + (inElem === 0 ? " cell--elemstart" : "");
+          var shown = captured && elem < CAP.array.length ? CAP.array[elem].bytes[inElem] : String(inElem);
+          d.innerHTML = (inElem === 0 ? '<span class="cell__t">a[' + elem + "]</span>" : "")
+            + '<span class="cell__v">' + shown + "</span>";
+          d.setAttribute("title", captured
+            ? "byte " + inElem + " of a[" + elem + "], value byte " + shown + ", offset +" + c
+            : "byte " + inElem + " of element " + elem + ", offset +" + c + " (computed layout, contents not captured)");
+          lane.appendChild(d);
+          cells.push(d);
+        }
+      } else {
+        for (var n = 0; n < 5; n++) {
+          var nd = document.createElement("div");
+          nd.className = "cell " + (n === state.i ? "cell--owner-ptr cell--target" : "cell--owner-free");
+          nd.style.fontSize = "12px";
+          nd.textContent = "n" + n;
+          nd.setAttribute("title", CAP.heap[n]);
+          lane.appendChild(nd);
+        }
+      }
+      var base = parseInt(CAP.arrayBase, 16);
+      var addr, value, hops, work, formula, note, dimW;
+      if (state.mode === "contig") {
+        var off = state.i * state.stride;
+        if (captured && state.i < CAP.array.length) {
+          addr = CAP.array[state.i].addr;
+          value = String(CAP.array[state.i].v);
+          note = "Captured run: this address and value come straight from the printout, not from my arithmetic.";
+        } else {
+          addr = hex(base + off) + " (computed)";
+          value = "not captured";
+          note = "What-if mode: the address is computed by the formula from the captured base. Only the int[5] case was printed by the program.";
+        }
+        hops = "1";
+        work = "1 multiply, 1 add";
+        formula = CAP.arrayBase + " + " + state.i + " x " + state.stride + " = " + hex(base + off);
+        dimW = (off / n) * 100;
+      } else {
+        addr = CAP.heap[state.i];
+        value = "data " + (state.i * 10);
+        hops = String(state.i + 1);
+        work = state.i + 1 + " dependent loads";
+        formula = "head -> " + CAP.heap.slice(0, state.i + 1).join(" -> ") + " = " + (state.i + 1) + " hops";
+        note = "Scattered list: the address of node " + state.i + " is not computable, it is stored inside node " + (state.i - 1 < 0 ? "the head" : String(state.i - 1)) + ". You can only walk there.";
+        dimW = 0;
+      }
+      $("l4-addr").textContent = addr;
+      $("l4-val").textContent = value;
+      $("l4-hops").textContent = hops;
+      $("l4-work").textContent = work;
+      $("l4-formula").textContent = formula;
+      $("l4-note").textContent = note;
+      $("l4-rule").style.width = dimW + "%";
+      $("l4-tick").style.left = "0%";
+      $("l4-tick").style.width = dimW + "%";
+      $("l4-dimlabel").textContent = state.mode === "contig"
+        ? (state.i * state.stride) + " bytes = " + state.i + " x " + state.stride
+        : (state.i + 1) + " hops, no arithmetic shortcut";
+      $("l4-dimlabel").style.left = Math.min(dimW, 58) + "%";
+      var spanW = state.mode === "contig" ? (state.stride / n) * 100 : (1 / n) * 100;
+      var spanL = state.mode === "contig" ? dimW : (state.i / n) * 100;
+      $("l4-span").style.left = spanL + "%";
+      $("l4-span").style.width = spanW + "%";
+      $("l4-spanlabel").style.left = Math.min(spanL, 60) + "%";
+      $("l4-spanlabel").textContent = state.mode === "contig"
+        ? "element " + state.i + " = bytes " + (state.i * state.stride) + " to " + (state.i * state.stride + state.stride - 1)
+        : "node " + state.i + " = " + CAP.heap[state.i];
+      scale();
+      $("l4-modal").textContent = captured
+        ? "contiguous array: 20 bytes, stride 4. The cells hold the real bytes of each int (little-endian)."
+        : "what-if layout: " + state.stride + " byte stride, computed from the captured base. Cell digits are byte offsets inside the element, contents were not captured for this type.";
+      updateScrollHints();
+      $("l4-index-lbl").textContent = String(state.i);
+      contigBtn.setAttribute("aria-pressed", state.mode === "contig" ? "true" : "false");
+      scatterBtn.setAttribute("aria-pressed", state.mode === "scatter" ? "true" : "false");
+    }
+    contigBtn.addEventListener("click", function () { state.mode = "contig"; render(); log("address lane: contiguous array"); });
+    scatterBtn.addEventListener("click", function () { state.mode = "scatter"; render(); log("address lane: scattered list"); });
+    typeIn.addEventListener("change", function () {
+      state.stride = parseInt(typeIn.value, 10); render();
+      log("address lane: stride " + state.stride + " bytes, index now maps to " + hex(parseInt(CAP.arrayBase, 16) + state.i * state.stride));
+    });
+    idxIn.addEventListener("input", function () {
+      state.i = parseInt(idxIn.value, 10); render();
+      log("address lane: i = " + state.i + " -> " + $("l4-addr").textContent);
+    });
+    render();
+  })();
+
+  /* ---------- sheet 05: heap simulator ---------- */
+  (function () {
+    var strip = $("h-strip");
+    if (!strip) return;
+    var live = [];
+    function render() {
+      strip.innerHTML = "";
+      for (var i = 0; i < 8; i++) {
+        var chunk = document.createElement("div");
+        chunk.className = "heapchunk" + (i < live.length ? " heapchunk--live" : " heapchunk--free");
+        if (i < live.length) {
+          chunk.innerHTML = "<span class='heapchunk__off'>+" + (i * CAP.heapStride) + "</span>" +
+            "<span class='heapchunk__addr mono'>" + live[i].slice(-6) + "</span>";
+          chunk.setAttribute("title", live[i]);
+        } else {
+          chunk.innerHTML = "<span class='heapchunk__off'>free</span>";
+        }
+        strip.appendChild(chunk);
+      }
+      var chain = "head -> " + (live.length ? live.join(" -> ") + " -> NULL" : "NULL");
+      $("h-chain").textContent = chain;
+      $("h-count").textContent = String(live.length);
+      $("h-req").textContent = (live.length * CAP.heapRequest) + " bytes (" + CAP.heapRequest + " each)";
+      $("h-charged").textContent = (live.length * CAP.heapStride) + " bytes (" + CAP.heapStride + " each)";
+      $("h-last").textContent = live.length ? live[live.length - 1] : "none yet";
+      $("h-new").disabled = live.length >= 8;
+      $("h-note").textContent = live.length === 0
+        ? "Empty lane: no node allocated yet. Press new Node to ask the allocator for 16 bytes, which is sizeof(Node) for an int plus a pointer."
+        : live.length < 5
+          ? "First five addresses are the captured ones: each new node lands exactly 32 bytes after the previous, which is what the run printed."
+          : "Beyond the fifth node the lane continues on the same measured 32 byte stride, marked as modelled because the run only printed five.";
+    }
+    $("h-new").addEventListener("click", function () {
+      if (live.length >= 8) return;
+      var addr;
+      if (live.length < CAP.heap.length) addr = CAP.heap[live.length];
+      else addr = hex(parseInt(CAP.heap[CAP.heap.length - 1], 16) + (live.length - CAP.heap.length + 1) * CAP.heapStride);
+      live.push(addr);
+      render();
+      log("allocator: new Node -> " + addr + (live.length <= CAP.heap.length ? " (captured address)" : " (modelled, measured 32 byte stride)"));
+    });
+    $("h-free").addEventListener("click", function () {
+      var gone = live[live.length - 1];
+      live.pop();
+      render();
+      log("allocator: free " + (gone || "nothing") + ", live chunks now " + live.length);
+    });
+    $("h-reset").addEventListener("click", function () { live = []; render(); log("allocator: reset, lane empty"); });
+    render();
+  })();
+
+  /* ---------- sheet 07: padding bench ---------- */
+  (function () {
+    var lane = $("p7-lane");
+    if (!lane) return;
+    var btns = document.querySelectorAll("[data-struct]");
+    function draw(key) {
+      var s = CAP.structs[key];
+      lane.innerHTML = "";
+      s.cells.forEach(function (c) {
+        var d = document.createElement("div");
+        d.className = "cell cell--owner-" + c[0];
+        d.style.gridColumn = "span " + c[1];
+        d.style.fontSize = "12px";
+        d.textContent = c[2];
+        lane.appendChild(d);
+      });
+      $("p7-size").textContent = String(s.size);
+      $("p7-sum").textContent = String(s.sum);
+      $("p7-pad").textContent = (s.size - s.sum) + " bytes";
+      $("p7-def").textContent = s.def;
+      $("p7-work").textContent = key === "P2"
+        ? "char a at 0, then 3 padding bytes so int b can start at 4, char c at 8, then 3 more padding bytes so the struct size is a multiple of 4. Total 12 bytes for 6 bytes of fields."
+        : key === "P3"
+          ? "char a at 0, char b at 1, then 2 padding bytes so int c can start at 4. Total 8 bytes, the same as P1, and the smallest arrangement of these three fields."
+          : key === "Node"
+            ? "int data at 0, then 4 padding bytes so the 8 byte pointer can start at 8, Node* next at 8. Total 16 bytes: the pointer costs the same as 8 chars."
+            : "int a at 0, char b at 4, char c at 5, then 2 padding bytes so the total size is a multiple of the largest alignment, 4. Total 8 bytes.";
+    }
+    for (var i = 0; i < btns.length; i++) {
+      (function (b) {
+        b.addEventListener("click", function () {
+          for (var k = 0; k < btns.length; k++) btns[k].setAttribute("aria-pressed", "false");
+          b.setAttribute("aria-pressed", "true");
+          draw(b.getAttribute("data-struct"));
+          log("padding bench: " + b.getAttribute("data-struct") + " = " + $("p7-size").textContent + " bytes, " + $("p7-pad").textContent + " padding");
+        });
+      })(btns[i]);
+    }
+    draw("P1");
+  })();
+
+  /* ---------- sheet 08: taxonomy board ---------- */
+  (function () {
+    var det = $("taxo-detail");
+    if (!det) return;
+    var T = {
+      all: ["Data structures", "A way of organising data in memory so that the operations you need are cheap. Everything below is one of three questions: one value or many, a line or a hierarchy, fixed size or grown size.", ["Memory is a lane of addressable bytes, sheet 01", "Every structure is a layout choice, sheet 04"]],
+      primitive: ["Primitive (built in)", "Holds exactly one value, and the machine knows its size directly. int, char, float, double, and pointers. A primitive is a single slot in the lane.", ["sizeof(int) = 4, sizeof(void*) = 8 here", "Alignment rule applies (sheet 03)"]],
+      composite: ["Composite (derived)", "Built from primitives or from other composite types: arrays, structs, linked lists, stacks, queues, trees. A struct is laid out field by field, with padding where alignment demands it.", ["struct Node = 16 bytes for 4 data + 8 pointer + 4 padding", "Padding is why struct size > sum of fields (sheet 07)"]],
+      linear: ["Linear", "Every element has at most one predecessor and one successor, so the elements form one sequence: arrays, linked lists, stacks, queues. Traversal is a single ordered pass.", ["Array: contiguous, stride = sizeof(T)", "Linked: scattered, hop per element"]],
+      array: ["Array (linear, static, contiguous)", "A fixed number of elements of the same type stored back to back in one block. Address of element i is base + i x sizeof(T), so access is O(1) and insertion in the middle is O(n).", ["20 bytes for 5 ints", "Indexed access needs one multiply"]],
+      list: ["Linked list (linear, dynamic, scattered)", "Nodes that each hold data plus the address of the next node, so consecutive elements need not be in consecutive memory. Reaching element i costs i + 1 hops, but relinking at a known position is O(1).", ["32 bytes charged per node here", "Address of node i is stored, not computed"]],
+      stackq: ["Stack and queue (linear, with a discipline)", "Linear structures that restrict where you may add or remove. Stack: last in first out at one end. Queue: first in first out, add at the back and remove at the front. Both can be array backed or linked backed.", ["Stack: push, pop, top, LIFO", "Queue: enqueue at back, dequeue at front"]],
+      nonlinear: ["Non-linear: tree, graph", "One element can have many successors, so the structure is hierarchical or networked rather than a sequence. Trees and graphs are usually dynamic, nodes allocated as they are added.", ["Tree: one parent, many children, no cycles", "Graph: any connections, cycles allowed"]]
+    };
+    var nodes = document.querySelectorAll(".map .mapnode");
+    function select(key) {
+      var t = T[key] || T.all;
+      $("taxo-title").textContent = t[0];
+      $("taxo-body").textContent = t[1];
+      var ul = $("taxo-facts");
+      ul.innerHTML = "";
+      t[2].forEach(function (line) {
+        var li = document.createElement("li");
+        li.textContent = line;
+        ul.appendChild(li);
+      });
+      var chips = $("taxo-chips");
+      chips.innerHTML = "";
+      [["one value or many", key === "primitive" || key === "composite"], ["linear or hierarchical", key === "linear" || key === "nonlinear"], ["fixed or grown", key === "array" || key === "list"]].forEach(function (c) {
+        var sp = document.createElement("span");
+        sp.className = "chip" + (c[1] ? " chip--live" : "");
+        sp.textContent = c[0];
+        chips.appendChild(sp);
+      });
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i].setAttribute("aria-pressed", nodes[i].getAttribute("data-topic") === key ? "true" : "false");
+      }
+      log("classification map: " + t[0]);
+    }
+    for (var i = 0; i < nodes.length; i++) {
+      (function (n) {
+        var key = n.getAttribute("data-topic");
+        n.addEventListener("click", function () { select(key); });
+        n.addEventListener("keydown", function (ev) {
+          if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); select(key); }
+        });
+      })(nodes[i]);
+    }
+    select("all");
+  })();
+
+  /* ---------- sheet 09: ADT implementation toggle ---------- */
+  (function () {
+    var table = $("i9-table");
+    if (!table) return;
+    var ab = $("i9-array"), lb = $("i9-list");
+    function pick(which) {
+      table.setAttribute("data-impl", which);
+      ab.setAttribute("aria-pressed", which === "array" ? "true" : "false");
+      lb.setAttribute("aria-pressed", which === "list" ? "true" : "false");
+      $("i9-note").textContent = which === "array"
+        ? "Array backed: you pay in shifting when you insert at the front, and you get O(1) access to any index and 4 bytes per element."
+        : "Linked backed: every insert at a known position is O(1) and the structure grows without a capacity limit, but access becomes O(n) and each element costs 32 bytes measured.";
+    }
+    ab.addEventListener("click", function () { pick("array"); log("ADT cost table: array backed"); });
+    lb.addEventListener("click", function () { pick("list"); log("ADT cost table: linked backed"); });
+    pick("array");
+  })();
+
+  /* ---------- sheet 10: bars draw in when seen ---------- */
+  (function () {
+    var fills = document.querySelectorAll(".bar__fill");
+    if (!fills.length) return;
+    function fill(el) { el.style.width = el.getAttribute("data-w") + "%"; }
+    if (!window.IntersectionObserver) {
+      for (var i = 0; i < fills.length; i++) fill(fills[i]);
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { fill(e.target); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.4 });
+    for (var k = 0; k < fills.length; k++) io.observe(fills[k]);
+  })();
+
+  /* ---------- self test ---------- */
+  (function () {
+    var quiz = $("quiz");
+    if (!quiz) return;
+    var boxes = quiz.querySelectorAll("details.ans");
+    function score() {
+      var open = 0;
+      for (var i = 0; i < boxes.length; i++) if (boxes[i].open) open++;
+      $("q-score").textContent = open === 0
+        ? "nothing revealed yet"
+        : open + " of " + boxes.length + " revealed" + (open === boxes.length ? ": all eight, check the answer key below" : "");
+    }
+    for (var i = 0; i < boxes.length; i++) boxes[i].addEventListener("toggle", score);
+    for (var j = 0; j < boxes.length; j++) {
+      boxes[j].addEventListener("toggle", function () {
+        log("self-test: answer " + (this.open ? "revealed" : "hidden") + ", " + $("q-score").textContent);
+      });
+    }
+    $("q-all").addEventListener("click", function () {
+      for (var i = 0; i < boxes.length; i++) boxes[i].open = true;
+      score();
+      log("self-test: all answers revealed");
+    });
+    $("q-none").addEventListener("click", function () {
+      for (var i = 0; i < boxes.length; i++) boxes[i].open = false;
+      score();
+      log("self-test: answers hidden again");
+    });
+    score();
+  })();
+
+  /* Enter commits a typed value: the listeners above run on input/change, and
+     this makes the keyboard path explicit instead of silently doing nothing. */
+  document.addEventListener("keydown", function (ev) {
+    var t = ev.target;
+    if (ev.key !== "Enter" || !t || (t.tagName !== "INPUT" && t.tagName !== "SELECT")) return;
+    ev.preventDefault();
+    if (t.tagName === "SELECT") t.dispatchEvent(new Event("change"));
+    else t.dispatchEvent(new Event("change"));
+    log("committed " + (t.id || t.tagName) + " with the Enter key");
+  });
+
+  /* ---------- rail: current sheet and sight progress ---------- */
+  (function () {
+    var links = document.querySelectorAll('.rail__list a[href^="#sheet-"]');
+    if (!links.length) return;
+    var seen = {};
+    try { seen = JSON.parse(localStorage.getItem("dsa-l5-seen") || "{}") || {}; } catch (e) { seen = {}; }
+    function meter() {
+      var n = 0;
+      for (var k in seen) if (seen[k]) n++;
+      $("rail-count").textContent = n + " of " + links.length + " sheets seen";
+      $("rail-fill").style.width = Math.round((n / links.length) * 100) + "%";
+    }
+    var targets = [];
+    for (var i = 0; i < links.length; i++) {
+      var id = links[i].getAttribute("href").slice(1);
+      var el = document.getElementById(id);
+      if (el) targets.push({ id: id, el: el });
+    }
+    if (window.IntersectionObserver) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          for (var j = 0; j < links.length; j++) links[j].setAttribute("aria-current", "false");
+          for (var m = 0; m < links.length; m++) {
+            if (links[m].getAttribute("href") === "#" + e.target.id) links[m].setAttribute("aria-current", "true");
+          }
+          seen[e.target.id] = 1;
+          try { localStorage.setItem("dsa-l5-seen", JSON.stringify(seen)); } catch (er) {}
+          meter();
+        });
+      }, { rootMargin: "-20% 0px -60% 0px" });
+      targets.forEach(function (t) { io.observe(t.el); });
+    }
+    meter();
+  })();
+})();
+</script>
+</body>
+</html>

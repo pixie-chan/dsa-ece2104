@@ -1,0 +1,29 @@
+# compiled binaries and build leftovers
+_build/
+*.o
+*.out
+*.exe
+a.out
+
+# python
+__pycache__/
+*.pyc
+
+# gate screenshots (regenerable, and they are megabytes of pixels)
+.qa/ui-gate-*.png
+.qa/review-*.png
+.qa/zoom-*.png
+
+# course material that is not mine to republish (university handout, submissions)
+Handouts/
+*.pdf
+
+# editor and OS noise
+.DS_Store
+.vscode/
+.idea/
+compile_commands.json
+
+# build caches
+.cache/
+*.log

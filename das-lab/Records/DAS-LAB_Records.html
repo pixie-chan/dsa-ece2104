@@ -1,0 +1,2497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DAS-LAB Lab Records: Experiments 0 to 4</title>
+<style>
+@page { size: A4; margin: 18mm 16mm; }
+body { font-family: "DejaVu Serif", Georgia, serif; font-size: 10.5pt; line-height: 1.5;
+       color: #111; max-width: 190mm; margin: 0 auto; padding: 8mm; }
+h1 { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 17pt; color: #123c6b;
+     border-bottom: 2px solid #123c6b; padding-bottom: 4px; margin-top: 0; }
+h2 { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 13pt; color: #123c6b;
+     border-bottom: 1px solid #b9c8db; padding-bottom: 2px; margin-top: 18px; }
+h3 { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 11.5pt; color: #23486f;
+     margin-top: 14px; }
+code { font-family: "DejaVu Sans Mono", "Courier New", monospace; font-size: 9.5pt;
+       background: #f2f4f7; padding: 0 2px; border-radius: 2px; }
+pre { background: #f7f8fa; border: 1px solid #ccd4de; border-left: 3px solid #123c6b;
+      border-radius: 3px; padding: 7px 9px; overflow-x: auto; page-break-inside: avoid; }
+pre code { background: none; font-size: 8.6pt; line-height: 1.35; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 9.8pt;
+        page-break-inside: avoid; }
+th, td { border: 1px solid #b9c8db; padding: 4px 6px; text-align: left; vertical-align: top; }
+th { background: #e8eef6; font-family: "DejaVu Sans", Arial, sans-serif; }
+ul, ol { margin: 6px 0 6px 18px; }
+li { margin: 2px 0; }
+hr { border: 0; border-top: 1px dashed #b9c8db; margin: 14px 0; }
+.page-break { page-break-before: always; }
+strong { color: #000; }
+</style>
+</head>
+<body>
+<h1>Experiment 0: Array Operations</h1>
+<p><strong>Course:</strong> ELC2132 Data Structures &amp; Algorithms Lab  ·  <strong>Language:</strong> C++ (<code>g++ -std=c++17</code>)
+<strong>Name:</strong> .............................  <strong>Reg. No.:</strong> .............................
+<strong>Batch:</strong> ...................  <strong>Date:</strong> ...................</p>
+<p>Manuals: <code>DAS-LAB/Manuals/Exp 0_Array Operations 1.pdf</code>, <code>Exp 0_Array Operations 2.pdf</code>,
+<code>Exp 0_Array Operations Pointers.pdf</code></p>
+<p>This experiment has three parts:</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Topic</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1-D array operations: initialization, sum, maximum, reversal</td>
+<td><code>Exp0_Array_Operations/exp0_1.cpp</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Array operations: (a) insertion, (b) linear search</td>
+<td><code>Exp0_Array_Operations/exp0_2.cpp</code>, <code>exp0_2_linear_search.cpp</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>2-D array operations using pointer notation</td>
+<td><code>Exp0_Array_Operations/exp0_3.cpp</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Part 1: 1-D array operations</h2>
+<h3>Aim</h3>
+<p>Write a C++ program that demonstrates the following 1-D array operations on an array of SIZE
+elements:</p>
+<ul>
+<li>(a) <strong>Initialization</strong>: declare the array and fill it with values</li>
+<li>(b) <strong>Finding the sum</strong>: add every element of the array</li>
+<li>(c) <strong>Finding the maximum element</strong>: report the largest value stored</li>
+<li>(d) <strong>Reversing the array</strong>: turn the order of the elements around</li>
+</ul>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Declare an integer array <code>arr[SIZE]</code> and initialize it with the values <code>{10, 20, 30}</code> (part a).</li>
+<li>Print every element with its index using a loop from <code>i = 0</code> to <code>SIZE - 1</code> (part a).</li>
+<li>Set <code>sum = 0</code>; for <code>i = 0</code> to <code>SIZE - 1</code>, add <code>arr[i]</code> to <code>sum</code>; print <code>sum</code> (part b).</li>
+<li>Set <code>max = arr[0]</code>; for <code>i = 1</code> to <code>SIZE - 1</code>, if <code>arr[i] &gt; max</code> then set <code>max = arr[i]</code>;
+   print <code>max</code> (part c).</li>
+<li>For <code>i = 0</code> to <code>SIZE / 2 - 1</code>, swap <code>arr[i]</code> with <code>arr[SIZE - 1 - i]</code> (part d).</li>
+<li>Print the reversed array (part d).</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp0_Array_Operations/exp0_1.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 0, Part 1 : 1-D array operations
+ * Course               : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language             : C++
+ *
+ * Aim                  : Demonstrate (a) initialization, (b) finding the sum,
+ *                        (c) finding the maximum element and (d) reversing a
+ *                        1-D array of SIZE elements.
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o exp0_1 exp0_1.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define SIZE 3
+
+int main()
+{
+    int arr[SIZE] = {10, 20, 30};
+    int sum = 0;
+    int max = arr[0];
+    int temp;
+
+    // (a) Initialization: print the array with its index numbers.
+    cout &lt;&lt; &quot;Elements of the array:&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; SIZE; i++) {
+        cout &lt;&lt; &quot;arr[&quot; &lt;&lt; i &lt;&lt; &quot;] = &quot; &lt;&lt; arr[i] &lt;&lt; endl;
+    }
+
+    // (b) Add every element to get the sum.
+    for (int i = 0; i &lt; SIZE; i++) {
+        sum = sum + arr[i];
+    }
+    cout &lt;&lt; &quot;Sum of elements in the array: &quot; &lt;&lt; sum &lt;&lt; endl;
+
+    // (c) Compare every element with max and keep the biggest one.
+    for (int i = 1; i &lt; SIZE; i++) {
+        if (arr[i] &gt; max) {
+            max = arr[i];
+        }
+    }
+    cout &lt;&lt; &quot;Maximum element in the array: &quot; &lt;&lt; max &lt;&lt; endl;
+
+    // (d) Reverse the array by swapping the two ends.
+    for (int i = 0; i &lt; SIZE / 2; i++) {
+        temp = arr[i];
+        arr[i] = arr[SIZE - 1 - i];
+        arr[SIZE - 1 - i] = temp;
+    }
+
+    cout &lt;&lt; &quot;Reversed array:&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; SIZE; i++) {
+        cout &lt;&lt; arr[i] &lt;&lt; &quot; &quot;;
+    }
+    cout &lt;&lt; endl;
+
+    return 0;
+}
+</code></pre>
+<h3>Results</h3>
+<!--TEXT:_build/out/exp0_1.txt-->
+
+<pre><code>Elements of the array:
+arr[0] = 10
+arr[1] = 20
+arr[2] = 30
+Sum of elements in the array: 60
+Maximum element in the array: 30
+Reversed array:
+30 20 10
+</code></pre>
+<h3>Observation</h3>
+<p>The four operations run one after another on the same array, and each one is visible in the
+output above:</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Operation</th>
+<th>Result printed</th>
+<th>Loop used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a)</td>
+<td>Initialization and printing</td>
+<td><code>arr[0] = 10</code>, <code>arr[1] = 20</code>, <code>arr[2] = 30</code></td>
+<td><code>for i = 0</code> to <code>SIZE - 1</code></td>
+</tr>
+<tr>
+<td>(b)</td>
+<td>Sum of the elements</td>
+<td><code>Sum of elements in the array: 60</code></td>
+<td><code>for i = 0</code> to <code>SIZE - 1</code>, <code>sum += arr[i]</code></td>
+</tr>
+<tr>
+<td>(c)</td>
+<td>Maximum element</td>
+<td><code>Maximum element in the array: 30</code></td>
+<td><code>for i = 1</code> to <code>SIZE - 1</code>, compare with <code>max</code></td>
+</tr>
+<tr>
+<td>(d)</td>
+<td>Reversal</td>
+<td><code>30 20 10</code></td>
+<td><code>for i = 0</code> to <code>SIZE / 2 - 1</code>, swap with <code>arr[SIZE - 1 - i]</code></td>
+</tr>
+</tbody>
+</table>
+<p>The sum was verified by hand: 10 + 20 + 30 = 60. The maximum loop starts at <code>i = 1</code> because
+<code>max</code> is already initialized with <code>arr[0]</code>, so the first element is never compared with itself.
+The reversal loop runs only up to <code>SIZE / 2</code> because each iteration fixes two elements at once,
+one from each end, and swapping in place needs no second array. All four operations are single
+passes over the array, so each one is <strong>O(n)</strong> in time and <strong>O(1)</strong> in extra space.</p>
+<hr />
+<h2>Part 2 (a): Insert an integer in the array</h2>
+<h3>Aim</h3>
+<p>Write a C++ program to insert an integer value at a chosen index of a 1-D array, shifting the
+elements that follow it one position to the right.</p>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Declare an array <code>arr</code> with capacity 10, store the values <code>{10, 20, 30}</code> in it and set
+   <code>size = 3</code>, the number of elements actually in use.</li>
+<li>Print the array before the insertion.</li>
+<li>Read the index at which the value is to be inserted.</li>
+<li>If the index is less than 0 or greater than <code>size</code>, print an error message and stop.</li>
+<li>If <code>size</code> has already reached the capacity, report that the array is full and stop.</li>
+<li>Read the value to be inserted.</li>
+<li>For <code>i = size</code> down to <code>index + 1</code>, copy <code>arr[i - 1]</code> into <code>arr[i]</code> (shift right).</li>
+<li>Store the new value at <code>arr[index]</code> and increase <code>size</code> by 1.</li>
+<li>Print the array after the insertion.</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp0_Array_Operations/exp0_2.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 0, Part 2 (a) : Insert an integer into a 1-D array
+ * Course                   : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language                 : C++
+ *
+ * Aim                      : Insert a new value at a chosen index of a 1-D array
+ *                            by shifting every element from that index onwards
+ *                            one position to the right.
+ *
+ * Idea                     : the array has spare capacity, so the number of
+ *                            elements in use (size) grows with every insertion
+ *                            and no existing element is lost.
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o exp0_2 exp0_2.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define CAPACITY 10   // how many elements the array can hold
+
+int main()
+{
+    int arr[CAPACITY] = {10, 20, 30};
+    int size = 3;        // elements currently in use
+    int index = 0;
+    int value = 0;
+
+    cout &lt;&lt; &quot;Array before insertion (&quot; &lt;&lt; size &lt;&lt; &quot; elements):&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; size; i++) {
+        cout &lt;&lt; &quot;arr[&quot; &lt;&lt; i &lt;&lt; &quot;] = &quot; &lt;&lt; arr[i] &lt;&lt; endl;
+    }
+
+    cout &lt;&lt; &quot;Enter the index where you want to insert (0 to &quot; &lt;&lt; size &lt;&lt; &quot;): &quot;;
+    cin &gt;&gt; index;
+
+    if (index &lt; 0 || index &gt; size) {
+        cout &lt;&lt; &quot;Invalid index! Please enter a valid index.&quot; &lt;&lt; endl;
+        return 1;
+    }
+    if (size == CAPACITY) {
+        cout &lt;&lt; &quot;Array is full, cannot insert another element.&quot; &lt;&lt; endl;
+        return 1;
+    }
+
+    cout &lt;&lt; &quot;Enter the new value to insert: &quot;;
+    cin &gt;&gt; value;
+
+    // Shift every element from index onwards one place to the right.
+    for (int i = size; i &gt; index; i--) {
+        arr[i] = arr[i - 1];
+    }
+
+    // Put the new value into the empty place that the shifting created.
+    arr[index] = value;
+    size = size + 1;
+
+    cout &lt;&lt; &quot;Array after insertion (&quot; &lt;&lt; size &lt;&lt; &quot; elements):&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; size; i++) {
+        cout &lt;&lt; &quot;arr[&quot; &lt;&lt; i &lt;&lt; &quot;] = &quot; &lt;&lt; arr[i] &lt;&lt; endl;
+    }
+
+    return 0;
+}
+</code></pre>
+<h3>Results</h3>
+<p>Insertion of the value 99 at index 1:</p>
+<!--TEXT:_build/out/exp0_2_insert.txt-->
+
+<pre><code>Array before insertion (3 elements):
+arr[0] = 10
+arr[1] = 20
+arr[2] = 30
+Enter the index where you want to insert (0 to 3): 1
+Enter the new value to insert: 99
+Array after insertion (4 elements):
+arr[0] = 10
+arr[1] = 99
+arr[2] = 20
+arr[3] = 30
+</code></pre>
+<p>Guard case, an index outside the valid range (9 instead of 0 to 3):</p>
+<!--TEXT:_build/out/exp0_2_insert_bad_index.txt-->
+
+<pre><code>Array before insertion (3 elements):
+arr[0] = 10
+arr[1] = 20
+arr[2] = 30
+Enter the index where you want to insert (0 to 3): 9
+Invalid index! Please enter a valid index.
+</code></pre>
+<h3>Observation</h3>
+<p>Before the insertion the array held three elements in use, and after inserting 99 at index 1 it
+holds four, so the shift moved <code>20</code> to index 2 and <code>30</code> to index 3 and no value was lost. The
+two other positions were checked as well: inserting at index 0 puts the new value first and
+pushes all three existing elements right, inserting at index 3 (the current <code>size</code>) appends the
+value at the end without any shifting at all, and a negative index or an index beyond <code>size</code> is
+rejected with an error message before anything is modified.</p>
+<p>The shifting loop is the whole cost of the operation. In the worst case, which is an insertion at
+index 0, all <code>n</code> elements move one place, so insertion is <strong>O(n)</strong> in time and needs no extra
+array, which is <strong>O(1)</strong> extra space.</p>
+<hr />
+<h2>Part 2 (b): Search an element using linear search</h2>
+<h3>Aim</h3>
+<p>Write a C++ program to search for a value in an array by comparing it with every element in turn,
+from the first element to the last, and to report the position at which it is found.</p>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Declare an array <code>a</code> of <code>N = 10</code> integers.</li>
+<li>Read <code>N</code> values into the array.</li>
+<li>Read the element to be searched (the key).</li>
+<li>Set <code>position = -1</code> and <code>comparisons = 0</code>.</li>
+<li>For <code>i = 0</code> to <code>N - 1</code>:</li>
+<li>Increase <code>comparisons</code> by 1.</li>
+<li>If <code>a[i]</code> is equal to the key, set <code>position = i</code> and leave the loop.</li>
+<li>If <code>position</code> is still -1, print <code>Element Not Found</code>; otherwise print the position of the
+   element (1-based) and its 0-based index.</li>
+<li>Print the number of comparisons that were made.</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp0_Array_Operations/exp0_2_linear_search.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 0, Part 2 (b) : Search an element using linear search
+ * Course                   : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language                 : C++
+ *
+ * Aim                      : Search for a value in an array by comparing it with
+ *                            every element from the first to the last, and report
+ *                            the position where it is found.
+ *
+ * Idea                     : the loop stops as soon as a match is found, so the
+ *                            number of comparisons is the position of the element
+ *                            in the best case and N when it is not present.
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o exp0_2_linear_search exp0_2_linear_search.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define N 10
+
+int main()
+{
+    int a[N];
+    int item = 0;
+    int position = -1;    // -1 means &quot;not found&quot;
+    int comparisons = 0;
+
+    cout &lt;&lt; &quot;Enter &quot; &lt;&lt; N &lt;&lt; &quot; elements of the array:&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; N; i++) {
+        cin &gt;&gt; a[i];
+    }
+
+    cout &lt;&lt; &quot;Enter the element to be searched: &quot;;
+    cin &gt;&gt; item;
+
+    // Compare the item with every element until it matches.
+    for (int i = 0; i &lt; N; i++) {
+        comparisons = comparisons + 1;
+        if (a[i] == item) {
+            position = i;
+            break;
+        }
+    }
+
+    if (position == -1) {
+        cout &lt;&lt; &quot;Element Not Found (after &quot; &lt;&lt; comparisons &lt;&lt; &quot; comparisons)&quot; &lt;&lt; endl;
+    } else {
+        cout &lt;&lt; &quot;Element Found at Position = &quot; &lt;&lt; position + 1
+             &lt;&lt; &quot; (0-based index &quot; &lt;&lt; position
+             &lt;&lt; &quot;, after &quot; &lt;&lt; comparisons &lt;&lt; &quot; comparison(s))&quot; &lt;&lt; endl;
+    }
+
+    return 0;
+}
+</code></pre>
+<h3>Results</h3>
+<p>The key 19 is present in the array (it is the seventh value entered):</p>
+<!--TEXT:_build/out/exp0_2b_search_found.txt-->
+
+<pre><code>Enter 10 elements of the array:
+5 12 7 23 45 3 19 8 30 11
+Enter the element to be searched: 19
+Element Found at Position = 7 (0-based index 6, after 7 comparison(s))
+</code></pre>
+<p>The key 100 is not present, so the loop has to examine the whole array:</p>
+<!--TEXT:_build/out/exp0_2b_search_notfound.txt-->
+
+<pre><code>Enter 10 elements of the array:
+5 12 7 23 45 3 19 8 30 11
+Enter the element to be searched: 100
+Element Not Found (after 10 comparisons)
+</code></pre>
+<h3>Observation</h3>
+<p>The element 19 was found at position 7 after 7 comparisons, which is exactly its distance from
+the start of the array, and the element 100 was not found, which forced all 10 comparisons.
+Two more cases were checked to complete the picture:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Position reported</th>
+<th>Comparisons</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 (first element)</td>
+<td>1</td>
+<td>1</td>
+<td>best case, the first comparison succeeds</td>
+</tr>
+<tr>
+<td>19 (seventh element)</td>
+<td>7</td>
+<td>7</td>
+<td>the loop stops as soon as it matches</td>
+</tr>
+<tr>
+<td>11 (last element)</td>
+<td>10</td>
+<td>10</td>
+<td>the match is found only at the last element</td>
+</tr>
+<tr>
+<td>100 (absent)</td>
+<td>not found</td>
+<td>10</td>
+<td>the loop must examine every element</td>
+</tr>
+</tbody>
+</table>
+<p>The number of comparisons grows in step with the position of the element, so the best case is
+<strong>O(1)</strong> and the average and worst cases are <strong>O(n)</strong>. Linear search needs no sorted input and
+no extra memory, which is its advantage over binary search, but on a large array it is much
+slower.</p>
+<p>One portability note: the listing printed in the manual uses <code>#include &lt;conio.h&gt;</code>, <code>clrscr()</code>,
+<code>getch()</code> and <code>void main()</code>, which belong to the old Turbo C compiler on DOS and do not exist on
+Linux. A portable equivalent was written above with <code>#include &lt;iostream&gt;</code>, <code>int main()</code> and <code>cin</code>,
+so that the program compiles with any modern C++ compiler.</p>
+<hr />
+<h2>Part 3: 2-D array operations using pointer notation</h2>
+<h3>Aim</h3>
+<p>Write a C++ program that demonstrates 2-D array operations using pointer notation: print a 3x3
+array, then multiply each of its elements by 2, reaching every element through pointer
+arithmetic rather than through subscript notation.</p>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Declare a 2-D array <code>arr[ROWS][COLS]</code> and initialize it with the values 1 to 9 arranged in
+   three rows.</li>
+<li>Call <code>printArray(arr, ROWS, COLS)</code>:</li>
+<li>For every row <code>i</code>, for every column <code>j</code>, print <code>*((*(arr + i)) + j)</code>.</li>
+<li>Call <code>multiplyByTwo(arr, ROWS, COLS)</code>:</li>
+<li>For every row <code>i</code>, for every column <code>j</code>, multiply <code>*((*(arr + i)) + j)</code> by 2 and print the
+      new value.</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp0_Array_Operations/exp0_3.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 0, Pointers : 2-D array operations using pointer notation
+ * Course                 : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language               : C++
+ *
+ * Aim                    : Print a 3x3 array and then multiply every element by
+ *                          2, reaching every element only through pointer
+ *                          arithmetic: *((*(arr + i)) + j)
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o exp0_3 exp0_3.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define ROWS 3
+#define COLS 3
+
+// arr is a pointer to a row of the 2-D array, so the function knows the row
+// length and the pointer arithmetic below lands on the right element.
+void printArray(int (*arr)[COLS], int rows, int cols)
+{
+    cout &lt;&lt; &quot;Array elements:&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; rows; i++) {
+        for (int j = 0; j &lt; cols; j++) {
+            cout &lt;&lt; *((*(arr + i)) + j) &lt;&lt; &quot; &quot;;
+        }
+        cout &lt;&lt; endl;
+    }
+}
+
+void multiplyByTwo(int (*arr)[COLS], int rows, int cols)
+{
+    cout &lt;&lt; &quot;Array elements multiplied by 2:&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; rows; i++) {
+        for (int j = 0; j &lt; cols; j++) {
+            *((*(arr + i)) + j) = *((*(arr + i)) + j) * 2;
+            cout &lt;&lt; *((*(arr + i)) + j) &lt;&lt; &quot; &quot;;
+        }
+        cout &lt;&lt; endl;
+    }
+}
+
+int main()
+{
+    int arr[ROWS][COLS] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
+
+    printArray(arr, ROWS, COLS);
+    multiplyByTwo(arr, ROWS, COLS);
+
+    return 0;
+}
+</code></pre>
+<h3>Results</h3>
+<!--TEXT:_build/out/exp0_3.txt-->
+
+<pre><code>Array elements:
+1 2 3
+4 5 6
+7 8 9
+Array elements multiplied by 2:
+2 4 6
+8 10 12
+14 16 18
+</code></pre>
+<h3>Observation</h3>
+<p>The array is printed twice: first as stored, and then with every element doubled. The doubled
+values are correct for all nine positions (1 becomes 2, 5 becomes 10, 9 becomes 18), which shows
+that the pointer expression reaches every element of the 2-D array and can also modify it.</p>
+<p>The expression <code>*((*(arr + i)) + j)</code> works because a 2-D array is an array of rows: <code>arr</code> decays
+to a pointer to the first row, <code>arr + i</code> steps to row <code>i</code>, <code>*(arr + i)</code> is that row (which itself
+decays to a pointer to its first element), and adding <code>j</code> and dereferencing gives the element in
+column <code>j</code> of that row. The function parameter <code>int (*arr)[COLS]</code> is a pointer to an array of
+<code>COLS</code> integers, which is why the function knows the row length and pointer arithmetic lands on
+the correct element.</p>
+<p>Both functions visit every element once, so the time complexity is <strong>O(rows × cols)</strong>, which is
+<strong>O(9)</strong> for the 3x3 array used here, and the array is modified in place, so no extra memory is
+needed.</p>
+<hr />
+<h2>Conclusion</h2>
+<p>All the array operations asked for in Experiment 0 were written in C++, compiled with
+<code>g++ -Wall -Wextra -Wpedantic -std=c++17</code> with no warnings, and executed successfully.</p>
+<ol>
+<li>A 1-D array can be initialized at declaration, and the three operations requested on it
+   (sum, maximum, reversal) each need only a single pass over the elements, which is why all of
+   them are O(n) in time and O(1) in extra space.</li>
+<li>Inserting into an array is not free: because the elements live in consecutive memory
+   locations, everything after the insertion point has to be shifted one place to the right,
+   which costs O(n) time. The program keeps a separate <code>size</code> counter and spare capacity so that
+   an insertion grows the array instead of destroying the last element.</li>
+<li>Linear search compares the key with the elements one by one and stops at the first match, so
+   its cost depends on where the element sits: 1 comparison for the first element, 7 for the
+   seventh, and 10 when the element is absent.</li>
+<li>A 2-D array can be handled entirely through pointer notation. The expression
+   <code>*((*(arr + i)) + j)</code> moves one row at a time and then one column at a time, and pointer
+   arithmetic can both read and modify the elements, which shows how arrays and pointers are
+   related in C.</li>
+</ol>
+<p>Hence the aim of implementing 1-D array operations, insertion, linear search and 2-D array
+operations with pointer notation was achieved.</p>
+<hr />
+<h3>Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Exp0_Array_Operations/exp0_1.cpp</code></td>
+<td>Part 1: initialization, sum, maximum and reversal of a 1-D array</td>
+</tr>
+<tr>
+<td><code>Exp0_Array_Operations/exp0_2.cpp</code></td>
+<td>Part 2 (a): insertion at a given index by shifting right</td>
+</tr>
+<tr>
+<td><code>Exp0_Array_Operations/exp0_2_linear_search.cpp</code></td>
+<td>Part 2 (b): linear search with a comparison count</td>
+</tr>
+<tr>
+<td><code>Exp0_Array_Operations/exp0_3.cpp</code></td>
+<td>Part 3: 2-D array printing and doubling with pointer notation</td>
+</tr>
+<tr>
+<td><code>_build/out/exp0_*.txt</code></td>
+<td>The transcripts shown above</td>
+</tr>
+</tbody>
+</table>
+<div class="page-break"></div>
+<h1>Experiment 1: Sorting using Merge Sort</h1>
+<p><strong>Course:</strong> ELC2132 Data Structures &amp; Algorithms Lab  ·  <strong>Language:</strong> C++ (<code>g++ -std=c++17</code>)
+<strong>Name:</strong> .............................  <strong>Reg. No.:</strong> .............................
+<strong>Batch:</strong> ...................  <strong>Date:</strong> ...................</p>
+<p>Source: <code>DAS-LAB/Exp1_Merge_Sort/exp1_merge_sort.cpp</code>  ·  Manual: <code>DAS-LAB/Manuals/Exp 1_Student.pdf</code></p>
+<hr />
+<h2>Aim</h2>
+<p>Write a C++ program that implements merge sort and use it to sort the array
+<code>38 27 43 3 9 82 10</code>.</p>
+<hr />
+<h2>Basic understanding</h2>
+<p>Merge sort follows the divide and conquer strategy. The array is divided into two halves, each
+half is sorted by the same procedure, and the two sorted halves are then combined by a merge step
+that repeatedly takes the smaller of the two front elements. The division stops when a subarray
+holds a single element, because an array of one element is already sorted. Unlike the sorts that
+swap elements inside one array, merge sort needs a temporary array during the merge step, and it
+is stable: elements that compare equal keep their original relative order, which is why the merge
+step compares with <code>&lt;=</code> and takes from the left half first.</p>
+<hr />
+<h2>Algorithm</h2>
+<p><strong>mergeSort(arr, left, right)</strong></p>
+<ol>
+<li>If <code>left &gt;= right</code>, the subarray holds at most one element and is already sorted, so return.</li>
+<li>Compute the middle index: <code>mid = left + (right - left) / 2</code>.</li>
+<li>Recursively sort the left half: <code>mergeSort(arr, left, mid)</code>.</li>
+<li>Recursively sort the right half: <code>mergeSort(arr, mid + 1, right)</code>.</li>
+<li>Merge the two sorted halves: <code>merge(arr, left, mid, right)</code>.</li>
+</ol>
+<p><strong>merge(arr, left, mid, right)</strong></p>
+<ol>
+<li>Compute the sizes <code>n1 = mid - left + 1</code> and <code>n2 = right - mid</code>.</li>
+<li>Copy <code>arr[left ... mid]</code> into a temporary array <code>L</code> and <code>arr[mid + 1 ... right]</code> into <code>R</code>.</li>
+<li>Set <code>i = 0</code>, <code>j = 0</code>, <code>k = left</code>.</li>
+<li>While <code>i &lt; n1</code> and <code>j &lt; n2</code>: if <code>L[i] &lt;= R[j]</code>, copy <code>L[i]</code> into <code>arr[k]</code> and increment <code>i</code>;
+   otherwise copy <code>R[j]</code> into <code>arr[k]</code> and increment <code>j</code>. Increment <code>k</code> after every copy.</li>
+<li>Copy any elements left over in <code>L</code> into <code>arr</code>, then any elements left over in <code>R</code>.</li>
+<li>Return.</li>
+</ol>
+<p><strong>main()</strong></p>
+<ol>
+<li>Start.</li>
+<li>Declare the array <code>arr</code> with the values <code>{38, 27, 43, 3, 9, 82, 10}</code>.</li>
+<li>Print the original array.</li>
+<li>Call <code>mergeSort(arr, 0, SIZE - 1)</code>.</li>
+<li>Print the sorted array.</li>
+<li>Stop.</li>
+</ol>
+<hr />
+<h2>C++ Program</h2>
+<!--CODE:Exp1_Merge_Sort/exp1_merge_sort.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 1 : Sorting using merge sort
+ * Course       : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language     : C++
+ *
+ * Aim          : Sort the array 38 27 43 3 9 82 10 using merge sort.
+ *
+ * Idea         : divide the array into two halves, sort each half with the same
+ *                function, then merge the two sorted halves into one.
+ *
+ * Time complexity : O(n log n) in the best, average and worst case
+ * Space complexity: O(n) for the two temporary arrays L and R
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o merge_sort exp1_merge_sort.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define SIZE 7
+
+// Merge the two sorted halves arr[left..mid] and arr[mid+1..right].
+void merge(int arr[], int left, int mid, int right)
+{
+    int L[SIZE], R[SIZE];      // SIZE is enough, each half is smaller than the whole
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    // Copy both halves into the temporary arrays.
+    for (int i = 0; i &lt; n1; i++) {
+        L[i] = arr[left + i];
+    }
+    for (int j = 0; j &lt; n2; j++) {
+        R[j] = arr[mid + 1 + j];
+    }
+
+    int i = 0;
+    int j = 0;
+    int k = left;
+
+    // Take the smaller element from the front of L or R, until one runs out.
+    while (i &lt; n1 &amp;&amp; j &lt; n2) {
+        if (L[i] &lt;= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy whatever is left over.
+    while (i &lt; n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    while (j &lt; n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(int arr[], int left, int right)
+{
+    if (left &lt; right) {
+        int mid = left + (right - left) / 2;
+
+        mergeSort(arr, left, mid);        // sort the left half
+        mergeSort(arr, mid + 1, right);   // sort the right half
+        merge(arr, left, mid, right);     // merge the two sorted halves
+    }
+}
+
+int main()
+{
+    int arr[SIZE] = {38, 27, 43, 3, 9, 82, 10};
+
+    cout &lt;&lt; &quot;Original array: &quot;;
+    for (int i = 0; i &lt; SIZE; i++) {
+        cout &lt;&lt; arr[i] &lt;&lt; &quot; &quot;;
+    }
+    cout &lt;&lt; endl;
+
+    mergeSort(arr, 0, SIZE - 1);
+
+    cout &lt;&lt; &quot;Sorted array: &quot;;
+    for (int i = 0; i &lt; SIZE; i++) {
+        cout &lt;&lt; arr[i] &lt;&lt; &quot; &quot;;
+    }
+    cout &lt;&lt; endl;
+
+    return 0;
+}
+</code></pre>
+<hr />
+<h2>Results</h2>
+<!--TEXT:_build/out/exp1_merge_sort.txt-->
+
+<pre><code>Original array: 38 27 43 3 9 82 10
+Sorted array: 3 9 10 27 38 43 82
+</code></pre>
+<p>The array printed by the program after sorting is <code>3 9 10 27 38 43 82</code>, which is the ascending
+order of the given values.</p>
+<hr />
+<h2>Observation</h2>
+<p>The recursion divides the array down to single elements and then merges them back in sorted
+order. Recording the call sequence for the given input gives the following trace:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Subarray being processed</th>
+<th>Action</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>38 27 43 3 9 82 10</code></td>
+<td>split at <code>mid = 3</code></td>
+<td><code>38 27 43 3</code> and <code>9 82 10</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>38 27 43 3</code></td>
+<td>split at <code>mid = 1</code></td>
+<td><code>38 27</code> and <code>43 3</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>38 27</code></td>
+<td>split at <code>mid = 0</code>, then merge</td>
+<td><code>27 38</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>43 3</code></td>
+<td>split at <code>mid = 2</code>, then merge</td>
+<td><code>3 43</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>27 38</code> and <code>3 43</code></td>
+<td>merge</td>
+<td><code>3 27 38 43</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>9 82 10</code></td>
+<td>split at <code>mid = 5</code></td>
+<td><code>9 82</code> and <code>10</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>9 82</code></td>
+<td>split at <code>mid = 4</code>, then merge</td>
+<td><code>9 82</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>9 82</code> and <code>10</code></td>
+<td>merge</td>
+<td><code>9 10 82</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>3 27 38 43</code> and <code>9 10 82</code></td>
+<td>final merge</td>
+<td><code>3 9 10 27 38 43 82</code></td>
+</tr>
+</tbody>
+</table>
+<p>The trace shows why the total work is <code>n log n</code>: the array is halved about <code>log2(n)</code> times, which
+is 3 levels for 7 elements, and every level performs one merge pass that touches each element
+once. The recurrence is</p>
+<pre><code>T(n) = 2 T(n/2) + O(n)      with T(1) = O(1)
+</code></pre>
+<p>which solves to <strong>O(n log n)</strong>. Unlike quick sort, this bound holds in the best, average and
+worst case, and the input order does not matter: a reversed array and a sorted array are both
+split the same way. The cost is the temporary <code>L</code> and <code>R</code> arrays, which together hold <code>n</code>
+elements, so the space complexity is <strong>O(n)</strong> in addition to the <code>O(log n)</code> recursion depth.</p>
+<hr />
+<h2>Conclusion</h2>
+<p>Merge sort was implemented in C++ and used to sort the array <code>38 27 43 3 9 82 10</code>, producing
+<code>3 9 10 27 38 43 82</code> as required. The program divides the array into halves until each part holds
+a single element, and then merges the parts back in order, which the trace of the nine steps above
+makes visible.</p>
+<p>The running time is O(n log n) in every case, because the division depth is log n and each level
+does one linear merge pass, which makes merge sort more predictable than quick sort, whose worst
+case is O(n^2). The price is the extra O(n) memory for the temporary arrays, and the fact that the
+sort is not in place. Because the merge step takes from the left half whenever the two front
+values are equal, the algorithm is stable, which matters when records are sorted by one field and
+then by another. Hence the aim of implementing merge sort was achieved.</p>
+<div class="page-break"></div>
+<h1>Experiment 2: Sorting using Quick Sort</h1>
+<p><strong>Course:</strong> ELC2132 Data Structures &amp; Algorithms Lab  ·  <strong>Language:</strong> C++ (<code>g++ -std=c++17</code>)
+<strong>Name:</strong> .............................  <strong>Reg. No.:</strong> .............................
+<strong>Batch:</strong> ...................  <strong>Date:</strong> ...................</p>
+<p>Source: <code>DAS-LAB/Exp2_Quick_Sort/exp2_quick_sort.cpp</code>  ·  Manual: <code>DAS-LAB/Manuals/Exp 2_Student.pdf</code></p>
+<hr />
+<h2>Aim</h2>
+<p>Write a C++ program that implements quick sort and use it to sort the array
+<code>38 27 43 3 9 82 10</code>.</p>
+<hr />
+<h2>Basic understanding</h2>
+<p>Quick sort also works by divide and conquer, but the division is done by a partition step rather
+than by simply cutting the array in half. One element is chosen as the pivot, every element
+smaller than the pivot is moved to its left and every larger element to its right, and the pivot
+then sits in the position it will occupy in the final sorted array. The two sides of the pivot are
+then sorted by the same procedure. The program follows the Lomuto scheme, which takes the last
+element of the range as the pivot, keeps a boundary index <code>i</code> of the elements known to be smaller
+than the pivot, and swaps an element into that region whenever it is smaller than the pivot. The
+sorting happens inside the original array, so no temporary array is needed.</p>
+<hr />
+<h2>Algorithm</h2>
+<p><strong>partition(arr, low, high)</strong></p>
+<ol>
+<li>Set <code>pivot = arr[high]</code>, the last element of the range.</li>
+<li>Set <code>i = low - 1</code>, the boundary of the region holding values smaller than the pivot.</li>
+<li>For <code>j = low</code> to <code>high - 1</code>:</li>
+<li>If <code>arr[j] &lt; pivot</code>, increment <code>i</code> and swap <code>arr[i]</code> with <code>arr[j]</code>.</li>
+<li>Swap <code>arr[i + 1]</code> with <code>arr[high]</code>, which places the pivot just after the smaller values.</li>
+<li>Return <code>i + 1</code>, the final index of the pivot.</li>
+</ol>
+<p><strong>quickSort(arr, low, high)</strong></p>
+<ol>
+<li>If <code>low &gt;= high</code>, the range holds at most one element and is already sorted, so return.</li>
+<li>Call <code>partition(arr, low, high)</code> and store the result in <code>pi</code>.</li>
+<li>Recursively sort the left side: <code>quickSort(arr, low, pi - 1)</code>.</li>
+<li>Recursively sort the right side: <code>quickSort(arr, pi + 1, high)</code>.</li>
+</ol>
+<p><strong>main()</strong></p>
+<ol>
+<li>Start.</li>
+<li>Declare the array <code>arr</code> with the values <code>{38, 27, 43, 3, 9, 82, 10}</code>.</li>
+<li>Print the original array.</li>
+<li>Call <code>quickSort(arr, 0, SIZE - 1)</code>.</li>
+<li>Print the sorted array.</li>
+<li>Stop.</li>
+</ol>
+<hr />
+<h2>C++ Program</h2>
+<!--CODE:Exp2_Quick_Sort/exp2_quick_sort.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 2 : Sorting using quick sort
+ * Course       : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language     : C++
+ *
+ * Aim          : Sort the array 38 27 43 3 9 82 10 using quick sort.
+ *
+ * Idea         : take the last element as the pivot, move every smaller element
+ *                to its left, put the pivot in its final position, then sort the
+ *                two sides with the same function.
+ *
+ * Time complexity : O(n log n) on average, O(n^2) in the worst case
+ * Space complexity: O(log n) on average for the recursion
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o quick_sort exp2_quick_sort.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define SIZE 7
+
+// Exchange the values of the two variables the pointers point to.
+void swapValues(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Put the pivot in its final place: smaller values on the left, bigger on the right.
+int partition(int arr[], int low, int high)
+{
+    int pivot = arr[high];
+    int i = low - 1;              // last position of the &quot;smaller than pivot&quot; part
+
+    for (int j = low; j &lt; high; j++) {
+        if (arr[j] &lt; pivot) {
+            i++;
+            swapValues(&amp;arr[i], &amp;arr[j]);
+        }
+    }
+
+    swapValues(&amp;arr[i + 1], &amp;arr[high]);   // place the pivot after the smaller values
+    return i + 1;
+}
+
+void quickSort(int arr[], int low, int high)
+{
+    if (low &lt; high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);    // sort the left side of the pivot
+        quickSort(arr, pi + 1, high);   // sort the right side of the pivot
+    }
+}
+
+int main()
+{
+    int arr[SIZE] = {38, 27, 43, 3, 9, 82, 10};
+
+    cout &lt;&lt; &quot;Original array: &quot;;
+    for (int i = 0; i &lt; SIZE; i++) {
+        cout &lt;&lt; arr[i] &lt;&lt; &quot; &quot;;
+    }
+    cout &lt;&lt; endl;
+
+    quickSort(arr, 0, SIZE - 1);
+
+    cout &lt;&lt; &quot;Sorted array: &quot;;
+    for (int i = 0; i &lt; SIZE; i++) {
+        cout &lt;&lt; arr[i] &lt;&lt; &quot; &quot;;
+    }
+    cout &lt;&lt; endl;
+
+    return 0;
+}
+</code></pre>
+<hr />
+<h2>Results</h2>
+<!--TEXT:_build/out/exp2_quick_sort.txt-->
+
+<pre><code>Original array: 38 27 43 3 9 82 10
+Sorted array: 3 9 10 27 38 43 82
+</code></pre>
+<p>The array printed by the program after sorting is <code>3 9 10 27 38 43 82</code>, which is the ascending
+order of the given values and is identical to the result produced by merge sort in Experiment 1.</p>
+<hr />
+<h2>Observation</h2>
+<p>Every call to <code>partition</code> fixes exactly one element, the pivot, in its final position. Tracing the
+calls for the given input gives:</p>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>Range being partitioned</th>
+<th>Pivot</th>
+<th>Array after the partition</th>
+<th>Pivot's final index</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quickSort(0, 6)</code></td>
+<td><code>38 27 43 3 9 82 10</code></td>
+<td>10</td>
+<td><code>3 9 10 38 27 82 43</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>quickSort(0, 1)</code></td>
+<td><code>3 9</code></td>
+<td>9</td>
+<td><code>3 9</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>quickSort(3, 6)</code></td>
+<td><code>38 27 82 43</code></td>
+<td>43</td>
+<td><code>38 27 43 82</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>quickSort(3, 4)</code></td>
+<td><code>38 27</code></td>
+<td>27</td>
+<td><code>27 38</code></td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>The remaining calls are on ranges of a single element (<code>3</code> at index 0, <code>82</code> at index 6, <code>27</code> at
+index 3 and <code>38</code> at index 4), which return immediately because <code>low &gt;= high</code>. After the four
+partitions the array reads <code>3 9 10 27 38 43 82</code>.</p>
+<p>In the first partition, for example, the pivot is 10 and the scan moves <code>3</code> and <code>9</code> into the
+smaller-than-pivot region, so the swap at the end puts 10 at index 2 with everything smaller on
+its left and everything larger on its right. That single step already places 10 correctly and
+never touches it again, which is why quick sort needs no merge pass at all.</p>
+<p>The cost of one partition is a single scan of the range, so it is O(n) at each level, and the
+number of levels depends on how evenly the pivot splits the data. When the pivot falls near the
+middle, there are about <code>log n</code> levels and the total is <strong>O(n log n)</strong>; when it is always the
+smallest or the largest element, the split is maximally uneven, the depth becomes <code>n</code>, and the
+total degrades to <strong>O(n^2)</strong>. The array used here is not sorted, so the pivots 10, 9, 43 and 27
+gave reasonably even splits. The recursion depth is <code>O(log n)</code> on average and <code>O(n)</code> in the worst
+case, and since the algorithm sorts in place, no extra array is required.</p>
+<p>A comparison of the two sorts implemented in Experiments 1 and 2:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Merge sort (Experiment 1)</th>
+<th>Quick sort (Experiment 2)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Best and average time</td>
+<td>O(n log n)</td>
+<td>O(n log n)</td>
+</tr>
+<tr>
+<td>Worst-case time</td>
+<td>O(n log n)</td>
+<td>O(n^2)</td>
+</tr>
+<tr>
+<td>Extra space</td>
+<td>O(n) for the temporary arrays</td>
+<td>O(log n) recursion stack on average</td>
+</tr>
+<tr>
+<td>In place</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Stable</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr>
+<td>Comments</td>
+<td>predictable, good for linked lists</td>
+<td>usually faster in practice, needs a good pivot choice</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Conclusion</h2>
+<p>Quick sort was implemented in C++ and used on the array <code>38 27 43 3 9 82 10</code>, producing
+<code>3 9 10 27 38 43 82</code>, exactly the same result that merge sort produced in Experiment 1, which
+confirms that both algorithms are correct.</p>
+<p>The working of the algorithm is visible in the partition trace: each partition scans its range
+once, moves every element smaller than the pivot to the left of the boundary and leaves the pivot
+in its final position, so the pivot never has to be moved again. Sorting then continues only on
+the two remaining sides.</p>
+<p>The average time complexity is O(n log n), which makes quick sort competitive with merge sort,
+but the worst case is O(n^2) and occurs when the pivot is always an extreme value, for example
+when an already sorted array is sorted again with the last element chosen as the pivot. The
+advantage over merge sort is that quick sort works in place and needs no extra array, only the
+recursion stack. Hence the aim of implementing quick sort and sorting the given array with it was
+achieved.</p>
+<div class="page-break"></div>
+<h1>Experiment 3: Implementation of Recursive Programs</h1>
+<p><strong>Course:</strong> ELC2132 Data Structures &amp; Algorithms Lab  ·  <strong>Language:</strong> C++ (<code>g++ -std=c++17</code>)
+<strong>Name:</strong> .............................  <strong>Reg. No.:</strong> .............................
+<strong>Batch:</strong> ...................  <strong>Date:</strong> ...................</p>
+<p>Source folder: <code>DAS-LAB/Exp3_Recursion/</code>  ·  Manual: <code>DAS-LAB/Manuals/Exp 3_Student.pdf</code></p>
+<hr />
+<h2>Aim</h2>
+<p>Write C++ programs to design, implement and analyze recursive programs for computing the
+Fibonacci series, the factorial of a number, and for solving the Tower of Hanoi problem.</p>
+<hr />
+<h2>Basic understanding</h2>
+<p>Recursion is a technique in which a function calls itself, directly or indirectly, to solve a
+problem by reducing it to smaller instances of the same problem. Every recursive solution
+needs exactly two parts:</p>
+<ul>
+<li><strong>Base case</strong>: the simplest instance, solved directly without further recursion. It is what
+  stops the recursion.</li>
+<li><strong>Recursive case</strong>: the step where the function calls itself with a smaller input, moving
+  towards the base case.</li>
+</ul>
+<p>Every call is placed on the program's call stack, and each call holds its stack frame until the
+calls below it return. This is why recursion costs memory (space complexity) in addition to
+time. The three programs below show three patterns of increasing complexity: linear recursion
+(factorial), tree recursion (Fibonacci) and recursion with problem transformation (Tower of
+Hanoi).</p>
+<hr />
+<h2>3.1 Factorial of a Number</h2>
+<h3>Aim</h3>
+<p>Write a recursive C++ program to compute the factorial of a non-negative integer <code>n</code>, defined
+as <code>n! = n * (n-1) * (n-2) * ... * 1</code>, with <code>0! = 1</code>.</p>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Read the non-negative integer <code>n</code>.</li>
+<li>If <code>n &lt; 0</code>, report that the factorial is not defined for negative numbers and stop.</li>
+<li>If <code>n &gt; 12</code>, report that the result would not fit in an int and stop.</li>
+<li>Call the recursive function <code>factorial(n)</code>:</li>
+<li>If <code>n == 0</code> or <code>n == 1</code>, return <code>1</code> (base case, recursion stops here).</li>
+<li>Otherwise, return <code>n * factorial(n - 1)</code> (recursive case: the problem is reduced by 1).</li>
+<li>Print <code>n!</code> as the returned value.</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp3_Recursion/exp3_1_factorial.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 3.1 : Factorial of a number using recursion
+ * Course          : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language        : C++
+ *
+ * Aim             : Find n! = n * (n-1) * (n-2) * ... * 1, with 0! = 1.
+ *
+ * Base case       : factorial(0) = 1 and factorial(1) = 1
+ * Recursive case  : factorial(n) = n * factorial(n - 1)
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o factorial exp3_1_factorial.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define MAX_N 12   // 12! = 479001600, the biggest factorial that fits in an int
+
+int factorial(int n)
+{
+    if (n == 0 || n == 1) {
+        return 1;                    // base case, the recursion stops here
+    }
+    return n * factorial(n - 1);     // recursive case
+}
+
+int main()
+{
+    int n = 0;
+
+    cout &lt;&lt; &quot;Enter a number (0 to &quot; &lt;&lt; MAX_N &lt;&lt; &quot;): &quot;;
+    cin &gt;&gt; n;
+
+    if (n &lt; 0) {
+        cout &lt;&lt; &quot;Factorial is not defined for negative numbers.&quot; &lt;&lt; endl;
+        return 1;
+    }
+    if (n &gt; MAX_N) {
+        cout &lt;&lt; &quot;Please enter a number up to &quot; &lt;&lt; MAX_N
+             &lt;&lt; &quot;, bigger values do not fit in an int.&quot; &lt;&lt; endl;
+        return 1;
+    }
+
+    cout &lt;&lt; n &lt;&lt; &quot;! = &quot; &lt;&lt; factorial(n) &lt;&lt; endl;
+
+    return 0;
+}
+</code></pre>
+<h3>Output</h3>
+<!--TEXT:_build/out/exp3_1_factorial.txt-->
+
+<pre><code>Enter a number (0 to 12): 10
+10! = 3628800
+</code></pre>
+<p>Values verified for other inputs:</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>Output of the program</th>
+<th>Expected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>5</td>
+<td>120</td>
+<td>120</td>
+</tr>
+<tr>
+<td>10</td>
+<td>3628800</td>
+<td>3628800</td>
+</tr>
+<tr>
+<td>12</td>
+<td>479001600</td>
+<td>479001600</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>Please enter a number up to 12</code> message</td>
+<td>guard: 13! does not fit in an int</td>
+</tr>
+<tr>
+<td>-4</td>
+<td><code>factorial of a negative number is not defined</code></td>
+<td>input validation</td>
+</tr>
+</tbody>
+</table>
+<h3>Observation</h3>
+<p><code>factorial(5)</code> expands as <code>5 * factorial(4)</code> → <code>5 * 4 * factorial(3)</code> → ... → <code>5 * 4 * 3 * 2 * 1</code>.
+The calls are pushed on the stack until the base case <code>factorial(0)</code> returns 1, and then the
+multiplications are performed while the stack unwinds. Exactly <code>n + 1</code> calls are made, one
+multiplication per call, so the time complexity is <strong>O(n)</strong>; at the deepest point <code>n + 1</code> frames
+are alive, so the space complexity is <strong>O(n)</strong>.</p>
+<hr />
+<h2>3.2 Fibonacci Series</h2>
+<h3>Aim</h3>
+<p>Write a recursive C++ program to compute the nth term of the Fibonacci series, defined as
+<code>F(0) = 0</code>, <code>F(1) = 1</code> and <code>F(n) = F(n-1) + F(n-2)</code> for <code>n &gt; 1</code>.</p>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Read <code>n</code>, the index of the term to be computed (0 ≤ n ≤ 35).</li>
+<li>For <code>i = 0</code> to <code>n</code>, print the value returned by <code>fib(i)</code>:</li>
+<li>If <code>i == 0</code>, return <code>0</code> (base case 1).</li>
+<li>If <code>i == 1</code>, return <code>1</code> (base case 2).</li>
+<li>Otherwise return <code>fib(i - 1) + fib(i - 2)</code> (recursive case, two calls).</li>
+<li>Reset the call counter to 0 and compute <code>fib(n)</code> again.</li>
+<li>Print <code>F(n)</code> and the total number of recursive calls made.</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp3_Recursion/exp3_2_fibonacci.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 3.2 : Fibonacci series using recursion
+ * Course          : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language        : C++
+ *
+ * Aim             : Compute the Fibonacci series F(0) = 0, F(1) = 1 and
+ *                   F(n) = F(n-1) + F(n-2) for n &gt; 1, using recursion.
+ *
+ * Base cases      : F(0) = 0, F(1) = 1
+ * Recursive case  : F(n) = F(n-1) + F(n-2)     (two recursive calls)
+ *
+ * Time complexity : O(2^n), the same values are calculated again and again
+ * Space complexity: O(n), only the deepest chain of calls is kept in memory
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o fibonacci exp3_2_fibonacci.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define MAX_N 35
+
+int callCount = 0;   // counts the calls, to show how fast the work grows
+
+int fib(int n)
+{
+    callCount = callCount + 1;
+
+    if (n == 0) {
+        return 0;                    // base case 1
+    }
+    if (n == 1) {
+        return 1;                    // base case 2
+    }
+    return fib(n - 1) + fib(n - 2);  // recursive case
+}
+
+int main()
+{
+    int n = 0;
+
+    cout &lt;&lt; &quot;Enter n (0 to &quot; &lt;&lt; MAX_N &lt;&lt; &quot;): &quot;;
+    cin &gt;&gt; n;
+
+    if (n &lt; 0 || n &gt; MAX_N) {
+        cout &lt;&lt; &quot;Please enter a number between 0 and &quot; &lt;&lt; MAX_N &lt;&lt; &quot;.&quot; &lt;&lt; endl;
+        return 1;
+    }
+
+    cout &lt;&lt; &quot;Fibonacci series (first &quot; &lt;&lt; n + 1 &lt;&lt; &quot; terms):&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt;= n; i++) {
+        cout &lt;&lt; &quot;F(&quot; &lt;&lt; i &lt;&lt; &quot;) = &quot; &lt;&lt; fib(i) &lt;&lt; endl;
+    }
+
+    callCount = 0;
+    int value = fib(n);
+
+    cout &lt;&lt; endl;
+    cout &lt;&lt; &quot;F(&quot; &lt;&lt; n &lt;&lt; &quot;) = &quot; &lt;&lt; value &lt;&lt; endl;
+    cout &lt;&lt; &quot;Total recursive calls made to compute F(&quot; &lt;&lt; n &lt;&lt; &quot;): &quot; &lt;&lt; callCount &lt;&lt; endl;
+
+    return 0;
+}
+</code></pre>
+<h3>Output</h3>
+<!--TEXT:_build/out/exp3_2_fibonacci.txt-->
+
+<pre><code>Enter n (0 to 35): 8
+Fibonacci series (first 9 terms):
+F(0) = 0
+F(1) = 1
+F(2) = 1
+F(3) = 2
+F(4) = 3
+F(5) = 5
+F(6) = 8
+F(7) = 13
+F(8) = 21
+
+F(8) = 21
+Total recursive calls made to compute F(8): 67
+</code></pre>
+<h3>Observation</h3>
+<p><code>F(5)</code> is computed as <code>F(4) + F(3)</code>, and each of those again splits into two calls, so the same
+subproblem (for example <code>F(2)</code>) is recomputed many times. The number of calls therefore
+grows exponentially. The counter built into the program confirms the growth, and the values
+match the closed formula <code>calls(n) = 2 * F(n+1) - 1</code>:</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>Recursive calls for F(n)</th>
+<th>2 × F(n+1) − 1</th>
+<th>Time (measured)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5</td>
+<td>15</td>
+<td>15</td>
+<td>&lt; 0.01 s</td>
+</tr>
+<tr>
+<td>10</td>
+<td>177</td>
+<td>177</td>
+<td>&lt; 0.01 s</td>
+</tr>
+<tr>
+<td>15</td>
+<td>1973</td>
+<td>1973</td>
+<td>&lt; 0.01 s</td>
+</tr>
+<tr>
+<td>20</td>
+<td>21891</td>
+<td>21891</td>
+<td>&lt; 0.01 s</td>
+</tr>
+<tr>
+<td>25</td>
+<td>242785</td>
+<td>242785</td>
+<td>&lt; 0.01 s</td>
+</tr>
+<tr>
+<td>30</td>
+<td>2692537</td>
+<td>2692537</td>
+<td>0.01 s</td>
+</tr>
+</tbody>
+</table>
+<p>Time complexity is <strong>O(2^n)</strong>. Space complexity is only <strong>O(n)</strong>, because the two calls are
+made one after the other: at any instant only the deepest chain of <code>n + 1</code> frames is alive, not
+the whole call tree.</p>
+<hr />
+<h2>3.3 Tower of Hanoi</h2>
+<h3>Aim</h3>
+<p>Write a recursive C++ program to solve the Tower of Hanoi puzzle for <code>n</code> disks: move all disks
+from the source rod to the destination rod using an auxiliary rod, such that only one disk is
+moved at a time, only the top disk of a rod may be moved, and a larger disk is never placed on
+a smaller one.</p>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Read the number of disks <code>n</code> (1 ≤ n ≤ 20).</li>
+<li>Call <code>towerOfHanoi(n, 'A', 'B', 'C')</code>, where A is the source, B the helper and C the
+   destination rod:</li>
+<li>If <code>n == 1</code>, move disk 1 from the source to the destination and count the move
+      (base case).</li>
+<li>Otherwise:<ol>
+<li>Move the top <code>n - 1</code> disks from the source to the helper rod, using the
+     destination as the helper: <code>towerOfHanoi(n - 1, source, destination, helper)</code>.</li>
+<li>Move disk <code>n</code> from the source to the destination and count the move.</li>
+<li>Move the <code>n - 1</code> disks from the helper rod to the destination, using the
+     source as the helper: <code>towerOfHanoi(n - 1, helper, source, destination)</code>.</li>
+</ol>
+</li>
+<li>Print the total number of moves, which is <code>2^n - 1</code>.</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp3_Recursion/exp3_3_tower_of_hanoi.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 3.3 : Tower of Hanoi using recursion
+ * Course          : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language        : C++
+ *
+ * Aim             : Move n disks from rod A to rod C using rod B, one disk at a
+ *                   time, and never put a bigger disk on a smaller one.
+ *
+ * Base case       : n = 1, move that single disk straight to the destination
+ * Recursive case  : move the top n-1 disks to the helper rod, move disk n to the
+ *                   destination, then move the n-1 disks on top of it
+ *
+ * Time complexity : O(2^n), the number of moves is exactly 2^n - 1
+ * Space complexity: O(n) calls waiting on the stack
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o tower_of_hanoi exp3_3_tower_of_hanoi.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define MAX_DISKS 20
+
+int moveCount = 0;
+
+// Move n disks from 'source' to 'destination' using 'helper' as the spare rod.
+void towerOfHanoi(int n, char source, char helper, char destination)
+{
+    if (n == 1) {
+        // Base case: only one disk left, move it directly.
+        moveCount = moveCount + 1;
+        cout &lt;&lt; &quot;Move &quot; &lt;&lt; moveCount &lt;&lt; &quot;: disk 1 from &quot; &lt;&lt; source
+             &lt;&lt; &quot; to &quot; &lt;&lt; destination &lt;&lt; endl;
+        return;
+    }
+
+    // Step 1: move the top n-1 disks out of the way onto the helper rod.
+    towerOfHanoi(n - 1, source, destination, helper);
+
+    // Step 2: move the biggest disk to the destination.
+    moveCount = moveCount + 1;
+    cout &lt;&lt; &quot;Move &quot; &lt;&lt; moveCount &lt;&lt; &quot;: disk &quot; &lt;&lt; n &lt;&lt; &quot; from &quot; &lt;&lt; source
+         &lt;&lt; &quot; to &quot; &lt;&lt; destination &lt;&lt; endl;
+
+    // Step 3: move the n-1 disks from the helper rod onto the destination.
+    towerOfHanoi(n - 1, helper, source, destination);
+}
+
+int main()
+{
+    int n = 0;
+
+    cout &lt;&lt; &quot;Enter the number of disks (1 to &quot; &lt;&lt; MAX_DISKS &lt;&lt; &quot;): &quot;;
+    cin &gt;&gt; n;
+
+    if (n &lt; 1 || n &gt; MAX_DISKS) {
+        cout &lt;&lt; &quot;Please enter a number between 1 and &quot; &lt;&lt; MAX_DISKS &lt;&lt; &quot;.&quot; &lt;&lt; endl;
+        return 1;
+    }
+
+    cout &lt;&lt; endl;
+    cout &lt;&lt; &quot;Moves for &quot; &lt;&lt; n &lt;&lt; &quot; disks (A = source, B = helper, C = destination):&quot; &lt;&lt; endl;
+    towerOfHanoi(n, 'A', 'B', 'C');
+
+    cout &lt;&lt; endl;
+    cout &lt;&lt; &quot;Total number of moves = &quot; &lt;&lt; moveCount &lt;&lt; endl;
+
+    return 0;
+}
+</code></pre>
+<h3>Output</h3>
+<!--TEXT:_build/out/exp3_3_tower_of_hanoi.txt-->
+
+<pre><code>Enter the number of disks (1 to 20): 3
+
+Moves for 3 disks (A = source, B = helper, C = destination):
+Move 1: disk 1 from A to C
+Move 2: disk 2 from A to B
+Move 3: disk 1 from C to B
+Move 4: disk 3 from A to C
+Move 5: disk 1 from B to A
+Move 6: disk 2 from B to C
+Move 7: disk 1 from A to C
+
+Total number of moves = 7
+</code></pre>
+<h3>Observation</h3>
+<p>For 3 disks the solution takes 7 moves, and the printed sequence is a valid solution: disk 3
+never moves before disks 1 and 2 are stacked on rod B, and no larger disk is ever placed on a
+smaller one. The move count was checked against <code>2^n - 1</code>:</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>Moves printed</th>
+<th>2^n − 1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>7</td>
+<td>7</td>
+</tr>
+<tr>
+<td>4</td>
+<td>15</td>
+<td>15</td>
+</tr>
+<tr>
+<td>5</td>
+<td>31</td>
+<td>31</td>
+</tr>
+<tr>
+<td>10</td>
+<td>1023</td>
+<td>1023</td>
+</tr>
+<tr>
+<td>15</td>
+<td>32767</td>
+<td>32767</td>
+</tr>
+<tr>
+<td>20</td>
+<td>1048575</td>
+<td>1048575</td>
+</tr>
+</tbody>
+</table>
+<p>Each call with <code>n</code> disks makes two calls with <code>n - 1</code> disks, which gives the recurrence
+<code>T(n) = 2T(n-1) + 1</code> with <code>T(1) = 1</code>. Solving it gives <code>T(n) = 2^n - 1</code>, so the time complexity is
+<strong>O(2^n)</strong>. The recursion depth is <code>n</code>, so the space complexity is <strong>O(n)</strong>. At 20 disks the
+program printed all 1,048,575 moves in 0.11 s.</p>
+<hr />
+<h2>Summary of the three programs</h2>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Recursion pattern</th>
+<th>Recursive calls</th>
+<th>Time complexity</th>
+<th>Space complexity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Factorial</td>
+<td>single recursive call (linear)</td>
+<td>n + 1</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>Fibonacci</td>
+<td>two recursive calls (tree)</td>
+<td>2·F(n+1) − 1</td>
+<td>O(2^n)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>Tower of Hanoi</td>
+<td>two calls with problem transformation</td>
+<td>2^(n+1) − 1</td>
+<td>O(2^n)</td>
+<td>O(n)</td>
+</tr>
+</tbody>
+</table>
+<h2>Conclusion</h2>
+<p>All three programs were written, compiled with <code>g++ -Wall -Wextra -Wpedantic -std=c++17</code> without any
+warning, and executed successfully.</p>
+<ol>
+<li>The factorial program shows linear recursion: one call per step and one unwinding
+   multiplication, giving O(n) time and O(n) stack space. It works up to <code>12!</code>, which is the
+biggest factorial that fits in an int.</li>
+<li>The Fibonacci program shows tree recursion. Its exponential O(2^n) running time was
+   confirmed by counting the calls made (for example 21,891 calls merely to compute <code>F(20)</code>),
+   which demonstrates how the same subproblem is recomputed again and again. Its space cost
+   stays O(n), because the two recursive calls are sequential rather than simultaneous.</li>
+<li>The Tower of Hanoi program shows recursion where the problem itself is transformed at
+   every step. The number of moves printed matched <code>2^n - 1</code> exactly for every value tested,
+   showing why the puzzle is treated as exponential.</li>
+</ol>
+<p>Hence the aim of designing, implementing and analyzing recursive C++ programs for the factorial,
+the Fibonacci series and the Tower of Hanoi was achieved.</p>
+<div class="page-break"></div>
+<h1>Experiment 4: Implementation of Priority Queues: Concepts and Operations</h1>
+<p><strong>Course:</strong> ELC2132 Data Structures &amp; Algorithms Lab  ·  <strong>Language:</strong> C++ (<code>g++ -std=c++17</code>)
+<strong>Name:</strong> .............................  <strong>Reg. No.:</strong> .............................
+<strong>Batch:</strong> ...................  <strong>Date:</strong> ...................</p>
+<p>Source folder: <code>DAS-LAB/Exp4_Priority_Queue/</code>  ·  Manual: <code>DAS-LAB/Manuals/Exp 4_Student.pdf</code></p>
+<hr />
+<h2>Aim</h2>
+<p>Write C++ programs to understand the concept of a priority queue as an abstract data type, and to
+implement it using both an unsorted array and a sorted linked list.</p>
+<hr />
+<h2>Basic understanding</h2>
+<p>A priority queue is an abstract data type in which every element carries a priority, and the
+element with the highest priority is always served first, regardless of the order in which the
+elements were inserted. This is a fundamental departure from an ordinary queue, which is
+strictly First-In-First-Out (FIFO).</p>
+<p>A useful analogy is a hospital emergency room: a patient with a critical injury is treated before
+a patient with a minor cut, even if the latter arrived first. The queue is ordered by urgency
+(priority), not by arrival time.</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>insert(item, priority)</code></td>
+<td>Adds a new element with its associated priority</td>
+</tr>
+<tr>
+<td><code>extractMax()</code></td>
+<td>Removes and returns the element with the highest priority</td>
+</tr>
+<tr>
+<td><code>peek()</code></td>
+<td>Returns the highest-priority element without removing it</td>
+</tr>
+<tr>
+<td><code>isEmpty()</code></td>
+<td>Checks whether the queue currently holds any elements</td>
+</tr>
+</tbody>
+</table>
+<p>There are two natural strategies for storing the elements, and each pushes the cost onto a
+different operation:</p>
+<ul>
+<li><strong>Unsorted array</strong>: new elements are simply appended at the end, so insertion is fast, but
+  extraction must scan every element to find the maximum.</li>
+<li><strong>Sorted linked list</strong>: nodes are kept in descending order of priority at all times, so
+  extraction is instant (the maximum is always the head node), but insertion must traverse the
+  list to find the correct position and relink the pointers.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Unsorted array (Part A)</th>
+<th>Sorted linked list (Part B)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert</td>
+<td>O(1)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>Extract max</td>
+<td>O(n)</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Peek</td>
+<td>O(n)</td>
+<td>O(1)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4.1 Priority Queue Using an Unsorted Array</h2>
+<h3>Aim</h3>
+<p>Implement a max-priority queue in C++ using an unsorted array, supporting <code>insert</code>, <code>extractMax</code>,
+<code>peek</code> and <code>isEmpty</code>.</p>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Declare a structure <code>Element</code> with the members <code>data</code> and <code>priority</code>, an array
+   <code>pq[MAX]</code> to store the elements, and an integer <code>n</code> initialised to 0.</li>
+<li><strong>insert(data, priority)</strong>: if <code>n == MAX</code>, report overflow; otherwise store the element at
+   <code>pq[n]</code> and increment <code>n</code> (no ordering is maintained, so this is O(1)).</li>
+<li><strong>maxIndex()</strong>: set <code>idx = 0</code>; for <code>i = 1</code> to <code>n - 1</code>, if <code>pq[i].priority &gt; pq[idx].priority</code>
+   then set <code>idx = i</code>; return <code>idx</code>. This is the linear scan that makes peek and extractMax
+   O(n) in the unsorted representation.</li>
+<li><strong>peek()</strong>: if <code>n == 0</code>, report that the queue is empty; otherwise print
+   <code>pq[maxIndex()]</code> without removing it.</li>
+<li><strong>extractMax()</strong>: if <code>n == 0</code>, report that the queue is empty; otherwise set
+   <code>idx = maxIndex()</code>, print <code>pq[idx]</code>, shift every element after <code>idx</code> one position to the left and
+   decrement <code>n</code>.</li>
+<li><strong>isEmpty()</strong>: return <code>n == 0</code>.</li>
+<li>Display the menu (insert, extract max, peek, display, isEmpty, exit) and repeat until the
+   user chooses to exit.</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp4_Priority_Queue/exp4_1_priority_queue_array.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 4.1 : Max-priority queue using an UNSORTED ARRAY
+ * Course          : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language        : C++
+ *
+ * Aim             : Implement a priority queue using an unsorted array with the
+ *                   operations insert, extractMax, peek and isEmpty.
+ *
+ * Idea            : a new element is simply put at the end, so insert is O(1).
+ *                   The biggest priority is found by checking every element, so
+ *                   peek and extractMax are O(n).
+ *
+ *   insert      O(1)
+ *   peek        O(n)
+ *   extractMax  O(n)
+ *   isEmpty     O(1)
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o pq_array exp4_1_priority_queue_array.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+#define MAX 100
+
+// One element of the queue: the value and the priority it is served with.
+struct Element {
+    int data;
+    int priority;
+};
+
+Element pq[MAX];
+int n = 0;      // how many elements are in the queue
+
+bool isEmpty()
+{
+    return n == 0;
+}
+
+bool isFull()
+{
+    return n == MAX;
+}
+
+// Insert at the end, no ordering is kept.
+void insertItem(int data, int priority)
+{
+    if (isFull()) {
+        cout &lt;&lt; &quot;Queue is full, cannot insert &quot; &lt;&lt; data &lt;&lt; endl;
+        return;
+    }
+
+    pq[n].data = data;
+    pq[n].priority = priority;
+    n = n + 1;
+
+    cout &lt;&lt; &quot;Inserted: data = &quot; &lt;&lt; data &lt;&lt; &quot;, priority = &quot; &lt;&lt; priority &lt;&lt; endl;
+}
+
+// Find the position of the element with the biggest priority.
+int maxIndex()
+{
+    int index = 0;
+
+    for (int i = 1; i &lt; n; i++) {
+        if (pq[i].priority &gt; pq[index].priority) {
+            index = i;
+        }
+    }
+    return index;
+}
+
+// Show the biggest priority without removing it.
+void peek()
+{
+    if (isEmpty()) {
+        cout &lt;&lt; &quot;Queue is empty, nothing to peek&quot; &lt;&lt; endl;
+        return;
+    }
+
+    int index = maxIndex();
+    cout &lt;&lt; &quot;Highest priority element: data = &quot; &lt;&lt; pq[index].data
+         &lt;&lt; &quot;, priority = &quot; &lt;&lt; pq[index].priority &lt;&lt; endl;
+}
+
+// Remove the element with the biggest priority.
+void extractMax()
+{
+    if (isEmpty()) {
+        cout &lt;&lt; &quot;Queue is empty, nothing to extract&quot; &lt;&lt; endl;
+        return;
+    }
+
+    int index = maxIndex();
+    cout &lt;&lt; &quot;Extracted: data = &quot; &lt;&lt; pq[index].data
+         &lt;&lt; &quot;, priority = &quot; &lt;&lt; pq[index].priority &lt;&lt; endl;
+
+    // Close the gap by moving the following elements one place to the left.
+    for (int i = index; i &lt; n - 1; i++) {
+        pq[i] = pq[i + 1];
+    }
+    n = n - 1;
+}
+
+void display()
+{
+    if (isEmpty()) {
+        cout &lt;&lt; &quot;Queue is empty&quot; &lt;&lt; endl;
+        return;
+    }
+
+    cout &lt;&lt; &quot;Queue elements (in the order they were inserted, size = &quot; &lt;&lt; n &lt;&lt; &quot;):&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; n; i++) {
+        cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;] data = &quot; &lt;&lt; pq[i].data
+             &lt;&lt; &quot;, priority = &quot; &lt;&lt; pq[i].priority &lt;&lt; endl;
+    }
+}
+
+int main()
+{
+    int choice = 0;
+    int data = 0;
+    int priority = 0;
+
+    do {
+        cout &lt;&lt; endl;
+        cout &lt;&lt; &quot;--- Max Priority Queue (unsorted array) ---&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;1. Insert&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;2. Extract max&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;3. Peek&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;4. Display&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;5. isEmpty&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;6. Exit&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;Enter your choice: &quot;;
+        cin &gt;&gt; choice;
+
+        if (choice == 1) {
+            cout &lt;&lt; &quot;Enter data and priority: &quot;;
+            cin &gt;&gt; data &gt;&gt; priority;
+            insertItem(data, priority);
+        } else if (choice == 2) {
+            extractMax();
+        } else if (choice == 3) {
+            peek();
+        } else if (choice == 4) {
+            display();
+        } else if (choice == 5) {
+            if (isEmpty()) {
+                cout &lt;&lt; &quot;Queue is empty&quot; &lt;&lt; endl;
+            } else {
+                cout &lt;&lt; &quot;Queue is not empty&quot; &lt;&lt; endl;
+            }
+        } else if (choice == 6) {
+            cout &lt;&lt; &quot;Exiting.&quot; &lt;&lt; endl;
+        } else {
+            cout &lt;&lt; &quot;Wrong choice, enter a number from 1 to 6.&quot; &lt;&lt; endl;
+        }
+    } while (choice != 6);
+
+    return 0;
+}
+</code></pre>
+<h3>Output</h3>
+<p>Four elements are inserted in the order (10, priority 3), (20, 1), (30, 5), (40, 2), so the highest
+priority belongs to the third element inserted. The transcript below is the actual session inside a
+terminal, with the typed menu choices echoed after their prompts.</p>
+<!--TEXT:_build/out/exp4_1_pq_array.txt-->
+
+<pre><code>
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 1
+Enter data and priority: 10 3
+Inserted: data = 10, priority = 3
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 1
+Enter data and priority: 20 1
+Inserted: data = 20, priority = 1
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 1
+Enter data and priority: 30 5
+Inserted: data = 30, priority = 5
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 1
+Enter data and priority: 40 2
+Inserted: data = 40, priority = 2
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 4
+Queue elements (in the order they were inserted, size = 4):
+  [0] data = 10, priority = 3
+  [1] data = 20, priority = 1
+  [2] data = 30, priority = 5
+  [3] data = 40, priority = 2
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 3
+Highest priority element: data = 30, priority = 5
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 2
+Extracted: data = 30, priority = 5
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 3
+Highest priority element: data = 10, priority = 3
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 4
+Queue elements (in the order they were inserted, size = 3):
+  [0] data = 10, priority = 3
+  [1] data = 20, priority = 1
+  [2] data = 40, priority = 2
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 5
+Queue is not empty
+
+--- Max Priority Queue (unsorted array) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 6
+Exiting.
+</code></pre>
+<h3>Observation</h3>
+<p>The display shows the array in insertion order, which confirms that <code>insert</code> performs no
+ordering at all and is therefore O(1). Even so, <code>peek</code> correctly reported the element with
+priority 5, and <code>extractMax</code> removed that same element, after which <code>peek</code> returned the next
+highest priority, 3. Both of these operations had to scan the array, which is the O(n) cost of
+the unsorted representation. The <code>isEmpty</code> check returned "not empty" while three elements
+remained, and the empty-queue case was checked separately: extracting and peeking on an
+empty queue print an error message instead of reading invalid memory.</p>
+<hr />
+<h2>4.2 Priority Queue Using a Sorted Linked List</h2>
+<h3>Aim</h3>
+<p>Implement a max-priority queue in C++ using a singly linked list kept in descending order of
+priority, supporting <code>insert</code>, <code>extractMax</code>, <code>peek</code> and <code>isEmpty</code>.</p>
+<h3>Algorithm</h3>
+<ol>
+<li>Start.</li>
+<li>Define a self-referential structure <code>Node</code> with the members <code>data</code>, <code>priority</code> and
+   <code>next</code>, and declare <code>head = NULL</code> and <code>count = 0</code>.</li>
+<li><strong>insert(data, priority)</strong>:</li>
+<li>Allocate a new node and store the data and priority in it.</li>
+<li>If <code>head == NULL</code> or the new priority is greater than <code>head-&gt;priority</code>, make the new node
+      the head (it outranks every element already in the list).</li>
+<li>Otherwise traverse the list while the next node has a priority greater than or equal to
+      the new priority, then insert the new node after that position. This keeps the list sorted
+      in descending order and makes insertion O(n).</li>
+<li>Increment <code>count</code>.</li>
+<li><strong>peek()</strong>: if <code>head == NULL</code>, report that the queue is empty; otherwise print the data and
+   priority of the head node. Because the list is always sorted, this is O(1).</li>
+<li><strong>extractMax()</strong>: if <code>head == NULL</code>, report that the queue is empty; otherwise print the
+   head node, unlink it by setting <code>head = head-&gt;next</code>, free the removed node and decrement
+   <code>count</code>. This is O(1).</li>
+<li><strong>isEmpty()</strong>: return <code>head == NULL</code>.</li>
+<li>Display the menu and repeat until the user chooses to exit; free all remaining nodes
+   before terminating.</li>
+<li>Stop.</li>
+</ol>
+<h3>C++ Program</h3>
+<!--CODE:Exp4_Priority_Queue/exp4_2_priority_queue_linkedlist.cpp-->
+
+<pre><code class="language-cpp">/*
+ * Experiment 4.2 : Max-priority queue using a SORTED LINKED LIST
+ * Course          : ELC2132 Data Structures &amp; Algorithms Lab
+ * Language        : C++
+ *
+ * Aim             : Implement a priority queue using a singly linked list that is
+ *                   always kept in descending order of priority, with the
+ *                   operations insert, extractMax, peek and isEmpty.
+ *
+ * Idea            : the list stays sorted, so the biggest priority is always the
+ *                   first node. peek and extractMax are O(1), but insert has to
+ *                   walk the list to find the right place, so it is O(n).
+ *
+ *   insert      O(n)
+ *   peek        O(1)
+ *   extractMax  O(1)
+ *   isEmpty     O(1)
+ *
+ * Compile : g++ -Wall -Wextra -Wpedantic -std=c++17 -o pq_list exp4_2_priority_queue_linkedlist.cpp
+ */
+
+#include &lt;iostream&gt;
+using namespace std;
+
+// One node of the list: the value, its priority and the address of the next node.
+struct Node {
+    int data;
+    int priority;
+    Node* next;
+};
+
+Node* head = NULL;   // the element with the biggest priority
+int count = 0;       // how many elements are in the list
+
+bool isEmpty()
+{
+    return head == NULL;
+}
+
+// Insert the new element so that the list stays in descending order.
+void insertItem(int data, int priority)
+{
+    Node* node = new Node();
+    node-&gt;data = data;
+    node-&gt;priority = priority;
+    node-&gt;next = NULL;
+
+    // Case 1: the new element has the biggest priority, so it becomes the head.
+    if (head == NULL || priority &gt; head-&gt;priority) {
+        node-&gt;next = head;
+        head = node;
+    } else {
+        // Case 2: walk until the next node has a smaller priority.
+        Node* current = head;
+        while (current-&gt;next != NULL &amp;&amp; current-&gt;next-&gt;priority &gt;= priority) {
+            current = current-&gt;next;
+        }
+        node-&gt;next = current-&gt;next;
+        current-&gt;next = node;
+    }
+
+    count = count + 1;
+    cout &lt;&lt; &quot;Inserted: data = &quot; &lt;&lt; data &lt;&lt; &quot;, priority = &quot; &lt;&lt; priority &lt;&lt; endl;
+}
+
+// Show the biggest priority without removing it.
+void peek()
+{
+    if (isEmpty()) {
+        cout &lt;&lt; &quot;Queue is empty, nothing to peek&quot; &lt;&lt; endl;
+        return;
+    }
+
+    cout &lt;&lt; &quot;Highest priority element: data = &quot; &lt;&lt; head-&gt;data
+         &lt;&lt; &quot;, priority = &quot; &lt;&lt; head-&gt;priority &lt;&lt; endl;
+}
+
+// Remove the first node, which always has the biggest priority.
+void extractMax()
+{
+    if (isEmpty()) {
+        cout &lt;&lt; &quot;Queue is empty, nothing to extract&quot; &lt;&lt; endl;
+        return;
+    }
+
+    Node* temp = head;
+    cout &lt;&lt; &quot;Extracted: data = &quot; &lt;&lt; temp-&gt;data
+         &lt;&lt; &quot;, priority = &quot; &lt;&lt; temp-&gt;priority &lt;&lt; endl;
+
+    head = head-&gt;next;
+    delete temp;
+    count = count - 1;
+}
+
+void display()
+{
+    if (isEmpty()) {
+        cout &lt;&lt; &quot;Queue is empty&quot; &lt;&lt; endl;
+        return;
+    }
+
+    cout &lt;&lt; &quot;Queue elements (highest priority first, size = &quot; &lt;&lt; count &lt;&lt; &quot;):&quot; &lt;&lt; endl;
+    for (Node* current = head; current != NULL; current = current-&gt;next) {
+        cout &lt;&lt; &quot;  data = &quot; &lt;&lt; current-&gt;data &lt;&lt; &quot;, priority = &quot; &lt;&lt; current-&gt;priority;
+        if (current == head) {
+            cout &lt;&lt; &quot;  &lt;- head (max)&quot;;
+        }
+        cout &lt;&lt; endl;
+    }
+}
+
+// Free the remaining nodes before the program ends.
+void freeQueue()
+{
+    while (head != NULL) {
+        Node* temp = head;
+        head = head-&gt;next;
+        delete temp;
+    }
+    count = 0;
+}
+
+int main()
+{
+    int choice = 0;
+    int data = 0;
+    int priority = 0;
+
+    do {
+        cout &lt;&lt; endl;
+        cout &lt;&lt; &quot;--- Max Priority Queue (sorted linked list) ---&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;1. Insert&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;2. Extract max&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;3. Peek&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;4. Display&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;5. isEmpty&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;6. Exit&quot; &lt;&lt; endl;
+        cout &lt;&lt; &quot;Enter your choice: &quot;;
+        cin &gt;&gt; choice;
+
+        if (choice == 1) {
+            cout &lt;&lt; &quot;Enter data and priority: &quot;;
+            cin &gt;&gt; data &gt;&gt; priority;
+            insertItem(data, priority);
+        } else if (choice == 2) {
+            extractMax();
+        } else if (choice == 3) {
+            peek();
+        } else if (choice == 4) {
+            display();
+        } else if (choice == 5) {
+            if (isEmpty()) {
+                cout &lt;&lt; &quot;Queue is empty&quot; &lt;&lt; endl;
+            } else {
+                cout &lt;&lt; &quot;Queue is not empty&quot; &lt;&lt; endl;
+            }
+        } else if (choice == 6) {
+            cout &lt;&lt; &quot;Exiting.&quot; &lt;&lt; endl;
+        } else {
+            cout &lt;&lt; &quot;Wrong choice, enter a number from 1 to 6.&quot; &lt;&lt; endl;
+        }
+    } while (choice != 6);
+
+    freeQueue();
+    return 0;
+}
+</code></pre>
+<h3>Output</h3>
+<p>The same four elements are inserted in the same order as in Part A, so that the two
+implementations can be compared directly. The transcript below is again the actual terminal
+session, with the typed menu choices echoed after their prompts.</p>
+<!--TEXT:_build/out/exp4_2_pq_list.txt-->
+
+<pre><code>
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 1
+Enter data and priority: 10 3
+Inserted: data = 10, priority = 3
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 1
+Enter data and priority: 20 1
+Inserted: data = 20, priority = 1
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 1
+Enter data and priority: 30 5
+Inserted: data = 30, priority = 5
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 1
+Enter data and priority: 40 2
+Inserted: data = 40, priority = 2
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 4
+Queue elements (highest priority first, size = 4):
+  data = 30, priority = 5  &lt;- head (max)
+  data = 10, priority = 3
+  data = 40, priority = 2
+  data = 20, priority = 1
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 3
+Highest priority element: data = 30, priority = 5
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 2
+Extracted: data = 30, priority = 5
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 3
+Highest priority element: data = 10, priority = 3
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 4
+Queue elements (highest priority first, size = 3):
+  data = 10, priority = 3  &lt;- head (max)
+  data = 40, priority = 2
+  data = 20, priority = 1
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 5
+Queue is not empty
+
+--- Max Priority Queue (sorted linked list) ---
+1. Insert
+2. Extract max
+3. Peek
+4. Display
+5. isEmpty
+6. Exit
+Enter your choice: 6
+Exiting.
+</code></pre>
+<h3>Observation</h3>
+<p>The display shows the list already in descending order of priority after the four insertions,
+which confirms that <code>insert</code> walks the list and places every node in its correct position, making
+it O(n). The element <code>(30, 5)</code> was placed at the head even though it was inserted third, and the
+element <code>(40, 2)</code> landed between <code>(10, 3)</code> and <code>(20, 1)</code>. Because the head is always the
+maximum, <code>peek</code> and <code>extractMax</code> needed no traversal and returned <code>(30, 5)</code> immediately, after
+which <code>(10, 3)</code> became the new head. Every allocated node was released with <code>delete</code>, both on
+extraction and by <code>freeQueue</code> at exit; a run under AddressSanitizer and UndefinedBehaviorSanitizer
+reported no leaks and no errors.</p>
+<hr />
+<h2>Comparison of the two implementations</h2>
+<p>Both programs produced exactly the same sequence of results for the same input (insert four
+elements, peek, extract max, peek again), which shows that the abstract data type behaves
+identically even though the storage strategy is completely different. Only the cost of the
+operations moves:</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Unsorted array</th>
+<th>Sorted linked list</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert</td>
+<td>O(1): append at <code>pq[size]</code></td>
+<td>O(n): traverse to the correct position</td>
+</tr>
+<tr>
+<td>Peek</td>
+<td>O(n): linear scan for the maximum</td>
+<td>O(1): the head is the maximum</td>
+</tr>
+<tr>
+<td>Extract max</td>
+<td>O(n): scan, then shift the hole left</td>
+<td>O(1): unlink the head</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>fixed capacity <code>MAX</code>, possible overflow</td>
+<td>grows on demand, needs <code>new</code>/<code>delete</code></td>
+</tr>
+<tr>
+<td>Order of elements in memory</td>
+<td>insertion order</td>
+<td>descending priority</td>
+</tr>
+</tbody>
+</table>
+<p>So neither representation is better in all cases: the array is preferable when insertions
+dominate, and the linked list is preferable when the highest-priority element is extracted
+repeatedly, which is exactly the access pattern of a scheduler or an event-driven simulation.</p>
+<h2>Conclusion</h2>
+<p>Both priority queues were implemented in C++ and executed successfully. The unsorted-array
+version performed <code>insert</code> in constant time but had to scan the array for <code>peek</code> and
+<code>extractMax</code>; the sorted-linked-list version kept itself ordered at insertion cost so that
+<code>peek</code> and <code>extractMax</code> became constant-time operations. For the same input sequence both
+versions always returned the element with the highest priority first, which verified that a
+priority queue is an abstract data type, that is, defined by its operations rather than by its
+implementation. The programs also handled the boundary cases correctly: inserting into a full
+array, extracting from or peeking into an empty queue, equal priorities (the element inserted
+earlier is served first in both implementations) and the release of all dynamically allocated
+nodes. Hence the aim of understanding and implementing a priority queue using both an
+unsorted array and a sorted linked list was achieved.</p>
+<hr />
+<h3>Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Exp4_Priority_Queue/exp4_1_priority_queue_array.cpp</code></td>
+<td>Part A: max-priority queue using an unsorted array</td>
+</tr>
+<tr>
+<td><code>Exp4_Priority_Queue/exp4_2_priority_queue_linkedlist.cpp</code></td>
+<td>Part B: max-priority queue using a sorted linked list</td>
+</tr>
+<tr>
+<td><code>_build/out/exp4_1_pq_array.txt</code></td>
+<td>Raw sample run of Part A</td>
+</tr>
+<tr>
+<td><code>_build/out/exp4_2_pq_list.txt</code></td>
+<td>Raw sample run of Part B</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

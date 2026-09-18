@@ -1,0 +1,26 @@
+flowchart LR
+  subgraph S["Singly linked: 1 link, forward only, 16 bytes per node"]
+    direction LR
+    s1["10"] --> s2["20"] --> s3["30"] --> sn["NULL"]
+  end
+
+  subgraph D["Doubly linked: 2 links, both directions, 24 bytes per node"]
+    direction LR
+    d1["10"] <--> d2["20"] <--> d3["30"] <--> dn["NULL"]
+  end
+
+  subgraph C["Circular: last node points back to the first, no NULL anywhere"]
+    direction LR
+    c1["1"] --> c2["2"] --> c3["3"] --> c1
+  end
+
+  S --- SUSE["use: stacks, queues, most exam questions<br/>trap: you cannot step backwards"]
+  D --- DUSE["use: LRU cache, browser back and forward<br/>trap: every insert writes 4 pointers"]
+  C --- CUSE["use: round robin scheduling, playlists<br/>trap: while cur != NULL loops forever"]
+
+  style S fill:#eef2f7,stroke:#5b6b7f
+  style D fill:#e8f4ea,stroke:#3d7a4a
+  style C fill:#fdf1e7,stroke:#b5713a
+  style SUSE fill:#ffffff,stroke:#5b6b7f,stroke-dasharray: 4 3
+  style DUSE fill:#ffffff,stroke:#3d7a4a,stroke-dasharray: 4 3
+  style CUSE fill:#ffffff,stroke:#b5713a,stroke-dasharray: 4 3

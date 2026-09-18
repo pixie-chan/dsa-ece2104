@@ -59,7 +59,7 @@ Every constant used below was measured on this machine and is quoted with its ca
 |---|---|---|
 | `sizeof(int)` | 4 | `lec05_run_output.txt` |
 | `sizeof(void*)` | 8 | `lec05_run_output.txt` |
-| `sizeof(Node{int; Node*})` | 16 | `lec05_run_output.txt`, `lec11_15_run_output.txt` |
+| `sizeof(Node)` | 16 | `lec05_run_output.txt`, `lec11_15_run_output.txt` |
 | allocator stride per node | 32 | `lec05_run_output.txt` |
 | allocator usable bytes per 16 byte request | 24 | `lec05_run_output.txt` |
 | `sizeof(ArrayStack<int,5>)` | 40 | `lec11_15_run_output.txt` |
@@ -113,7 +113,7 @@ Every constant used below was measured on this machine and is quoted with its ca
 | Q | Marks | Topic tag | Question |
 |---|---|---|---|
 | C1 | 3 | [Array] | `int a[8]` starts at `0x1000` and `sizeof(int) = 4`. Give the total bytes, `&a[5]` and `&a[7]`, and the number of computing steps each address costs. |
-| C2 | 3 | [Pointers] | Give `sizeof(int)`, `sizeof(void*)` and `sizeof(Node{int data; Node* next;})`. Break the 16 bytes into payload, padding and pointer, give the padding offset, and say how far `p + 1` advances when `p` is a `Node*`. |
+| C2 | 3 | [Pointers] | Give `sizeof(int)`, `sizeof(void*)` and `sizeof(Node)`. Break the 16 bytes into payload, padding and pointer, give the padding offset, and say how far `p + 1` advances when `p` is a `Node*`. |
 | C3 | 3 | [Stack by Array] | `sizeof(ArrayStack<int,5>)` is 40 and the five ints alone are 20 bytes. Break the 40 into array, padding and bookkeeping, give the three offsets, and say how many pushes out of seven are refused. |
 | C4 | 3 | [Queue] | A circular queue has capacity 5, `front = 2` and `rear = 4`. Compute the count with the formula, give the next enqueue slot and the new rear, and state the count after that enqueue and whether the queue is then full. |
 | C5 | 3 | [Linked List] | A linked list holds 300 integers. Give the bytes requested, the bytes the allocator reports as usable, the bytes charged at the measured stride, the bytes the same 300 values cost in an array, and the ratio of charged to array. |

@@ -3,8 +3,8 @@
 The do-now list. Twelve patches, ordered by value, each with the literal edit and a check. Nothing here has been applied. Deeper evidence for every item, plus the record of what is already fixed, is in `DSA-MIDTERM-ROADMAP-PATCHES.md`; the measurements behind each claim are in `DSA-MIDTERM-ROADMAP-REVIEW.md`.
 
 - **Target:** `~/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/DSA-MIDTERM-ROADMAP.html`
-- **Pinned revision:** `sha256 7fc0de2dea029f63`, 1317 lines, 90145 bytes, mtime 2026-09-18 16:54:03 IST
-- **Every line number below belongs to that revision.**
+- **Pinned revision:** `sha256 10634400913b6a85`, 1121 lines, 224760 bytes, mtime 2026-09-18 23:06:14 IST
+- **Careful with line numbers.** Revision `10634400` reformatted the file from 2632 lines to 1121 by compacting whitespace, so the line numbers written when this list was drafted (against `7fc0de2d` and `c13596a0`) are stale. Every literal snippet in this document was re-validated against `10634400` and still matches exactly once, except the nine-image prefix in B6 which matches nine times by design. Locate every edit by its snippet.
 
 ## Every patch here was test-applied and verified
 
@@ -334,12 +334,14 @@ The page grew from 1317 to 2632 lines and from 90KB to 237KB. It now carries the
 
 | # | Severity | One line |
 |---|---|---|
-| B1 | High | 7 timeline slabs against 6 axis labels, so the exam label sits over Block F and the exam slab has no label |
+| B1 | FIXED | Seven axis labels now match the seven slabs, verified pairwise at every width from 1241px up |
 | B2 | Medium | Block F's tick counter is dead and its two numbers disagree, 9 against 15 |
 | B3 | Low | Three nav chips still read `s5`, `s8`, `s9` while the other fifteen are prose |
 | B4 | Low | The meta description carries a broken fragment, "Roughly sequence" |
-| B5 | Medium | One table is unwrapped, 133 `<th>` have no `scope`, 58 tables have no caption |
+| B5 | Medium | 1 table unwrapped, 133 `<th>` without `scope`, 58 tables without caption (22 wrappers were added at 23:06, so this is partly done) |
 | B6 | Medium | Nine figures now live in a sibling folder, so the page is no longer self-contained |
+| B7 | High, content | Four struct literals lost their field names, so the page shows C++ that cannot compile |
+| B8 | FIXED | The rail dropped from 1431px to 464px with uniform 347px slabs and no overflow at any of eleven widths |
 
 ### B1. Timeline labels no longer line up with the slabs
 
@@ -366,7 +368,7 @@ becomes:
         <div class="blocks__axis" aria-hidden="true"><span>1 to 4</span><span>5 to 9</span><span>10</span><span>11 to 15</span><span>16</span><span>17 to 31</span><span>exam</span></div>
 ```
 
-Line 126:
+Line 126, and this one line also fixes B8, so do them together:
 
 ```css
   grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,1fr) minmax(0,5fr) minmax(0,1fr) 232px; grid-template-rows:auto auto}
@@ -375,8 +377,10 @@ Line 126:
 becomes:
 
 ```css
-  grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,1fr) minmax(0,5fr) minmax(0,1fr) 232px 232px; grid-template-rows:auto auto}
+  grid-template-columns:minmax(0,4fr) minmax(0,5fr) 132px minmax(0,5fr) 132px 232px 232px; grid-template-rows:auto auto}
 ```
+
+Measured effect of that exact value, applied live in the browser: the rail drops from 1431px to 479px and the slabs from 1314px to 361px, with slab widths 187, 234, 132, 234, 132, 232, 232.
 
 Line 153, the print rule:
 
@@ -387,6 +391,12 @@ Line 153, the print rule:
 becomes `repeat(7, 1fr)`. The `.blocks__note` copy that ends "the single recursion lecture, then the exam" should also mention the projected block, since it is now one of the slabs.
 
 **Check:** re-measure label lefts against slab lefts; they must match pairwise, and the `exam` label must sit above the exam slab.
+
+### B1 and B8, FIXED at revision 993b491f, kept as a record
+
+The timeline was rebuilt in one pass. The axis now carries seven labels (`1 to 4`, `5 to 9`, `10`, `11 to 15`, `16`, `17 to 31`, `exam`) and the grid carries seven columns with minimum widths, so the labels and the slabs align pairwise. Measured at 1460px: labels at 0, 160, 340, 510, 690, 860, 1182 and slabs at exactly the same offsets.
+
+The height problem went with it. The rail fell from 1431px to 464px and the slabs are a uniform 347px instead of 1314px. Verified across eleven widths from 320px to 1920px: no overflow inside the rail and no document overflow at any of them, with the layout dropping to two columns at 1240px and one at 620px, and the exam slab spanning the full row in the stacked layouts. The print rule now reads `repeat(7, 1fr)`.
 
 ### B2. Block F's counter can never move, and its numbers disagree
 
@@ -442,6 +452,55 @@ The page references `../mte-scope/diagrams/01-tree-terminology.png` through `09-
 2. Keep the shared folder, and say so in the footer next to the rebuild line, naming `Notes/mte-scope/render-diagrams.sh` as the source of those nine figures.
 
 **Check:** every `src` in the file resolves relative to the HTML's own folder, or the footer names the dependency.
+
+### B7. Four struct literals lost their field names (content, high)
+
+The trees and formulation sections show C++ that cannot compile, while the same file elsewhere shows the correct form. All four, verbatim:
+
+```
+sizeof(Node{int; Node*})                            twice
+sizeof(TreeNode{int; TreeNode*; TreeNode*})          twice, one of them followed by " = 24"
+```
+
+The identifiers `data`, `next`, `left` and `right` were dropped somewhere between writing and building the page. Compare the correct fragments that survive in the same document: `<code>{int data; Node* next;}</code>` and `<code>sizeof(Node{int data; Node* next;})</code>`.
+
+This matters more than a typo, because the whole premise of these sections is that the sizes were compiled and measured. `lec05_run_output.txt` records `Node{int data; Node* next;} sizeof=16`, and 24 is right for `TreeNode{int data; TreeNode* left; TreeNode* right;}`, so the numbers are correct and only the declarations are broken.
+
+**Edit.** Two global replacements:
+
+```html
+<code>sizeof(Node{int; Node*})</code>
+```
+becomes
+```html
+<code>sizeof(Node{int data; Node* next;})</code>
+```
+
+and
+
+```html
+sizeof(TreeNode{int; TreeNode*; TreeNode*})
+```
+becomes
+```html
+sizeof(TreeNode{int data; TreeNode* left; TreeNode* right;})
+```
+
+**Check:** `grep -c 'int; ' file` returns 0, and every struct literal in the page compiles as written.
+
+### B8, FIXED at revision 993b491f, kept as a record
+
+The single-lecture columns were given minimum widths instead of a bare `1fr`, and the padding and line height were trimmed, so the two slabs that used to wrap to 1231px and 1314px now sit at 347px like the rest. Measured: rail 1431px to 464px, slabs 1314px to 347px, and the intrinsic heights are uniform enough that no slab carries dead space. `node ~/.cache/roadmap-qa/tall3.mjs` re-measures it.
+
+### B9. A duplicated `.slab__link` declaration (cosmetic, still present)
+
+The 23:07 save added `.slab__link{min-width:44px}` on the same line as the existing rule, so the file now has two `.slab__link` declarations where one would do:
+
+```css
+.slab__link{min-width:44px} .slab__link{position:absolute; inset:0; z-index:1; display:block; color:inherit; text-decoration:none}
+```
+
+It is also redundant: the link is `inset:0` inside a slab that is at least 53px wide, so it already meets the 44px target. Harmless, but merge it into the second rule rather than leaving a duplicate.
 
 ### Note, not a defect
 

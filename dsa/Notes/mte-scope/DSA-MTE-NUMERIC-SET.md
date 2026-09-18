@@ -24,7 +24,7 @@ Each carries the capture file it comes from.
 |---|---|---|
 | `sizeof(int)` | 4 | `lec05_run_output.txt` |
 | `sizeof(void*)` | 8 | `lec05_run_output.txt` |
-| `sizeof(Node{int; Node*})` | 16 | `lec05_run_output.txt` |
+| `sizeof(Node)` | 16 | `lec05_run_output.txt` |
 | allocator usable bytes for a 16 byte request | 24 | `lec05_run_output.txt` |
 | allocator charged stride per node | 32 | `lec05_run_output.txt` |
 | array base address in the run | `0x7ffe7c3131b0` | `lec05_run_output.txt` |
@@ -40,7 +40,7 @@ Each carries the capture file it comes from.
 | array stack pop, 2 million operations | 0.378 ns | `lec11_15_run_output.txt` |
 | linked queue cost per operation | 14.023 ns | `lec11_15_run_output.txt` |
 | circular queue cost per operation | 0.531 ns | `lec11_15_run_output.txt` |
-| `sizeof(TreeNode{int; TreeNode*; TreeNode*})` | 24 | `lec16_recursion_output.txt` |
+| `sizeof(TreeNode)` | 24 | `lec16_recursion_output.txt` |
 | stack limit from `getrlimit(RLIMIT_STACK)` | 8192 KiB | `lec16_recursion_output.txt` |
 | one suspended call to `linearSumRec` | 48 bytes | `lec16_recursion_output.txt` |
 | runaway child frame stride | 32 bytes | `lec16_recursion_output.txt` |
@@ -390,7 +390,7 @@ Anchor: `lec16_recursion_output.txt` puts its 1023 nodes at height 9, which is e
 | inorder visits | 1 per node | 1023 | "recursive inorder visits = 1023" |
 | key sum | 1023 × 1024 ÷ 2 | 523776 | "523776" |
 
-Node offsets and split: `sizeof(TreeNode{int; TreeNode*; TreeNode*}) = 24`, data at offset 0, left at
+Node offsets and split: `sizeof(TreeNode) = 24`, data at offset 0, left at
 offset **8**, right at offset **16**. The split is 4 payload + **4 padding** at offsets 4 to 7 + 8 for
 the left pointer + 8 for the right pointer = 4 + 4 + 8 + 8 = **24**, which matches the capture's
 "24 usable bytes for that 24 byte request" and its note that glibc's own bookkeeping lives outside

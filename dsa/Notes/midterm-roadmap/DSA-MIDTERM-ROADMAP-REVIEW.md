@@ -582,3 +582,111 @@ Now 81 pages, up from 18, because the mock paper and numeric set are inside the 
 ## Corrections to my own earlier note in this round
 
 My first pass on the 22:59 revision reported nine broken images. That reading came from a grep taken while the file was still being saved; the 23:00:39 revision references `../mte-scope/diagrams/`, which resolves, and the browser confirms all ten images load. The finding that survives is B6, the self-containment fragility, not a broken image.
+
+---
+
+# Round 17, the file was reformatted and 22 table wrappers were added
+
+Checked at 2026-09-18 23:08 IST against `sha256 10634400913b6a85` (224760 bytes, 1121 lines, mtime 23:06:14).
+
+## What changed
+
+This save compacted the file from 2632 lines to 1121, dropping 12744 bytes of whitespace. The content is intact, verified element by element against the 22:59 snapshot: 69 `<table>`, 277 `<th>`, 12 `<details>`, 10 `<figure>`, 10 `<img>`, 19 `<section>`, 439 `<code>`, 5 `<pre>`, and about 118.3k characters of visible text in both. All three inline scripts still parse and the health battery is 15 of 15 PASS, so the reformat broke nothing.
+
+It also added 22 `.tbl-wrap` wrappers (46 to 68), which closes most of B5's first item.
+
+## Batch 2 status after this save
+
+- B1 open: still 6 axis labels for 7 slabs.
+- B2 open: `SLABS` still has no `f` entry while `rm-count-f` is in the markup.
+- B3 open: the chips `s5`, `s8`, `s9` are unchanged.
+- B4 open: "Roughly sequence" is still in the meta description.
+- B5 partly done: 68 of 69 tables are wrapped, and the one left is "The four gaps that only practice closes" in the mock paper section. 144 of 277 `<th>` still lack `scope`, and 11 of 69 tables have a caption.
+- B6 open: nine `src="../mte-scope/diagrams/` references.
+
+## New, B7: four struct literals lost their field names
+
+Found while diffing the reformat. The page shows, verbatim:
+
+```
+sizeof(Node{int; Node*})                       twice
+sizeof(TreeNode{int; TreeNode*; TreeNode*})     twice, one with " = 24" after it
+```
+
+The identifiers are gone, so the declarations are not valid C++ even though the sizes quoted next to them are right: 16 for `Node{int data; Node* next;}` matches `lec05_run_output.txt`, and 24 is correct for `TreeNode{int data; TreeNode* left; TreeNode* right;}`. The same document still contains the correct `{int data; Node* next;}` in other places, so this is a build artifact, not a decision.
+
+For a dossier whose premise is that every size was compiled and measured, this is the highest value content fix left. Exact replacements are in B7 of the apply list.
+
+## Line numbers are now stale
+
+The reformat invalidated every line number in the apply list and the catalogue. All literal snippets were re-validated against `10634400`: each still matches exactly once, except B6's nine-image prefix which matches nine times by design. Both documents now say to locate edits by snippet.
+
+---
+
+# Round 18, a 28 byte save, and the timeline turned out to be 1314px tall
+
+Checked at 2026-09-18 23:12 IST against `sha256 9641bcb875092473` (224788 bytes, mtime 23:07:37).
+
+## The save itself
+
+One line: `.slab__link{min-width:44px}` was prepended to the existing `.slab__link` rule. Measured effect: none that matters. The link is `inset:0` inside a slab that is at least 53px wide, so it already satisfies a 44px target. It is a duplicate declaration on one line rather than a merged rule, which is B9 in the apply list, cosmetic only.
+
+## New, B8: the signature timeline is 1314px tall
+
+Measuring intrinsic slab heights with the grid stretch defeated gives the real picture:
+
+```
+Block A 253   Block B 279   Block C 1231   Block D 285   Block E 1314   Block F 297   Exam 208
+```
+
+Blocks C and E are the single-lecture slabs. They receive `1fr`, which resolves to 53px at 1460px width, so their text wraps a word or two per line and their content grows to 1231px and 1314px. The row is `auto` with `align-items:stretch`, so the other five slabs are stretched to 1314px and carry about 1000px of empty space each. The rail is 1431px.
+
+History, measured by loading the earlier snapshots:
+
+```
+revision e5b32c74 (before the expansion): rail 841px, slabs 723px, widths 289 361 72 361 72 232
+revision 5648946e (expansion):            rail 1431px, slabs 1314px, widths 213 266 53 266 53 232 300
+revision 9641bcb8 (now):                  rail 1431px, slabs 1314px, same widths
+```
+
+So it predates the expansion and the expansion made it worse: the extra implicit column shrank the fr unit from 72px to 53px.
+
+## The fix is verified
+
+Setting `grid-template-columns` to `minmax(0,4fr) minmax(0,5fr) 132px minmax(0,5fr) 132px 232px 232px` live in the browser, which is the same line B1 needs, drops the rail from 1431px to 479px and the slabs from 1314px to 361px, with widths 187, 234, 132, 234, 132, 232, 232. B1 and B8 are one edit.
+
+## Unchanged from round 17
+
+B1 to B7 stand as recorded, including B7, the four struct literals that lost their field names. Health is 15 of 15 PASS, all three scripts parse.
+
+---
+
+# Round 19, the timeline was rebuilt and both timeline items are closed
+
+Checked at 2026-09-18 23:15 IST. Three saves landed inside two minutes (`e042ab9f`, `ca4ce974`, `993b491f`), so this round covers the timeline work as one change.
+
+## B1 fixed: seven labels for seven slabs
+
+The axis now reads `1 to 4`, `5 to 9`, `10`, `11 to 15`, `16`, `17 to 31`, `exam`, and the grid has seven columns with minimum widths. Measured at 1460px: label offsets 0, 160, 340, 510, 690, 860, 1182 and slab offsets exactly the same, so every label sits over its own slab and the exam slab finally has one.
+
+## B8 fixed: the rail is 464px instead of 1431px
+
+The single-lecture columns were given minimum widths instead of a bare `1fr`, padding moved from 16px to 12px, and the slab description got `line-height: 1.5`. Measured: rail 1431px to 464px, slabs a uniform 347px instead of 1314px. The two slabs that used to wrap to 1231px and 1314px no longer drive the row.
+
+## No overflow, at any width
+
+Swept eleven widths from 320px to 1920px, measuring both the rail's internal overflow and the document's: zero at every one. The layout drops to two columns at 1240px with the exam slab spanning the full row, and to one column at 620px, where the exam slab returns to a normal cell. The print rule now reads `repeat(7, 1fr)`.
+
+## Health is still clean
+
+Fifteen of fifteen PASS on `993b491f`, including the spine ranges, the trail numbering, the rail wheel chaining and the OS dark preference. All three scripts parse.
+
+## Still open
+
+- B2: `SLABS` has no `f` entry, so `rm-count-f` is never painted, and the card says 9 while its accessible name says 15.
+- B3: the chips `s5`, `s8`, `s9` are still placeholders.
+- B4: "Roughly sequence" is still in the meta description.
+- B5: 68 of 69 tables wrapped, 144 of 277 `<th>` with `scope`, 11 of 69 tables with a caption.
+- B6: nine `src="../mte-scope/diagrams/` references, so the page still depends on a sibling folder.
+- B7: the four struct literals that lost their field names, still the highest value content fix.
+- B9: the duplicate `.slab__link{min-width:44px}` is still there next to the new `.slab{grid-row:2; min-width:44px}`. Harmless, one line to merge.

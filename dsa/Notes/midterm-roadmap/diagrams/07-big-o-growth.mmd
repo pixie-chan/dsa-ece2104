@@ -1,0 +1,12 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"},"flowchart":{"wrappingWidth":900}}}%%
+graph TB
+  G1["O(1) CONSTANT<br/>the cost does not grow with the input size. Wins when the work is a fixed number of steps."]
+  G2["O(log n) LOGARITHMIC<br/>each step throws away a constant fraction of what is left. Wins in binary search and in balanced search trees."]
+  G3["O(n) LINEAR<br/>one pass over the input. Wins when every element must be looked at once."]
+  G4["O(n log n) LINEARITHMIC<br/>a log height divide and conquer with a linear pass at each level. Wins as the target for comparison sorting."]
+  G5["O(n squared) QUADRATIC<br/>every element against every other, or two nested passes. Wins only for small inputs and simple code."]
+  G6["O(n cubed) CUBIC<br/>three nested passes, as in naive matrix multiplication. Wins only for very small inputs."]
+  G7["O(2 to the n) EXPONENTIAL<br/>the work doubles with each extra input element, as in listing every subset. Wins only on tiny inputs."]
+  G1 --> G2 --> G3 --> G4 --> G5 --> G6 --> G7
+  G7 ~~~ TAIL
+  TAIL["READ THE LADDER THIS WAY<br/>each rung grows faster than the one above it. Past some input size the lower rung always wins,<br/>so an algorithm one rung lower is the better choice for large inputs."]

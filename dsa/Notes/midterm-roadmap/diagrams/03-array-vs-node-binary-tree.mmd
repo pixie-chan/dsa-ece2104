@@ -1,0 +1,18 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"},"flowchart":{"wrappingWidth":520}}}%%
+graph TB
+  subgraph ARR["ARRAY FORM: the node at index i keeps its children at 2i and 2i + 1"]
+    direction LR
+    S1["index 1<br/>A<br/>the root"] --> S2["index 2<br/>B<br/>2i"] --> S3["index 3<br/>C<br/>2i + 1"] --> S4["index 4<br/>D<br/>2i"] --> S5["index 5<br/>E<br/>2i + 1"] --> S6["index 6<br/>F<br/>2i"] --> S7["index 7<br/>G<br/>2i + 1"]
+  end
+  subgraph NODE["NODE PLUS POINTER FORM: each node holds a key and two child addresses"]
+    direction TB
+    N1(("A")) --> N2(("B"))
+    N1 --> N3(("C"))
+    N2 --> N4(("D"))
+    N2 --> N5(("E"))
+    N3 --> N6(("F"))
+    N3 --> N7(("G"))
+  end
+  WASTE["WASTED SLOTS<br/>A flat array must reserve the room the shape could need, even where it is empty.<br/>The same seven nodes as a skewed chain land at indices 1, 2, 4, 8, 16, 32 and 64.<br/>So the array spans 64 slots while only 7 hold a node, which leaves 57 slots empty.<br/>The node and pointer form pays no such cost."]
+  S1 ~~~ N1
+  N5 ~~~ WASTE

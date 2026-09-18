@@ -1,0 +1,20 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph LR
+  subgraph TREE["ONE SMALL TREE"]
+    direction TB
+    A(("A")) --> B(("B"))
+    A --> C(("C"))
+    B --> D(("D"))
+    B --> E(("E"))
+    C --> F(("F"))
+  end
+  ROOT["ROOT<br/>the one node with no parent, here A"] -.-> A
+  PARENT["PARENT<br/>B is the parent of D and of E"] -.-> B
+  CHILD["CHILD<br/>D and E are children of B"] -.-> D
+  LEAF["LEAF<br/>a node with no children, here D, E and F"] -.-> F
+  INTERNAL["INTERNAL NODE<br/>a node with at least one child, here A, B and C"] -.-> C
+  SUBTREE["SUBTREE<br/>B together with D and E is itself a tree hanging under A"] -.-> B
+  DEGREE["DEGREE<br/>how many children a node has<br/>B has 2, C has 1, D, E and F have 0"] -.-> B
+  DEPTH["DEPTH<br/>edges counted from the root down to the node<br/>A at depth 0, B at depth 1, D at depth 2"] -.-> D
+  HEIGHT["HEIGHT<br/>longest path from a node down to a leaf"] -.-> A
+  LEVEL["LEVEL<br/>all nodes at the same depth<br/>A is level 0, B and C level 1, D, E and F level 2"] -.-> C

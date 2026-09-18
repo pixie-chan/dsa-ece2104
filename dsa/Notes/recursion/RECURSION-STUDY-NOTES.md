@@ -486,11 +486,13 @@ correct and reachable, and a frame that carries a large object by value makes ea
 cost far more than the 48 bytes measured here. Reduce the depth, shrink the frame, or
 convert to a loop.
 
-**C6.** Because GCC 15 rejects overriding `operator new` and `operator delete` under
-`-Wall -Wextra`: with both delete overloads it emits `-Wmismatched-new-delete`, and with
-only one it emits `-Wsized-deallocation`. The build must stay warning free, so the
-program routes its own allocations through `heapAlloc` and `heapFree` and counts there.
-The counters are then exact by construction rather than estimated.
+**C6.** Because overriding `operator new` and `operator delete` trips GCC 15's warnings at the
+delete sites under `-Wall -Wextra`, and a lesson build has to stay warning free: with both delete
+overloads it emits `-Wmismatched-new-delete` where the object is deleted, and with only one it
+emits `-Wsized-deallocation`. The warning is shape dependent, so a minimal pair can compile clean
+while a real program warns, which makes it a trap rather than a wall. The program therefore routes
+its own allocations through `heapAlloc` and `heapFree` and counts there, so the counters are exact
+by construction rather than estimated.
 
 **C7.** A loop keeps the same arithmetic and the same answer with O(1) extra memory and
 is measured 10.38× faster per walk here. What is lost is the direct expression of the

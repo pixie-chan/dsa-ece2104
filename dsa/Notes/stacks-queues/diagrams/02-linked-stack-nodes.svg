@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 886" width="840" height="886">
+  <defs>
+    <marker id="arOk" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#2f6b4f"/>
+    </marker>
+    <marker id="arAccent" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#1f5f8b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="840" height="886" fill="#ffffff"/>
+  <g font-family="system-ui, -apple-system, Segoe UI, sans-serif" fill="#16202c">
+
+    <text x="24" y="36" font-size="23" font-weight="700">Linked stack: the newest node becomes the head</text>
+    <text x="24" y="58" font-size="14" fill="#5a6b7d">ECE2104 lecture 12, 12_stack_linked_apps.cpp, every number measured in lec11_15_run_output.txt</text>
+
+    <text x="24" y="94" font-size="16" font-weight="600" fill="#1f5f8b">1. the node in bytes: sizeof(Node) = 16, offsetof(data) = 0, offsetof(next) = 8</text>
+
+    <rect x="60" y="108" width="185" height="62" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="245" y="108" width="185" height="62" fill="#fbeee9" stroke="#a8452a" stroke-width="1.5"/>
+    <rect x="430" y="108" width="370" height="62" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <text x="152" y="134" font-size="15" font-weight="600" text-anchor="middle">int data</text>
+    <text x="152" y="155" font-size="13" text-anchor="middle">offset 0, 4 bytes</text>
+    <text x="337" y="134" font-size="15" font-weight="600" text-anchor="middle" fill="#a8452a">4 bytes padding</text>
+    <text x="337" y="155" font-size="13" text-anchor="middle" fill="#a8452a">never used, keeps the pointer aligned</text>
+    <text x="615" y="134" font-size="15" font-weight="600" text-anchor="middle" fill="#2f6b4f">Node * next</text>
+    <text x="615" y="155" font-size="13" text-anchor="middle" fill="#2f6b4f">offset 8, 8 bytes, the link to the node below</text>
+
+    <line x1="60" y1="182" x2="800" y2="182" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="60" y1="182" x2="60" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="245" y1="182" x2="245" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="430" y1="182" x2="430" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="800" y1="182" x2="800" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="60" y="204" font-size="13" fill="#5a6b7d">offset 0</text>
+    <text x="245" y="204" font-size="13" fill="#5a6b7d" text-anchor="middle">4</text>
+    <text x="430" y="204" font-size="13" fill="#5a6b7d" text-anchor="middle">8</text>
+    <text x="800" y="204" font-size="13" fill="#5a6b7d" text-anchor="end">16</text>
+
+    <text x="24" y="228" font-size="14">4 payload bytes + 4 padding bytes + 8 pointer bytes = 16. the padding exists so the pointer sits on an 8 byte boundary.</text>
+    <text x="24" y="248" font-size="14" fill="#5a6b7d">sizeof(LinkedStack) = 24 bytes, one pointer plus two counters, so every element lives on the heap.</text>
+
+    <line x1="24" y1="268" x2="816" y2="268" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="294" font-size="16" font-weight="600" fill="#1f5f8b">2. push: each new node is inserted at the head, nothing is traversed</text>
+
+    <text x="165" y="316" font-size="13" font-weight="600" text-anchor="middle" fill="#2f6b4f">push(30): pushed third</text>
+    <text x="395" y="316" font-size="13" font-weight="600" text-anchor="middle">push(20): pushed second</text>
+    <text x="625" y="316" font-size="13" font-weight="600" text-anchor="middle">push(10): pushed first</text>
+
+    <rect x="90" y="326" width="62" height="64" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="152" y="326" width="88" height="64" fill="#ffffff" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="320" y="326" width="62" height="64" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="382" y="326" width="88" height="64" fill="#ffffff" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="550" y="326" width="62" height="64" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="612" y="326" width="88" height="64" fill="#ffffff" stroke="#1f5f8b" stroke-width="1.5"/>
+    <text x="121" y="366" font-size="20" font-weight="700" text-anchor="middle">30</text>
+    <text x="351" y="366" font-size="20" font-weight="700" text-anchor="middle">20</text>
+    <text x="581" y="366" font-size="20" font-weight="700" text-anchor="middle">10</text>
+    <text x="196" y="350" font-size="13" fill="#5a6b7d" text-anchor="middle">next</text>
+    <text x="426" y="350" font-size="13" fill="#5a6b7d" text-anchor="middle">next</text>
+    <text x="656" y="350" font-size="13" fill="#5a6b7d" text-anchor="middle">next</text>
+    <line x1="240" y1="362" x2="314" y2="362" stroke="#1f5f8b" stroke-width="2" marker-end="url(#arAccent)"/>
+    <line x1="470" y1="362" x2="544" y2="362" stroke="#1f5f8b" stroke-width="2" marker-end="url(#arAccent)"/>
+    <line x1="700" y1="362" x2="744" y2="362" stroke="#1f5f8b" stroke-width="2" marker-end="url(#arAccent)"/>
+    <text x="754" y="368" font-size="16" font-weight="700" fill="#5a6b7d">0</text>
+    <text x="24" y="368" font-size="15" font-weight="600" fill="#2f6b4f">head_</text>
+    <line x1="72" y1="362" x2="86" y2="362" stroke="#2f6b4f" stroke-width="2" marker-end="url(#arOk)"/>
+
+    <text x="165" y="412" font-size="13" fill="#5a6b7d" text-anchor="middle">0x5aaba91d1070</text>
+    <text x="395" y="412" font-size="13" fill="#5a6b7d" text-anchor="middle">0x5aaba91d1050</text>
+    <text x="625" y="412" font-size="13" fill="#5a6b7d" text-anchor="middle">0x5aaba91d1030</text>
+    <text x="24" y="436" font-size="14">the head moved on every push: LIFO is head insertion, so a push is O(1) with no traversal and no shifting.</text>
+
+    <line x1="24" y1="458" x2="816" y2="458" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="484" font-size="16" font-weight="600" fill="#1f5f8b">3. pop walks the head backward, and the only failure mode is underflow</text>
+
+    <text x="24" y="508" font-size="14">pop() returns 30, size = 2, head = 0x5aaba91d1050</text>
+    <text x="24" y="528" font-size="14">pop() returns 20, size = 1, head = 0x5aaba91d1030</text>
+    <text x="24" y="548" font-size="14">pop() returns 10, size = 0, head = 0</text>
+    <text x="440" y="508" font-size="14" fill="#a8452a">pop() on an empty stack returned false,</text>
+    <text x="440" y="528" font-size="14" fill="#a8452a">underflow counter = 2.</text>
+    <text x="440" y="548" font-size="14" fill="#5a6b7d">a linked stack cannot report full.</text>
+    <text x="24" y="572" font-size="14" fill="#a8452a">the two failure modes are not symmetric: overflow is impossible here, the limit is the machine, not the container.</text>
+
+    <line x1="24" y1="594" x2="816" y2="594" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="620" font-size="16" font-weight="600" fill="#1f5f8b">4. 200,000 pushes: no ceiling, and what the allocator really charges</text>
+    <text x="24" y="644" font-size="14">requested by the code: 200,000 heap requests x 16 bytes per element = 3,200,000 bytes</text>
+    <rect x="60" y="652" width="370" height="30" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <text x="442" y="672" font-size="13" fill="#1f5f8b">3,200,000 bytes as asked for</text>
+    <text x="24" y="706" font-size="14">charged by the allocator: a 32 byte stride, 24 usable bytes per node, so the real footprint is</text>
+    <rect x="60" y="714" width="740" height="30" fill="#fbeee9" stroke="#a8452a" stroke-width="1.5"/>
+    <text x="430" y="735" font-size="14" font-weight="600" fill="#a8452a" text-anchor="middle">6,400,000 bytes for the 3,200,000 bytes asked for</text>
+    <text x="24" y="766" font-size="14" fill="#5a6b7d">200,000 pushes made 200,000 heap requests, and draining them made 200,000 free calls.</text>
+
+    <text x="24" y="790" font-size="14">array stack (lecture 11): 0 heap calls per element, 4 bytes charged per element, fixed capacity, overflow detected.</text>
+    <text x="24" y="814" font-size="14">linked stack: 1 heap call per element, 32 bytes charged per element, no capacity limit, no overflow possible.</text>
+    <text x="24" y="838" font-size="14" fill="#5a6b7d">timed in one process: array push 0.639 ns and pop 0.323 ns, against linked push 16.027 ns and pop 8.330 ns.</text>
+    <text x="24" y="860" font-size="14" fill="#5a6b7d">the linked pop costs 25.8x more, and that gap is the allocator: the array never asked it after the one block.</text>
+
+  </g>
+</svg>

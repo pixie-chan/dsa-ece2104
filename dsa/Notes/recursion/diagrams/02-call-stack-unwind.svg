@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="700" viewBox="0 0 840 700" role="img" aria-label="Lecture 16 recursion: the call stack unwinding for factorial(4), frames released in reverse order, measured from 10_recursion_algorithms.cpp">
+  <rect width="840" height="700" fill="#ffffff"/>
+
+  <text x="40" y="46" font-family="sans-serif" font-size="22" font-weight="700" fill="#16202c">Lecture 16, Recursion: the call stack unwinding</text>
+  <text x="40" y="74" font-family="sans-serif" font-size="15" fill="#5a6b7d">ECE2104 DSA, factorial(4): frames leave in reverse order, each handing a value upward</text>
+
+  <text x="150" y="104" font-family="sans-serif" font-size="13" fill="#5a6b7d">frames still on the stack</text>
+  <text x="568" y="104" font-family="sans-serif" font-size="13" fill="#5a6b7d">value handed back</text>
+
+  <text x="40" y="146" font-family="sans-serif" font-size="14" fill="#5a6b7d">step 1</text>
+  <rect x="150" y="120" width="84" height="44" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="2"/>
+  <text x="192" y="140" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(4)</text>
+  <text x="192" y="157" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">n = 4</text>
+  <rect x="242" y="120" width="84" height="44" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="2"/>
+  <text x="284" y="140" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(3)</text>
+  <text x="284" y="157" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">n = 3</text>
+  <rect x="334" y="120" width="84" height="44" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="2"/>
+  <text x="376" y="140" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(2)</text>
+  <text x="376" y="157" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">n = 2</text>
+  <rect x="426" y="120" width="84" height="44" fill="#fbeee9" stroke="#a8452a" stroke-width="2"/>
+  <text x="468" y="140" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(1)</text>
+  <text x="468" y="157" font-family="monospace" font-size="13" fill="#a8452a" text-anchor="middle">base case</text>
+  <line x1="522" y1="142" x2="552" y2="142" stroke="#2f6b4f" stroke-width="2"/>
+  <path d="M564 142 L548 135 L548 149 Z" fill="#2f6b4f"/>
+  <rect x="568" y="120" width="232" height="44" fill="#e9f4ee" stroke="#2f6b4f"/>
+  <text x="584" y="148" font-family="monospace" font-size="14" fill="#16202c">returns 1</text>
+
+  <text x="40" y="252" font-family="sans-serif" font-size="14" fill="#5a6b7d">step 2</text>
+  <rect x="150" y="226" width="84" height="44" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="2"/>
+  <text x="192" y="246" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(4)</text>
+  <text x="192" y="263" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">n = 4</text>
+  <rect x="242" y="226" width="84" height="44" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="2"/>
+  <text x="284" y="246" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(3)</text>
+  <text x="284" y="263" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">n = 3</text>
+  <rect x="334" y="226" width="84" height="44" fill="#fbeee9" stroke="#a8452a" stroke-width="2"/>
+  <text x="376" y="246" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(2)</text>
+  <text x="376" y="263" font-family="monospace" font-size="13" fill="#a8452a" text-anchor="middle">returns</text>
+  <rect x="426" y="226" width="84" height="44" fill="#ffffff" stroke="#c9d4e0" stroke-width="2"/>
+  <text x="468" y="253" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">gone</text>
+  <line x1="522" y1="248" x2="552" y2="248" stroke="#2f6b4f" stroke-width="2"/>
+  <path d="M564 248 L548 241 L548 255 Z" fill="#2f6b4f"/>
+  <rect x="568" y="226" width="232" height="44" fill="#e9f4ee" stroke="#2f6b4f"/>
+  <text x="584" y="254" font-family="monospace" font-size="14" fill="#16202c">returns 2 x 1 = 2</text>
+
+  <text x="40" y="358" font-family="sans-serif" font-size="14" fill="#5a6b7d">step 3</text>
+  <rect x="150" y="332" width="84" height="44" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="2"/>
+  <text x="192" y="352" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(4)</text>
+  <text x="192" y="369" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">n = 4</text>
+  <rect x="242" y="332" width="84" height="44" fill="#fbeee9" stroke="#a8452a" stroke-width="2"/>
+  <text x="284" y="352" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(3)</text>
+  <text x="284" y="369" font-family="monospace" font-size="13" fill="#a8452a" text-anchor="middle">returns</text>
+  <rect x="334" y="332" width="84" height="44" fill="#ffffff" stroke="#c9d4e0" stroke-width="2"/>
+  <text x="376" y="359" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">gone</text>
+  <rect x="426" y="332" width="84" height="44" fill="#ffffff" stroke="#c9d4e0" stroke-width="2"/>
+  <text x="468" y="359" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">gone</text>
+  <line x1="522" y1="354" x2="552" y2="354" stroke="#2f6b4f" stroke-width="2"/>
+  <path d="M564 354 L548 347 L548 361 Z" fill="#2f6b4f"/>
+  <rect x="568" y="332" width="232" height="44" fill="#e9f4ee" stroke="#2f6b4f"/>
+  <text x="584" y="360" font-family="monospace" font-size="14" fill="#16202c">returns 3 x 2 = 6</text>
+
+  <text x="40" y="464" font-family="sans-serif" font-size="14" fill="#5a6b7d">step 4</text>
+  <rect x="150" y="438" width="84" height="44" fill="#fbeee9" stroke="#a8452a" stroke-width="2"/>
+  <text x="192" y="458" font-family="monospace" font-size="14" fill="#16202c" text-anchor="middle">f(4)</text>
+  <text x="192" y="475" font-family="monospace" font-size="13" fill="#a8452a" text-anchor="middle">returns</text>
+  <rect x="242" y="438" width="84" height="44" fill="#ffffff" stroke="#c9d4e0" stroke-width="2"/>
+  <text x="284" y="465" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">gone</text>
+  <rect x="334" y="438" width="84" height="44" fill="#ffffff" stroke="#c9d4e0" stroke-width="2"/>
+  <text x="376" y="465" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">gone</text>
+  <rect x="426" y="438" width="84" height="44" fill="#ffffff" stroke="#c9d4e0" stroke-width="2"/>
+  <text x="468" y="465" font-family="monospace" font-size="13" fill="#5a6b7d" text-anchor="middle">gone</text>
+  <line x1="522" y1="460" x2="552" y2="460" stroke="#2f6b4f" stroke-width="2"/>
+  <path d="M564 460 L548 453 L548 467 Z" fill="#2f6b4f"/>
+  <rect x="568" y="438" width="232" height="44" fill="#e9f4ee" stroke="#2f6b4f"/>
+  <text x="584" y="466" font-family="monospace" font-size="14" fill="#16202c">returns 4 x 6 = 24</text>
+
+  <rect x="40" y="516" width="760" height="104" fill="#eaf2f8" stroke="#c9d4e0"/>
+  <text x="56" y="540" font-family="sans-serif" font-size="13" fill="#5a6b7d">THE ORDER IS THE WHOLE POINT</text>
+  <text x="56" y="566" font-family="monospace" font-size="13" fill="#16202c">frames are created as f(4), f(3), f(2), f(1) and released in the exact reverse order</text>
+  <text x="56" y="590" font-family="monospace" font-size="13" fill="#16202c">factorial(4) = 24, measured: 4 calls, 4 frames, one frame per value of n</text>
+  <text x="56" y="614" font-family="monospace" font-size="13" fill="#16202c">nothing is copied out of the stack except the return value</text>
+
+  <text x="40" y="656" font-family="monospace" font-size="13" fill="#5a6b7d">Measured from ~/learning/cpp/lessons/10_recursion_algorithms.cpp, sections 1 and 9,</text>
+  <text x="40" y="678" font-family="monospace" font-size="13" fill="#5a6b7d">raw capture ~/learning/cpp/exercises/lec16_recursion_output.txt</text>
+</svg>

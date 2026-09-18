@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 800" width="840" height="800">
+  <defs>
+    <marker id="arAccent" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#1f5f8b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="840" height="800" fill="#ffffff"/>
+  <g font-family="system-ui, -apple-system, Segoe UI, sans-serif" fill="#16202c">
+
+    <text x="24" y="36" font-size="23" font-weight="700">Naive array queue: front and rear only ever move forward</text>
+    <text x="24" y="58" font-size="14" fill="#5a6b7d">ECE2104 lecture 13, 13_queue_array.cpp, every number measured in lec11_15_run_output.txt</text>
+
+    <text x="24" y="94" font-size="16" font-weight="600" fill="#1f5f8b">1. two indices plus an array: sizeof(NaiveQueue&lt;int,5&gt;) = 48, sizeof(CircularQueue&lt;int,5&gt;) = 64</text>
+    <text x="24" y="120" font-size="14">the payload array is 20 bytes; the bookkeeping is 24 bytes in the naive form and 40 bytes in the circular form.</text>
+    <text x="24" y="140" font-size="14" fill="#5a6b7d">enqueue writes at rear, then rear++ (one end). dequeue reads at front, then front++ (the other end).</text>
+
+    <line x1="24" y1="160" x2="816" y2="160" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="186" font-size="16" font-weight="600" fill="#1f5f8b">2. the two indices over one run of the same five slot array</text>
+
+    <text x="24" y="210" font-size="14" font-weight="600">A. after 5 enqueues: front = 0, rear = 5, size = 5, empty = no, full = yes</text>
+    <text x="124" y="228" font-size="13" fill="#1f5f8b" text-anchor="middle">front</text>
+    <text x="478" y="228" font-size="13" fill="#1f5f8b" text-anchor="middle">rear</text>
+    <text x="530" y="266" font-size="13" fill="#5a6b7d">all five slots hold data</text>
+    <rect x="90" y="236" width="68" height="58" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="170" y="236" width="68" height="58" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="250" y="236" width="68" height="58" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="330" y="236" width="68" height="58" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="410" y="236" width="68" height="58" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <text x="124" y="274" font-size="19" font-weight="700" text-anchor="middle">1</text>
+    <text x="204" y="274" font-size="19" font-weight="700" text-anchor="middle">2</text>
+    <text x="284" y="274" font-size="19" font-weight="700" text-anchor="middle">3</text>
+    <text x="364" y="274" font-size="19" font-weight="700" text-anchor="middle">4</text>
+    <text x="444" y="274" font-size="19" font-weight="700" text-anchor="middle">5</text>
+    <text x="124" y="314" font-size="13" fill="#5a6b7d" text-anchor="middle">0</text>
+    <text x="204" y="314" font-size="13" fill="#5a6b7d" text-anchor="middle">1</text>
+    <text x="284" y="314" font-size="13" fill="#5a6b7d" text-anchor="middle">2</text>
+    <text x="364" y="314" font-size="13" fill="#5a6b7d" text-anchor="middle">3</text>
+    <text x="444" y="314" font-size="13" fill="#5a6b7d" text-anchor="middle">4</text>
+
+    <text x="24" y="346" font-size="14" font-weight="600">B. after 3 dequeues: front = 3, rear = 5, size = 2, empty = no, full = yes</text>
+    <text x="364" y="364" font-size="13" fill="#1f5f8b" text-anchor="middle">front</text>
+    <text x="478" y="364" font-size="13" fill="#1f5f8b" text-anchor="middle">rear</text>
+    <text x="530" y="402" font-size="13" fill="#a8452a">3 slots below the front are still valid memory</text>
+    <rect x="90" y="372" width="68" height="58" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <rect x="170" y="372" width="68" height="58" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <rect x="250" y="372" width="68" height="58" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <rect x="330" y="372" width="68" height="58" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="410" y="372" width="68" height="58" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <text x="124" y="410" font-size="19" font-weight="700" text-anchor="middle" fill="#5a6b7d">--</text>
+    <text x="204" y="410" font-size="19" font-weight="700" text-anchor="middle" fill="#5a6b7d">--</text>
+    <text x="284" y="410" font-size="19" font-weight="700" text-anchor="middle" fill="#5a6b7d">--</text>
+    <text x="364" y="410" font-size="19" font-weight="700" text-anchor="middle">4</text>
+    <text x="444" y="410" font-size="19" font-weight="700" text-anchor="middle">5</text>
+    <text x="124" y="450" font-size="13" fill="#5a6b7d" text-anchor="middle">0</text>
+    <text x="204" y="450" font-size="13" fill="#5a6b7d" text-anchor="middle">1</text>
+    <text x="284" y="450" font-size="13" fill="#5a6b7d" text-anchor="middle">2</text>
+    <text x="364" y="450" font-size="13" fill="#5a6b7d" text-anchor="middle">3</text>
+    <text x="444" y="450" font-size="13" fill="#5a6b7d" text-anchor="middle">4</text>
+
+    <text x="24" y="482" font-size="14" font-weight="600" fill="#a8452a">C. enqueue(6) refused, enqueue(7) refused, then the drain: front = 5, rear = 5, size = 0, empty = yes, full = yes</text>
+    <text x="478" y="500" font-size="13" fill="#a8452a" text-anchor="middle">front = rear = 5</text>
+    <text x="530" y="538" font-size="13" fill="#a8452a">empty and full at the same time</text>
+    <rect x="90" y="508" width="68" height="58" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <rect x="170" y="508" width="68" height="58" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <rect x="250" y="508" width="68" height="58" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <rect x="330" y="508" width="68" height="58" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <rect x="410" y="508" width="68" height="58" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="124" y="546" font-size="19" font-weight="700" text-anchor="middle" fill="#5a6b7d">--</text>
+    <text x="204" y="546" font-size="19" font-weight="700" text-anchor="middle" fill="#5a6b7d">--</text>
+    <text x="284" y="546" font-size="19" font-weight="700" text-anchor="middle" fill="#5a6b7d">--</text>
+    <text x="364" y="546" font-size="19" font-weight="700" text-anchor="middle" fill="#5a6b7d">--</text>
+    <text x="444" y="546" font-size="19" font-weight="700" text-anchor="middle" fill="#5a6b7d">--</text>
+    <text x="124" y="586" font-size="13" fill="#5a6b7d" text-anchor="middle">0</text>
+    <text x="204" y="586" font-size="13" fill="#5a6b7d" text-anchor="middle">1</text>
+    <text x="284" y="586" font-size="13" fill="#5a6b7d" text-anchor="middle">2</text>
+    <text x="364" y="586" font-size="13" fill="#5a6b7d" text-anchor="middle">3</text>
+    <text x="444" y="586" font-size="13" fill="#5a6b7d" text-anchor="middle">4</text>
+
+    <text x="24" y="618" font-size="14" fill="#a8452a">the exact waste: rear == capacity says full while 3 of the 5 slots are unreachable, and space lost = front = 3 slots.</text>
+    <text x="24" y="640" font-size="14">after the drain front = 5 and rear = 5 with size = 0: the queue reports empty and full at once.</text>
+
+    <line x1="24" y1="660" x2="816" y2="660" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="686" font-size="16" font-weight="600" fill="#1f5f8b">3. the repair, measured on the same script of 5 enqueues, 3 dequeues, 3 more enqueues</text>
+    <text x="24" y="712" font-size="14">rear = (rear + 1) mod capacity is the whole repair: the naive form refused 3 of 3 enqueues, the circular form 0.</text>
+    <text x="24" y="734" font-size="14">the circular form holds 5 elements against the naive 2, so every dequeue frees its slot for exactly the next enqueue.</text>
+    <text x="24" y="758" font-size="14" fill="#5a6b7d">measured over 2,000,000 operations: 1.027 ns each, 0 heap blocks after the single 4136 byte array.</text>
+    <text x="24" y="780" font-size="14" fill="#5a6b7d">index wraps survived = 976, and every dequeue returned the value its enqueue put in, in order.</text>
+
+  </g>
+</svg>

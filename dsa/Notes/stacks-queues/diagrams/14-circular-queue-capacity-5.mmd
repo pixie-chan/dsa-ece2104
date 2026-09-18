@@ -1,0 +1,4 @@
+flowchart TD
+  A["circular queue, capacity 5"] --> B["one comparison cannot decide both:<br/>front == rear is empty AND full"]
+  B -->|count design| C["count decides<br/>0 empty, 5 full, all 5 slots usable"]
+  B -->|sentinel design| D["one slot stays empty<br/>4 of 5 slots usable, full test stays one comparison"]

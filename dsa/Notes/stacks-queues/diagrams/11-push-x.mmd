@@ -1,0 +1,4 @@
+flowchart LR
+  P["push(x)"] --> W["write at data[top_]"] --> I["top_ = top_ + 1"]
+  O["pop()"] --> D["top_ = top_ - 1"] --> R["return data[top_]"]
+  T["top()"] --> E["return data[top_ - 1], stack unchanged"]

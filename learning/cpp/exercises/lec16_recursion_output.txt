@@ -1,3 +1,132 @@
+# Real output of the ECE2104 Lecture 16 recursion lesson program on this machine.
+# Build: g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 -o /tmp/lec10 10_recursion_algorithms.cpp
+# Result of that build: zero warnings, zero errors.
+# Machine: Linux 7.0.0-31-generic x86_64, g++ 15, Python 3.14.4, Ubuntu 26.04.
+# Captured by /tmp/run_lec16.sh on 2026-09-18 17:40 IST.
+# Addresses change between runs (ASLR); every count, depth, stride and timing does not.
+# Allocation counters are taken at the source, in the program's own heapAlloc/heapFree.
+#
+# Section A: 10_recursion_algorithms.cpp, the lecture 16 lesson program.
+# Section B: the earlier capture of 09_recursion_frames.cpp, preserved byte for byte
+#            because other documents cite those lines. Nothing was deleted.
+
+################################################################
+## A. 10_recursion_algorithms.cpp
+################################################################
+=== 1. factorial: calls, depth, real frame addresses ===
+  n   factorial(n)  calls     frames deep   check
+  1   1             1         1             calls and frames both equal n
+  2   2             2         2             calls and frames both equal n
+  3   6             3         3             calls and frames both equal n
+  4   24            4         4             calls and frames both equal n
+  5   120           5         5             calls and frames both equal n
+  6   720           6         6             calls and frames both equal n
+  factorial(8) = 40320, 8 calls in total and 8 frames alive at the deepest
+  first frame at  0x7fff7408a954 and the innermost at 0x7fff7408a804
+  the probe recorded 8 frames, so 7 gaps between them
+  span across those frames = 336 bytes, so 48 bytes per recursive call
+  charging every live frame instead = 8 x 48 = 384 bytes for the recursion
+
+=== 2. the frame itself: bytes per call for three recursive shapes ===
+  recursive shape           input   calls     frames deep   bytes/call  why it is that size
+  linearSumRec(n)           7       8         8             48          one long long argument, one saved return address
+  hanoi(n, from, to, via)   7       127       7             96          four arguments plus the reference parameter
+  factorialRec(n)           8       8         8             48          same shape as linearSumRec, same measurement
+  calls and frames deep are equal for the linear shapes, and they differ for hanoi:
+  127 calls but only 7 frames alive, and the depth counter says 7 as well:
+  hanoi is binary in the calls and linear in the depth, so the two numbers part company
+  the stride is the stack cost of ONE suspended call: depth times this is your stack use
+  linearSumRec(7) = 28 and the closed form 7 x 8 / 2 = 28
+
+=== 3. fibonacci: what the naive recursion really recomputes ===
+  n    fib(n)      naive calls   fib(3) calls  2*Fib(n+1)-1      check
+  10   55          177           21            177               match
+  17   1597        5167          610           5167              match
+  24   46368       150049        17711         150049            match
+  fib(32): naive 2178309, memoised 2178309, iterative 2178309
+  all three agree: yes
+  naive computed fib(3) 832040 times inside the single call fib(32)
+  naive calls = 7049155 in 16.731 ms
+  memoised calls = 63, and 20000 runs with a fresh table each
+    return the checksum 43566180000 against the expected 43566180000, so that loop is not dead code
+  per single fib(32) call: 16731224.0 ns naive against 112.8 ns memoised
+  ratio = 148359.99x, which is what recomputing 7049155 calls costs against 63
+  the table stores 33 entries and cuts the call count by 111891x
+
+=== 4. Towers of Hanoi: calls and moves against the closed form ===
+  n   moves       2^n - 1     calls       2^n - 1     frames    check
+  1   1           1           1           1           1         moves, calls and frames all check out
+  2   3           3           3           3           2         moves, calls and frames all check out
+  3   7           7           7           7           3         moves, calls and frames all check out
+  4   15          15          15          15          4         moves, calls and frames all check out
+  5   31          31          31          31          5         moves, calls and frames all check out
+  6   63          63          63          63          6         moves, calls and frames all check out
+  every hanoi call performs exactly one move, so calls and moves are the same number,
+  2^n - 1: the check column above is computed in code, not asserted in prose
+  frames alive = n, so the stack cost is O(n) while the work is O(2^n)
+  2^20 - 1 = 1048575 moves for n = 20: a second per move is 0.033250 years
+
+=== 5. the same answer twice: recursive and iterative on identical inputs ===
+  problem                     recursive         iterative         equal
+  factorial(12)               479001600         479001600         yes
+  sum 1..1000                 500500            500500            yes
+  fib(32)                     2178309           2178309           yes
+  closed form for the middle row: 1000 x 1001 / 2 = 500500
+  2000 walks of 500 terms each, both checksums printed below
+  the two timed walks returned the same checksum: yes (250500000, expected 250500000)
+  recursion per walk: 1054.1 ns, loop per walk: 101.6 ns
+  ratio = 10.38x: the difference is the call, the frame and the return, not the arithmetic
+
+=== 6. recursion on the heap: build and destroy a tree ===
+  a complete binary tree of depth 9: nodes = 2^(10) - 1 = 1023
+  the recursive build made 1023 heap requests through heapAlloc, 24552 bytes requested
+  sizeof(TreeNode{int; TreeNode*; TreeNode*}) = 24, offsetof(left) = 8, offsetof(right) = 16
+  the allocator reports 24 usable bytes for that 24 byte request, so the payload the node holds is 24 bytes
+  that is the payload, NOT the whole allocator footprint: glibc keeps its own bookkeeping
+  outside those 24 bytes, so 24552 is bytes requested, not bytes resident
+  recursive inorder visits = 1023, explicit stack visits = 1023
+  both sums equal: yes (523776), and the closed form 1..1023 sums to 523776
+  the recursive destroy made 1023 free calls through heapFree for 1023 nodes: balanced, no leak
+  counters are taken at the source: our own heapAlloc and heapFree, not a guess at the allocator
+
+=== 7. the guardrail: measured frame stride against the real stack limit ===
+  getrlimit(RLIMIT_STACK) says this process may use 8192 KiB of stack
+  the measured cost of one suspended call to linearSumRec is 48 bytes
+  ceiling on unaided recursion depth = 8388608 / 48 = 174762 calls
+  so a real run at depth 87381 (half the ceiling) is safe:
+    checksum = 3817763271, expected 87381 x 87382 / 2 = 3817763271 -> matches
+    that recursion used about 4095 KiB of 8192 KiB and took 23 microseconds
+  that is the whole failure mode: the same code at depth 174763 runs past the limit and dies with a stack overflow, not with a wrong answer
+  the safe depth above is computed from THIS run's measured stride and THIS run's rlimit
+
+=== 8. the limit, measured in a child process: no base case ===
+  section 7 predicted a ceiling for linearSumRec (48 bytes per call, 174762 calls).
+  A peak has to be checked on its own function: the runaway below measures its own frame
+  inside the child, so the prediction and the measurement describe the same code.
+  A forked child recurses with no base case until it dies; a SIGSEGV handler on its own
+  stack writes the depth and the stride down a pipe, and the parent reports them.
+  the child measured its own runaway frame stride: 32 bytes per call
+  predicted ceiling = 8388608 / 32 = 262144 calls
+  measured: the child reached depth 261579 before the guard page under the stack was hit
+  difference -565 calls (-0.215530 percent), at 32 bytes per frame that is 8174 KiB against the 8192 KiB limit
+  the SIGSEGV handler ran on its own stack and reported before the child died: it exited
+    with code 42, the code the handler asks for, so the fault never became
+    an unhandled signal (waitpid reports signal 0, which is none)
+  child pid 265547 is gone, the parent keeps running and prints this line
+  write the base case first, then the recursive case: that order is the exam answer
+
+=== 9. the one line to remember ===
+  a recursive call does not create a new problem, it suspends the current frame on the
+  call stack, and the frame is charged per suspended call: 48 bytes for
+  linearSumRec, 48 for factorial, 96 for hanoi, 32 for the runaway above. every one of those is the number measured in sections 2 and 8, never a typed constant.
+  Depth times that number is your stack use, and it is released in reverse order when the
+  base case is reached and the frames unwind.
+  measured on this machine, the same machine that runs your DAS-LAB experiments.
+## exit code: 0
+
+################################################################
+## B. preserved capture of 09_recursion_frames.cpp
+################################################################
 === factorial: calls, depth, frames ===
   factorial(1) = 1 | recursive calls = 1 | deepest nesting = 1 frames
   factorial(2) = 2 | recursive calls = 2 | deepest nesting = 2 frames

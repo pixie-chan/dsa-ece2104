@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 826" width="840" height="826">
+  <defs>
+    <marker id="arAccent" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#1f5f8b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="840" height="826" fill="#ffffff"/>
+  <g font-family="system-ui, -apple-system, Segoe UI, sans-serif" fill="#16202c">
+
+    <text x="24" y="36" font-size="23" font-weight="700">A queue from two stacks: pour IN into OUT, order comes back right</text>
+    <text x="24" y="58" font-size="14" fill="#5a6b7d">ECE2104 lecture 15, 15_queue_apps.cpp, every number measured in lec11_15_run_output.txt</text>
+
+    <text x="24" y="94" font-size="16" font-weight="600" fill="#1f5f8b">1. enqueue pushes onto IN, dequeue pops from OUT, and the single pour reverses the order twice</text>
+    <text x="24" y="118" font-size="14" fill="#5a6b7d">when OUT is empty everything is poured from IN into OUT: reversed twice, so the oldest element lands on top of OUT.</text>
+
+    <text x="370" y="180" font-size="14" font-weight="600" fill="#1f5f8b" text-anchor="middle">one bulk transfer of 6 elements</text>
+    <path d="M 240 292 C 285 196 455 196 500 292" fill="none" stroke="#1f5f8b" stroke-width="2" marker-end="url(#arAccent)"/>
+
+    <text x="175" y="306" font-size="13" font-weight="600" text-anchor="middle" fill="#1f5f8b">IN stack: 6 elements</text>
+    <text x="575" y="306" font-size="13" font-weight="600" text-anchor="middle" fill="#2f6b4f">OUT stack: oldest (10) on top</text>
+
+    <rect x="120" y="314" width="110" height="36" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="120" y="350" width="110" height="36" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="120" y="386" width="110" height="36" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="120" y="422" width="110" height="36" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="120" y="458" width="110" height="36" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="120" y="494" width="110" height="36" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <text x="175" y="338" font-size="18" font-weight="700" text-anchor="middle">60</text>
+    <text x="175" y="374" font-size="18" font-weight="700" text-anchor="middle">50</text>
+    <text x="175" y="410" font-size="18" font-weight="700" text-anchor="middle">40</text>
+    <text x="175" y="446" font-size="18" font-weight="700" text-anchor="middle">30</text>
+    <text x="175" y="482" font-size="18" font-weight="700" text-anchor="middle">20</text>
+    <text x="175" y="518" font-size="18" font-weight="700" text-anchor="middle">10</text>
+
+    <rect x="520" y="314" width="110" height="36" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="520" y="350" width="110" height="36" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="520" y="386" width="110" height="36" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="520" y="422" width="110" height="36" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="520" y="458" width="110" height="36" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="520" y="494" width="110" height="36" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <text x="575" y="338" font-size="18" font-weight="700" text-anchor="middle">10</text>
+    <text x="575" y="374" font-size="18" font-weight="700" text-anchor="middle">20</text>
+    <text x="575" y="410" font-size="18" font-weight="700" text-anchor="middle">30</text>
+    <text x="575" y="446" font-size="18" font-weight="700" text-anchor="middle">40</text>
+    <text x="575" y="482" font-size="18" font-weight="700" text-anchor="middle">50</text>
+    <text x="575" y="518" font-size="18" font-weight="700" text-anchor="middle">60</text>
+
+    <text x="646" y="374" font-size="14" font-weight="600" fill="#2f6b4f">dequeue pops here first</text>
+    <text x="646" y="396" font-size="13" fill="#5a6b7d">and the pour pushed the</text>
+    <text x="646" y="416" font-size="13" fill="#5a6b7d">oldest element to the top.</text>
+
+    <text x="24" y="560" font-size="14">dequeues return 10, 20, 30, 40, 50, 60: FIFO order out of nothing but LIFO parts.</text>
+    <text x="24" y="584" font-size="14" fill="#5a6b7d">transfers: the 6 enqueues cost 0, the first dequeue pours all 6 at once, and every later dequeue costs 0.</text>
+    <text x="24" y="608" font-size="14">total transfers for 6 elements = 6, so each element crossed IN to OUT exactly once: a dequeue is 1 pop on average.</text>
+
+    <line x1="24" y1="632" x2="816" y2="632" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="658" font-size="16" font-weight="600" fill="#1f5f8b">2. the measured cost, and the reverse trick: a stack from two queues</text>
+    <text x="24" y="682" font-size="14">200 mixed operations with a full drain: 138 transfers for the 138 enqueues, and the values matched std::queue.</text>
+    <text x="24" y="706" font-size="14">worst case, a dequeue right after each enqueue: 500,000 transfers at 1.190 ns per operation, order verified.</text>
+
+    <text x="24" y="732" font-size="13" fill="#5a6b7d">rotations so far after each push onto a stack built from two queues:</text>
+    <rect x="24" y="740" width="120" height="50" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="154" y="740" width="120" height="50" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="284" y="740" width="120" height="50" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="414" y="740" width="120" height="50" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="544" y="740" width="120" height="50" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="674" y="740" width="120" height="50" fill="#fbeee9" stroke="#a8452a" stroke-width="1.5"/>
+    <text x="84" y="758" font-size="13" text-anchor="middle">push(1)</text>
+    <text x="214" y="758" font-size="13" text-anchor="middle">push(2)</text>
+    <text x="344" y="758" font-size="13" text-anchor="middle">push(3)</text>
+    <text x="474" y="758" font-size="13" text-anchor="middle">push(4)</text>
+    <text x="604" y="758" font-size="13" text-anchor="middle">push(5)</text>
+    <text x="734" y="758" font-size="13" text-anchor="middle">push(6)</text>
+    <text x="84" y="780" font-size="17" font-weight="700" text-anchor="middle">0</text>
+    <text x="214" y="780" font-size="17" font-weight="700" text-anchor="middle">1</text>
+    <text x="344" y="780" font-size="17" font-weight="700" text-anchor="middle">3</text>
+    <text x="474" y="780" font-size="17" font-weight="700" text-anchor="middle">6</text>
+    <text x="604" y="780" font-size="17" font-weight="700" text-anchor="middle">10</text>
+    <text x="734" y="780" font-size="17" font-weight="700" text-anchor="middle" fill="#a8452a">15</text>
+
+    <text x="24" y="812" font-size="14" fill="#a8452a">the same 6 pushes cost 15 rotations, 1 + 2 + 3 + 4 + 5, and the pops come back 6 5 4 3 2 1: LIFO works, a push is O(n).</text>
+
+  </g>
+</svg>

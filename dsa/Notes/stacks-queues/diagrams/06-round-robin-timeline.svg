@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 838" width="840" height="838">
+  <rect x="0" y="0" width="840" height="838" fill="#ffffff"/>
+  <g font-family="system-ui, -apple-system, Segoe UI, sans-serif" fill="#16202c">
+
+    <text x="24" y="36" font-size="23" font-weight="700">Round robin, quantum 3: eleven slices, done at time 29</text>
+    <text x="24" y="58" font-size="14" fill="#5a6b7d">ECE2104 lecture 15, 15_queue_apps.cpp, every number measured in lec11_15_run_output.txt</text>
+
+    <text x="24" y="94" font-size="16" font-weight="600" fill="#1f5f8b">1. the slice log: each task runs at most 3 units, then it goes back to the tail</text>
+    <text x="60" y="126" font-size="13" font-weight="600" fill="#5a6b7d">start</text>
+    <text x="106" y="126" font-size="13" font-weight="600" fill="#5a6b7d">end</text>
+    <text x="146" y="126" font-size="13" font-weight="600" fill="#5a6b7d">task</text>
+    <text x="192" y="126" font-size="13" font-weight="600" fill="#5a6b7d">ran</text>
+    <text x="240" y="126" font-size="13" font-weight="600" fill="#5a6b7d">remaining</text>
+    <text x="340" y="126" font-size="13" font-weight="600" fill="#5a6b7d">note</text>
+
+    <text x="60" y="148" font-size="13">0</text>
+    <text x="106" y="148" font-size="13">3</text>
+    <text x="146" y="148" font-size="13">A</text>
+    <text x="192" y="148" font-size="13">3</text>
+    <text x="240" y="148" font-size="13">5</text>
+    <text x="340" y="148" font-size="13">back to the tail of the queue</text>
+    <text x="60" y="168" font-size="13">3</text>
+    <text x="106" y="168" font-size="13">6</text>
+    <text x="146" y="168" font-size="13">B</text>
+    <text x="192" y="168" font-size="13">3</text>
+    <text x="240" y="168" font-size="13">1</text>
+    <text x="340" y="168" font-size="13">back to the tail of the queue</text>
+    <text x="60" y="188" font-size="13">6</text>
+    <text x="106" y="188" font-size="13">9</text>
+    <text x="146" y="188" font-size="13">C</text>
+    <text x="192" y="188" font-size="13">3</text>
+    <text x="240" y="188" font-size="13">6</text>
+    <text x="340" y="188" font-size="13">back to the tail of the queue</text>
+    <rect x="24" y="194" width="792" height="19" fill="#e9f4ee"/>
+    <text x="60" y="208" font-size="13">9</text>
+    <text x="106" y="208" font-size="13">11</text>
+    <text x="146" y="208" font-size="13">D</text>
+    <text x="192" y="208" font-size="13">2</text>
+    <text x="240" y="208" font-size="13">0</text>
+    <text x="340" y="208" font-size="13" fill="#2f6b4f">DONE, burst 2 ran out mid-slice</text>
+    <text x="60" y="228" font-size="13">11</text>
+    <text x="106" y="228" font-size="13">14</text>
+    <text x="146" y="228" font-size="13">E</text>
+    <text x="192" y="228" font-size="13">3</text>
+    <text x="240" y="228" font-size="13">3</text>
+    <text x="340" y="228" font-size="13">back to the tail of the queue</text>
+    <text x="60" y="248" font-size="13">14</text>
+    <text x="106" y="248" font-size="13">17</text>
+    <text x="146" y="248" font-size="13">A</text>
+    <text x="192" y="248" font-size="13">3</text>
+    <text x="240" y="248" font-size="13">2</text>
+    <text x="340" y="248" font-size="13">back to the tail of the queue</text>
+    <rect x="24" y="254" width="792" height="19" fill="#e9f4ee"/>
+    <text x="60" y="268" font-size="13">17</text>
+    <text x="106" y="268" font-size="13">18</text>
+    <text x="146" y="268" font-size="13">B</text>
+    <text x="192" y="268" font-size="13">1</text>
+    <text x="240" y="268" font-size="13">0</text>
+    <text x="340" y="268" font-size="13" fill="#2f6b4f">DONE, burst 4 had one unit left</text>
+    <text x="60" y="288" font-size="13">18</text>
+    <text x="106" y="288" font-size="13">21</text>
+    <text x="146" y="288" font-size="13">C</text>
+    <text x="192" y="288" font-size="13">3</text>
+    <text x="240" y="288" font-size="13">3</text>
+    <text x="340" y="288" font-size="13">back to the tail of the queue</text>
+    <rect x="24" y="294" width="792" height="19" fill="#e9f4ee"/>
+    <text x="60" y="308" font-size="13">21</text>
+    <text x="106" y="308" font-size="13">24</text>
+    <text x="146" y="308" font-size="13">E</text>
+    <text x="192" y="308" font-size="13">3</text>
+    <text x="240" y="308" font-size="13">0</text>
+    <text x="340" y="308" font-size="13" fill="#2f6b4f">DONE, burst 6</text>
+    <rect x="24" y="314" width="792" height="19" fill="#e9f4ee"/>
+    <text x="60" y="328" font-size="13">24</text>
+    <text x="106" y="328" font-size="13">26</text>
+    <text x="146" y="328" font-size="13">A</text>
+    <text x="192" y="328" font-size="13">2</text>
+    <text x="240" y="328" font-size="13">0</text>
+    <text x="340" y="328" font-size="13" fill="#2f6b4f">DONE, burst 8</text>
+    <rect x="24" y="334" width="792" height="19" fill="#e9f4ee"/>
+    <text x="60" y="348" font-size="13">26</text>
+    <text x="106" y="348" font-size="13">29</text>
+    <text x="146" y="348" font-size="13">C</text>
+    <text x="192" y="348" font-size="13">3</text>
+    <text x="240" y="348" font-size="13">0</text>
+    <text x="340" y="348" font-size="13" fill="#2f6b4f">DONE, burst 9</text>
+
+    <text x="24" y="390" font-size="14">completion order: D B E A C. total time = 29, slices = 11, one context switch per slice.</text>
+    <text x="24" y="414" font-size="14">round robin: average waiting 15.80, average turnaround 21.60, worst waiting 20.</text>
+    <text x="24" y="438" font-size="14">first come first served: average waiting 12.80, worst waiting 23.</text>
+
+    <line x1="24" y1="458" x2="816" y2="458" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="484" font-size="16" font-weight="600" fill="#1f5f8b">2. the same 29 units drawn twice: round robin above, first come first served below</text>
+    <text x="24" y="508" font-size="14" font-weight="600" fill="#1f5f8b">round robin, quantum 3: each bar is labelled with its own start and end time</text>
+
+    <text x="82" y="531" font-size="14" font-weight="700" text-anchor="end">A</text>
+    <text x="82" y="557" font-size="14" font-weight="700" text-anchor="end">B</text>
+    <text x="82" y="583" font-size="14" font-weight="700" text-anchor="end">C</text>
+    <text x="82" y="609" font-size="14" font-weight="700" text-anchor="end">D</text>
+    <text x="82" y="635" font-size="14" font-weight="700" text-anchor="end">E</text>
+
+    <rect x="96" y="514" width="70" height="22" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="436" y="514" width="70" height="22" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="678" y="514" width="46" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <text x="131" y="530" font-size="13" text-anchor="middle">0-3</text>
+    <text x="471" y="530" font-size="13" text-anchor="middle">14-17</text>
+    <text x="701" y="530" font-size="13" text-anchor="middle">24-26</text>
+
+    <rect x="168" y="540" width="70" height="22" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="508" y="540" width="22" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <text x="203" y="556" font-size="13" text-anchor="middle">3-6</text>
+    <text x="504" y="556" font-size="13" fill="#5a6b7d" text-anchor="end">17-18</text>
+
+    <rect x="241" y="566" width="70" height="22" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="533" y="566" width="70" height="22" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="727" y="566" width="70" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <text x="276" y="582" font-size="13" text-anchor="middle">6-9</text>
+    <text x="568" y="582" font-size="13" text-anchor="middle">18-21</text>
+    <text x="762" y="582" font-size="13" text-anchor="middle">26-29</text>
+
+    <rect x="314" y="592" width="46" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <text x="337" y="608" font-size="13" text-anchor="middle">9-11</text>
+
+    <rect x="363" y="618" width="70" height="22" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="605" y="618" width="70" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <text x="398" y="634" font-size="13" text-anchor="middle">11-14</text>
+    <text x="640" y="634" font-size="13" text-anchor="middle">21-24</text>
+
+    <line x1="96" y1="650" x2="800" y2="650" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="96" y1="650" x2="96" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="169" y1="650" x2="169" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="242" y1="650" x2="242" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="315" y1="650" x2="315" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="387" y1="650" x2="387" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="460" y1="650" x2="460" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="533" y1="650" x2="533" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="606" y1="650" x2="606" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="679" y1="650" x2="679" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="751" y1="650" x2="751" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="800" y1="650" x2="800" y2="657" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="96" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">0</text>
+    <text x="169" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">3</text>
+    <text x="242" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">6</text>
+    <text x="315" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">9</text>
+    <text x="387" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">12</text>
+    <text x="460" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">15</text>
+    <text x="533" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">18</text>
+    <text x="606" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">21</text>
+    <text x="679" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">24</text>
+    <text x="751" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">27</text>
+    <text x="800" y="675" font-size="13" fill="#5a6b7d" text-anchor="middle">29</text>
+
+    <text x="24" y="704" font-size="14" font-weight="600" fill="#2f6b4f">first come first served: the same five tasks, one uninterrupted run each</text>
+    <text x="192" y="726" font-size="13" fill="#5a6b7d" text-anchor="middle">0-8</text>
+    <text x="337" y="726" font-size="13" fill="#5a6b7d" text-anchor="middle">8-12</text>
+    <text x="495" y="726" font-size="13" fill="#5a6b7d" text-anchor="middle">12-21</text>
+    <text x="628" y="726" font-size="13" fill="#5a6b7d" text-anchor="middle">21-23</text>
+    <text x="726" y="726" font-size="13" fill="#5a6b7d" text-anchor="middle">23-29</text>
+    <rect x="96" y="734" width="192" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="290" y="734" width="95" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="387" y="734" width="216" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="605" y="734" width="46" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="654" y="734" width="144" height="22" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <text x="192" y="750" font-size="14" font-weight="700" text-anchor="middle">A</text>
+    <text x="337" y="750" font-size="14" font-weight="700" text-anchor="middle">B</text>
+    <text x="495" y="750" font-size="14" font-weight="700" text-anchor="middle">C</text>
+    <text x="628" y="750" font-size="14" font-weight="700" text-anchor="middle">D</text>
+    <text x="726" y="750" font-size="14" font-weight="700" text-anchor="middle">E</text>
+
+    <text x="24" y="786" font-size="14">both schedules finish at time 29: only the waiting differs. round robin pays 15.80 on the average, FCFS pays 12.80.</text>
+    <text x="24" y="812" font-size="14" fill="#2f6b4f">but the worst wait is 20 under round robin against 23 under FCFS, so under round robin nobody waits longer than 20.</text>
+
+  </g>
+</svg>

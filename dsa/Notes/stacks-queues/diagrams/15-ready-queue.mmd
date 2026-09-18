@@ -1,0 +1,5 @@
+flowchart LR
+  R["ready queue"] --> H["head runs for one quantum"]
+  H --> Q{"burst left?"}
+  Q -->|yes| T["requeue at the tail"] --> R
+  Q -->|no| F["task done, record completion"]

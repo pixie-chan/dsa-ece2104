@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 750" width="840" height="750">
+  <defs>
+    <marker id="arOk" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#2f6b4f"/>
+    </marker>
+    <marker id="arAccent" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#1f5f8b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="840" height="750" fill="#ffffff"/>
+  <g font-family="system-ui, -apple-system, Segoe UI, sans-serif" fill="#16202c">
+
+    <text x="24" y="36" font-size="23" font-weight="700">Array stack layout: one array plus one index, 40 bytes</text>
+    <text x="24" y="58" font-size="14" fill="#5a6b7d">ECE2104 lecture 11, 11_stack_array.cpp, every number measured in lec11_15_run_output.txt</text>
+
+    <text x="24" y="94" font-size="16" font-weight="600" fill="#1f5f8b">1. what the 40 bytes of ArrayStack&lt;int,5&gt; are</text>
+
+    <rect x="60" y="108" width="370" height="62" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="430" y="108" width="74" height="62" fill="#fbeee9" stroke="#a8452a" stroke-width="1.5"/>
+    <rect x="504" y="108" width="148" height="62" fill="#e9f4ee" stroke="#2f6b4f" stroke-width="1.5"/>
+    <rect x="652" y="108" width="148" height="62" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+
+    <text x="245" y="134" font-size="15" font-weight="600" text-anchor="middle">data[0..4]</text>
+    <text x="245" y="155" font-size="13" text-anchor="middle">5 x int = 20 bytes, offset 0</text>
+    <text x="467" y="134" font-size="14" font-weight="600" text-anchor="middle">padding</text>
+    <text x="467" y="155" font-size="13" text-anchor="middle">4 bytes</text>
+    <text x="578" y="132" font-size="14" font-weight="600" text-anchor="middle" fill="#2f6b4f">size_t top</text>
+    <text x="578" y="155" font-size="13" text-anchor="middle" fill="#2f6b4f">8 B at offset 24</text>
+    <text x="726" y="132" font-size="14" font-weight="600" text-anchor="middle">size_t refusals</text>
+    <text x="726" y="155" font-size="13" text-anchor="middle" fill="#5a6b7d">8 B at offset 32</text>
+
+    <line x1="60" y1="182" x2="800" y2="182" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="60" y1="182" x2="60" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="430" y1="182" x2="430" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="504" y1="182" x2="504" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="652" y1="182" x2="652" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <line x1="800" y1="182" x2="800" y2="189" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="60" y="204" font-size="13" fill="#5a6b7d">offset 0</text>
+    <text x="430" y="204" font-size="13" fill="#5a6b7d" text-anchor="middle">20</text>
+    <text x="504" y="204" font-size="13" fill="#5a6b7d" text-anchor="middle">24</text>
+    <text x="652" y="204" font-size="13" fill="#5a6b7d" text-anchor="middle">32</text>
+    <text x="800" y="204" font-size="13" fill="#5a6b7d" text-anchor="end">40</text>
+
+    <text x="24" y="228" font-size="14">offsetof(top) = 24, not 20: a size_t wants an 8 byte boundary, so 4 bytes of padding sit after the 5 ints.</text>
+    <text x="24" y="248" font-size="14" fill="#5a6b7d">the array comes first and the index trails it, which is why the base address never moves.</text>
+
+    <line x1="24" y1="268" x2="816" y2="268" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="294" font-size="16" font-weight="600" fill="#1f5f8b">2. the index decides everything: push writes data[top] then top++, pop does top-- then reads</text>
+
+    <rect x="70" y="312" width="100" height="62" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="170" y="312" width="100" height="62" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="270" y="312" width="100" height="62" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="370" y="312" width="100" height="62" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="470" y="312" width="100" height="62" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <text x="120" y="352" font-size="20" font-weight="700" text-anchor="middle">1</text>
+    <text x="220" y="352" font-size="20" font-weight="700" text-anchor="middle">2</text>
+    <text x="320" y="352" font-size="20" font-weight="700" text-anchor="middle">3</text>
+    <text x="420" y="352" font-size="20" font-weight="700" text-anchor="middle">4</text>
+    <text x="520" y="352" font-size="20" font-weight="700" text-anchor="middle">5</text>
+    <text x="120" y="394" font-size="13" fill="#5a6b7d" text-anchor="middle">data[0]</text>
+    <text x="220" y="394" font-size="13" fill="#5a6b7d" text-anchor="middle">data[1]</text>
+    <text x="320" y="394" font-size="13" fill="#5a6b7d" text-anchor="middle">data[2]</text>
+    <text x="420" y="394" font-size="13" fill="#5a6b7d" text-anchor="middle">data[3]</text>
+    <text x="520" y="394" font-size="13" fill="#5a6b7d" text-anchor="middle">data[4]</text>
+    <line x1="570" y1="343" x2="640" y2="343" stroke="#2f6b4f" stroke-width="2" marker-end="url(#arOk)"/>
+    <text x="648" y="338" font-size="15" font-weight="600" fill="#2f6b4f">top = 5</text>
+    <text x="648" y="358" font-size="13" fill="#5a6b7d">one past data[4]</text>
+
+    <text x="24" y="418" font-size="14">after 5 pushes: top = 5, one past the last stored element at index 4.</text>
+    <text x="24" y="438" font-size="14" fill="#5a6b7d">bottom is index 0. the index moves up on push and back down on pop. both O(1), nothing shifts.</text>
+
+    <line x1="24" y1="458" x2="816" y2="458" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="484" font-size="16" font-weight="600" fill="#1f5f8b">3. seven pushes into five slots: two refusals, contents untouched</text>
+    <text x="132" y="500" font-size="13" text-anchor="middle">push(1)</text>
+    <text x="228" y="500" font-size="13" text-anchor="middle">push(2)</text>
+    <text x="324" y="500" font-size="13" text-anchor="middle">push(3)</text>
+    <text x="420" y="500" font-size="13" text-anchor="middle">push(4)</text>
+    <text x="516" y="500" font-size="13" text-anchor="middle">push(5)</text>
+    <text x="612" y="500" font-size="13" text-anchor="middle">push(6)</text>
+    <text x="708" y="500" font-size="13" text-anchor="middle">push(7)</text>
+
+    <rect x="88" y="508" width="88" height="48" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="184" y="508" width="88" height="48" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="280" y="508" width="88" height="48" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="376" y="508" width="88" height="48" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="472" y="508" width="88" height="48" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="568" y="508" width="88" height="48" fill="#fbeee9" stroke="#a8452a" stroke-width="1.5"/>
+    <rect x="664" y="508" width="88" height="48" fill="#fbeee9" stroke="#a8452a" stroke-width="1.5"/>
+    <text x="132" y="538" font-size="18" font-weight="700" text-anchor="middle">1</text>
+    <text x="228" y="538" font-size="18" font-weight="700" text-anchor="middle">2</text>
+    <text x="324" y="538" font-size="18" font-weight="700" text-anchor="middle">3</text>
+    <text x="420" y="538" font-size="18" font-weight="700" text-anchor="middle">4</text>
+    <text x="516" y="538" font-size="18" font-weight="700" text-anchor="middle">5</text>
+    <text x="612" y="538" font-size="13" font-weight="600" fill="#a8452a" text-anchor="middle">REFUSED</text>
+    <text x="708" y="538" font-size="13" font-weight="600" fill="#a8452a" text-anchor="middle">REFUSED</text>
+
+    <text x="132" y="574" font-size="13" fill="#5a6b7d" text-anchor="middle">size 1</text>
+    <text x="228" y="574" font-size="13" fill="#5a6b7d" text-anchor="middle">size 2</text>
+    <text x="324" y="574" font-size="13" fill="#5a6b7d" text-anchor="middle">size 3</text>
+    <text x="420" y="574" font-size="13" fill="#5a6b7d" text-anchor="middle">size 4</text>
+    <text x="516" y="574" font-size="13" fill="#5a6b7d" text-anchor="middle">size 5, full</text>
+    <text x="612" y="574" font-size="13" fill="#a8452a" text-anchor="middle">refusals 1</text>
+    <text x="708" y="574" font-size="13" fill="#a8452a" text-anchor="middle">refusals 2</text>
+
+    <text x="24" y="598" font-size="14" fill="#a8452a">refusals = 2, capacity() = 5: overflow is detected, nothing is silently written.</text>
+    <text x="24" y="618" font-size="14" fill="#5a6b7d">contents after the refusals, bottom to top: 1 2 3 4 5, size = 5. the drain returns 5 4 3 2 1.</text>
+
+    <text x="24" y="656" font-size="16" font-weight="600" fill="#1f5f8b">4. an unchecked push writes slot 6, which is offset 24, exactly where the canary sits</text>
+    <rect x="24" y="672" width="792" height="62" fill="#fbeee9" stroke="#a8452a" stroke-width="1.5"/>
+    <text x="36" y="696" font-size="14">bench.data base = 0x7ffeb0a2d3e0    |    bench.data + 6*sizeof(int) = 0x7ffeb0a2d3f8</text>
+    <text x="36" y="720" font-size="14" fill="#a8452a">address of bench.canary = 0x7ffeb0a2d3f8, and it holds 0xc0ffee: offsetof(CanaryBench,canary) = 24, 6 ints in.</text>
+
+  </g>
+</svg>

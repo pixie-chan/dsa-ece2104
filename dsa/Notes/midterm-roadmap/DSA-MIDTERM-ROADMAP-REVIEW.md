@@ -411,3 +411,34 @@ The repair collapsed the two hook loops into one and deleted the orphaned block,
 ## Also still open
 
 P3 (section 7 range: measured `s7` = none, `s3` = 5 to 9), P4 (`og-card.png` missing), P5, P6, P7 (re-measured: `beforeprint` twice leaves 12 answers open), P8, P9, P10, P11, P12 and the P13 judgment items. Print still works: answers present, `SHOW ANSWER` still 12 times.
+
+---
+
+# Round 11 verification, revision 7fc0de2d
+
+Checked at 2026-09-18 16:56 IST against `sha256 7fc0de2dea029f63` (90145 bytes, mtime 16:54:03).
+
+## The section navigator runs for the first time
+
+The save changed line 1147 to `window.__rmRender = typeof render === "function" ? render : null;`. `typeof` on an undeclared name does not throw, so the block no longer aborts and the navigator IIFE finally executes. Measured: no page errors, `window.__rmRender` is `null`, `window.__rmHooks.length` is 3, `#jump-now` moves to `03 / 11` on a 6000px scroll with the active chip on `#s3`, a chip click writes `1. jumped to 06 numericals`, and `next` writes `2. stepped on to 07 evidence` while moving the active chip to `#s7`.
+
+## The guard can never be true, and the trail shows it
+
+`render` is still out of scope inside patch A, so the ternary always yields `null`, the handshake at line 1270 is always skipped, and the navigator falls back to its own `unattached` counter instead of the page's `ACTIONS`. Measured interleave, two navigator moves then two tick clicks:
+
+```
+1. jumped to 06 numericals
+2. stepped on to 07 evidence
+1. lecture 3 ticked off
+2. lecture 4 ticked off
+```
+
+Two sequences in one column, both starting at 1. Fix options and the ordering trap (patch A runs after the first IIFE, so it must stop assigning to `window.__rmRender` at all) are in P1 of the patch sheet.
+
+## Process note
+
+This save was nearly swallowed: my script recorded `reviewed.sha` from the live file rather than from the revision it had verified, and the file changed at 16:54:03 while round 10 was being written, so the watcher baselined the unverified hash and reported no change. Corrected: the reviewed hash is now written after verification and checked against the file's mtime, and the verification snapshot is kept.
+
+## Still open
+
+P3 (section 7 range, measured `s7` = none), P4, P5, P6, P7, P8, P9, P10, P11, P12, and the P13 judgment items. Everything else is working: ticks, meter, `aria-valuenow`, slab counters and fills, slab jump links, the navigator, and print.

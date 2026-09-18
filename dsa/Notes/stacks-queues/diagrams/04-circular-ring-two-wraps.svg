@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 770" width="840" height="770">
+  <rect x="0" y="0" width="840" height="770" fill="#ffffff"/>
+  <g font-family="system-ui, -apple-system, Segoe UI, sans-serif" fill="#16202c">
+
+    <text x="24" y="36" font-size="23" font-weight="700">Circular queue: the rear wraps, the count comes from the formula</text>
+    <text x="24" y="58" font-size="14" fill="#5a6b7d">ECE2104 lecture 14, 14_queue_linked_circular.cpp, every number measured in lec11_15_run_output.txt</text>
+
+    <text x="24" y="94" font-size="16" font-weight="600" fill="#1f5f8b">1. capacity = 5 and the script is enqueue enqueue dequeue dequeue, five times over</text>
+    <text x="24" y="116" font-size="13" fill="#5a6b7d">each row: op, value, then front, rear, count after that op. W marks the two ops where the rear wrapped past the end.</text>
+
+    <rect x="24" y="130" width="156" height="24" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="24" y="154" width="156" height="80" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="34" y="147" font-size="13" font-weight="600" fill="#1f5f8b">pass 1 (ops 1 to 4)</text>
+    <text x="34" y="172" font-size="13">enq 100  f0 r1 c1</text>
+    <text x="34" y="192" font-size="13">enq 101  f0 r2 c2</text>
+    <text x="34" y="212" font-size="13">deq 100  f1 r2 c1</text>
+    <text x="34" y="232" font-size="13">deq 101  f2 r2 c0</text>
+
+    <rect x="186" y="130" width="156" height="24" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="186" y="154" width="156" height="80" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="196" y="147" font-size="13" font-weight="600" fill="#1f5f8b">pass 2 (ops 5 to 8)</text>
+    <text x="196" y="172" font-size="13">enq 102  f2 r3 c1</text>
+    <text x="196" y="192" font-size="13">enq 103  f2 r4 c2</text>
+    <text x="196" y="212" font-size="13">deq 102  f3 r4 c1</text>
+    <text x="196" y="232" font-size="13">deq 103  f4 r4 c0</text>
+
+    <rect x="348" y="130" width="156" height="24" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="348" y="154" width="156" height="80" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="358" y="147" font-size="13" font-weight="600" fill="#1f5f8b">pass 3 (ops 9 to 12)</text>
+    <rect x="350" y="158" width="152" height="17" fill="#fbeee9"/>
+    <text x="358" y="172" font-size="13" fill="#a8452a">enq 104  f4 r0 c1 W</text>
+    <text x="358" y="192" font-size="13">enq 105  f4 r1 c2</text>
+    <text x="358" y="212" font-size="13">deq 104  f0 r1 c1</text>
+    <text x="358" y="232" font-size="13">deq 105  f1 r1 c0</text>
+
+    <rect x="510" y="130" width="156" height="24" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="510" y="154" width="156" height="80" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="520" y="147" font-size="13" font-weight="600" fill="#1f5f8b">pass 4 (ops 13 to 16)</text>
+    <text x="520" y="172" font-size="13">enq 106  f1 r2 c1</text>
+    <text x="520" y="192" font-size="13">enq 107  f1 r3 c2</text>
+    <text x="520" y="212" font-size="13">deq 106  f2 r3 c1</text>
+    <text x="520" y="232" font-size="13">deq 107  f3 r3 c0</text>
+
+    <rect x="672" y="130" width="156" height="24" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <rect x="672" y="154" width="156" height="80" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <text x="682" y="147" font-size="13" font-weight="600" fill="#1f5f8b">pass 5 (ops 17 to 20)</text>
+    <text x="682" y="172" font-size="13">enq 108  f3 r4 c1</text>
+    <rect x="674" y="178" width="152" height="17" fill="#fbeee9"/>
+    <text x="682" y="192" font-size="13" fill="#a8452a">enq 109  f3 r0 c2 W</text>
+    <text x="682" y="212" font-size="13">deq 108  f4 r0 c1</text>
+    <text x="682" y="232" font-size="13">deq 109  f0 r0 c0</text>
+
+    <text x="24" y="256" font-size="13" fill="#5a6b7d">read a wrapped row like this: the rear goes 4 then 0, which is the modulo bringing it back to the front of the array.</text>
+
+    <text x="24" y="292" font-size="16" font-weight="600" fill="#1f5f8b">2. the ring at a wrapped state: front = 3, rear = 2, count = 4</text>
+
+    <circle cx="230" cy="350" r="40" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <circle cx="320" cy="416" r="40" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <circle cx="286" cy="522" r="40" fill="#ffffff" stroke="#c9d4e0" stroke-width="1.5"/>
+    <circle cx="174" cy="522" r="40" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+    <circle cx="140" cy="416" r="40" fill="#eaf2f8" stroke="#1f5f8b" stroke-width="1.5"/>
+
+    <text x="230" y="342" font-size="19" font-weight="700" text-anchor="middle">0</text>
+    <text x="230" y="374" font-size="13" fill="#5a6b7d" text-anchor="middle">live</text>
+    <text x="320" y="408" font-size="19" font-weight="700" text-anchor="middle">1</text>
+    <text x="320" y="440" font-size="13" fill="#5a6b7d" text-anchor="middle">live</text>
+    <text x="286" y="514" font-size="19" font-weight="700" text-anchor="middle">2</text>
+    <text x="286" y="534" font-size="13" fill="#1f5f8b" text-anchor="middle">rear</text>
+    <text x="286" y="551" font-size="13" fill="#5a6b7d" text-anchor="middle">empty</text>
+    <text x="174" y="514" font-size="19" font-weight="700" text-anchor="middle">3</text>
+    <text x="174" y="534" font-size="13" fill="#2f6b4f" text-anchor="middle">front</text>
+    <text x="174" y="551" font-size="13" fill="#5a6b7d" text-anchor="middle">live</text>
+    <text x="140" y="408" font-size="19" font-weight="700" text-anchor="middle">4</text>
+    <text x="140" y="440" font-size="13" fill="#5a6b7d" text-anchor="middle">live</text>
+    <text x="230" y="468" font-size="13" fill="#5a6b7d" text-anchor="middle">capacity 5</text>
+
+    <text x="400" y="330" font-size="15" font-weight="600" fill="#1f5f8b">count = (rear - front + capacity) mod capacity</text>
+    <text x="400" y="366" font-size="14">state A: front = 0, rear = 3</text>
+    <text x="400" y="390" font-size="14">(3 - 0 + 5) mod 5 = 3, stored count 3</text>
+    <text x="400" y="424" font-size="14">state B: front = 2, rear = 3</text>
+    <text x="400" y="448" font-size="14">(3 - 2 + 5) mod 5 = 1, stored count 1</text>
+    <text x="400" y="482" font-size="14">state C, the wrapped one: front = 3, rear = 2</text>
+    <text x="400" y="506" font-size="14" fill="#a8452a">bare (rear - front) as unsigned = 18446744073709551615</text>
+    <text x="400" y="530" font-size="14" fill="#2f6b4f">(2 - 3 + 5) mod 5 = 4, stored count 4</text>
+    <text x="400" y="556" font-size="13" fill="#5a6b7d">that wrapped number is why the + capacity is in the formula.</text>
+    <text x="400" y="582" font-size="13" fill="#5a6b7d">the ring holds count = 4 elements in 5 slots: slots 3, 4, 0, 1, waiting</text>
+    <text x="400" y="602" font-size="13" fill="#5a6b7d">from the front at 3 round to the slot the rear is about to write.</text>
+
+    <text x="24" y="630" font-size="14" font-weight="600" fill="#2f6b4f">10 enqueues into a 5 slot array, and the rear index came round 2 times: the same five slots served all of them.</text>
+    <text x="24" y="654" font-size="14" fill="#5a6b7d">a naive queue would have refused after 5 enqueues and left 3 slots stranded: this one is still running.</text>
+
+    <line x1="24" y1="678" x2="816" y2="678" stroke="#c9d4e0" stroke-width="1"/>
+
+    <text x="24" y="704" font-size="16" font-weight="600" fill="#1f5f8b">3. the full and empty ambiguity, and the two ways out of it</text>
+    <text x="24" y="728" font-size="14">front == rear means empty, and it is also what you get after capacity enqueues, so one comparison cannot decide both.</text>
+    <text x="24" y="752" font-size="14">count based: front = 3, rear = 3, count = 0 reports empty. sentinel slot: 4 enqueues fill 4 of 5 slots, full = yes.</text>
+
+  </g>
+</svg>

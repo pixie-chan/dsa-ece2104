@@ -47,7 +47,7 @@ cd /tmp && ~/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome --headless
 |---|---|---|
 | P0 | FIXED | The stray brace in `render()` was repaired at `e5b32c74`, all three scripts parse |
 | P0b | FIXED | The hook call is now `hks[h](log, done, n, ticks.length)`, so the navigator's logger contract holds |
-| P1 | BLOCKER | `window.__rmRender = render;` is out of scope, the throw kills the section navigator |
+| P1 | DEGRADED | The throw is gone so the navigator finally runs, but the export is always `null`, so the trail shows two counter sequences |
 | P2 | DONE | Duplicate hook loop removed; `render()` now has one guarded loop |
 | P3 | Medium | `data-lectures="16"` on section 7 is skipped, so the spine never follows the recursion section |
 | P4 | Medium | `og:image` points at `og-card.png`, which does not exist |
@@ -136,28 +136,49 @@ For one revision the hook was called with `(done, n, ticks.length)`, which hande
 
 ---
 
-## P1, BLOCKER: patch A throws and the section navigator never runs
+## P1, DEGRADED at revision 7fc0de2d: the navigator runs, but the trail has two counters
 
 **Where:** line 1147, the last statements of the patch A IIFE, and the handshake at line 1270.
+
+As of `7fc0de2d` the line reads:
+
+```js
+  window.__rmRender = typeof render === "function" ? render : null;
+```
+
+`typeof` on an undeclared name does not throw, so the ReferenceError is gone and the script block now runs to the end. That is real progress: the section navigator executes for the first time. But the guard can never be true, because `render` is still out of scope here, so `window.__rmRender` is always `null` and the handshake at line 1270 is always skipped. Measured at this revision: `rmRender: "null"`, `hooks: 3`, no page errors, `#jump-now` moves to `03 / 11` on scroll with the active chip on `#s3`, a chip click writes `1. jumped to 06 numericals`, and `next` writes `2. stepped on to 07 evidence`.
+
+The cost is the trail numbering. With no logger handed over, the navigator falls back to its own `unattached` counter, which starts from the current list length and then counts independently of the page's `ACTIONS`. Measured interleave, two navigator moves then two tick clicks:
+
+```
+1. jumped to 06 numericals
+2. stepped on to 07 evidence
+1. lecture 3 ticked off
+2. lecture 4 ticked off
+```
+
+Two lists in one column, both claiming to start at 1.
+
+**Edit, smallest correct version.** Delete the assignment in patch A entirely, so it stops clobbering the export with `null`:
 
 ```js
   window.__rmHooks = window.__rmHooks || [];
   window.__rmHooks.push(function () { syncAll(); });
-  /* two things the section navigator appended below needs from this closure */
-  window.__rmRender = render;
 })();
 ```
 
-`render` is declared with `function render()` inside the first IIFE of the same `<script>` block, so it is not in scope here. The statement throws `ReferenceError: render is not defined`, and because all three IIFEs share one script element, the throw aborts the rest of the block, which means the navigator IIFE at line 1258 onward never executes.
-
-**Measured at revision e5b32c74 (with P0 fixed, so this is now the only thing standing between the page and a working navigator):** one page error `render is not defined`, `window.__rmRender` `undefined`, `#jump-now` stuck at `01 / 11` after a 6000px scroll, the active chip stuck at `#s1`, chip clicks writing nothing to the trail, `prev` and `next` doing nothing. Everything else on the page works: ticks, meter, `aria-valuenow`, trail, slab counters and slab jump links.
-
-**Edit.** Delete the offending line and export the function from the scope that owns it, in the first IIFE immediately after its existing `render();` call at line 990:
+and export the function from the scope that owns it, in the first IIFE immediately after its existing `render();` call at line 990:
 
 ```js
   render();
   window.__rmRender = render;
 ```
+
+Order matters: the first IIFE runs before patch A, so if patch A keeps assigning anything to `window.__rmRender` it will overwrite the good value.
+
+**Edit, cleanest version.** Skip the handshake. `window.__rmLog` is already a function (verified), so the navigator's `say()` can call `window.__rmLog(msg)` directly, and `own`, `unattached`, `window.__rmRender = render` and the `if (window.__rmRender)` call at line 1270 can all go. That removes the whole class of problem, including the ordering trap above.
+
+**Verify:** click two navigator controls, then click two ticks, and confirm the trail numbers run 1, 2, 3, 4 with no repeats. `node ~/.cache/roadmap-qa/verify14.mjs` prints the interleave test directly.
 
 **Alternative:** take option 2 of P0b and delete this export entirely.
 

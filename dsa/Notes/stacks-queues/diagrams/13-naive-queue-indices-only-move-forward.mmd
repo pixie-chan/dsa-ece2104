@@ -1,0 +1,5 @@
+flowchart TD
+  N["Naive queue: indices only move forward"] --> N1["refused when rear equals capacity"]
+  N1 --> N2["slots below frontIndex are lost"]
+  C["Circular queue: indices wrap"] --> C1["rear = (rear + 1) mod capacity"]
+  C1 --> C2["every freed slot is reusable, cost is one modulo"]

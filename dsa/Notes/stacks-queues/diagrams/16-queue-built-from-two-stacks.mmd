@@ -1,0 +1,6 @@
+flowchart TD
+  A["queue built from two stacks"] --> B["enqueue pushes onto IN"]
+  A --> C["dequeue pops from OUT"]
+  C --> D{"OUT empty?"}
+  D -->|yes| E["pour all of IN into OUT, one bulk transfer"]
+  D -->|no| F["pop the head of OUT"]

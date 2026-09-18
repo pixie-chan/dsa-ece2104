@@ -1,0 +1,10 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"},"flowchart":{"wrappingWidth":620}}}%%
+graph TB
+  R["MERGE SORT RECURSION TREE<br/>the split is by position, so the shape never depends on the values"]
+  R --> L0["LEVEL 0: 1 call of 8 elements"]
+  L0 --> L1["LEVEL 1: 2 calls of 4"]
+  L1 --> L2["LEVEL 2: 4 calls of 2"]
+  L2 --> L3["LEVEL 3: 8 calls of 1<br/>the base case: one element is already sorted"]
+  L3 --> U["THE MERGES RUN BACK UP<br/>4 merges of 2, then 2 merges of 4, then 1 merge of 8<br/>7 merges in total, which is n - 1"]
+  U --> F["THE TWO CLOSED FORMS THAT HELD EXACTLY<br/>depth = log2(n) + 1: measured 4, 7, 11, 17 at n = 8, 64, 1024, 65536<br/>merges = n - 1: measured 7, 63, 1023, 65535 at the same sizes"]
+  F --> S["WHY THE DEPTH MATTERS<br/>the depth is decided by n and never by the data,<br/>which is exactly what quick sort cannot promise"]

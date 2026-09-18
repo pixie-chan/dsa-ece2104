@@ -1,0 +1,10 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  Q["QUEUE: FIFO, the element that has waited longest leaves first<br/>two indices, one at each end: enqueue writes at rear, dequeue reads at front"]
+  Q --> F["FIFO PROOF from lec11_15_run_output.txt<br/>enqueue 10, rear 1<br/>enqueue 20, rear 2<br/>enqueue 30, rear 3<br/>dequeue gives 10, then 20, then 30<br/>same order out as in: the opposite of the stack"]
+  Q --> N["THE NAIVE ARRAY QUEUE WASTES SLOTS<br/>after 5 enqueues and 3 dequeues: front 3, rear 5, size 2<br/>slots 0 to 2 are valid memory and unreachable, that is 3 slots lost"]
+  N --> N2["THE REFUSAL<br/>enqueue 6 REFUSED, rear equals capacity, size still 2<br/>a queue holding 2 elements says full"]
+  N2 --> N3["AND THE DEAD END<br/>after draining: front 5, rear 5, size 0<br/>empty says yes and full says yes at the same time<br/>without an index reset it can never enqueue again"]
+  Q --> C["THE REPAIR, one modulo per operation<br/>rear = (rear + 1) mod capacity and front = (front + 1) mod capacity<br/>same script: naive refused 3 of 3 further enqueues, circular refused 0 and holds 5"]
+  C --> W["TWO WRAP-AROUNDS ON A 5 SLOT RING<br/>10 enqueues served by the same 5 slots, rear came round 2 times<br/>count = (rear - front + capacity) mod capacity"]
+  C --> T["COST, measured<br/>circular 0.531 ns per operation, 0 heap requests<br/>linked queue 14.023 ns per operation, 1 node per element<br/>the gap is the allocator, not the pointer work"]

@@ -23,9 +23,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-he
 .header-meta{display:flex;align-items:center;gap:16px}
 .header-stat{font-family:var(--font-mono);font-size:11px;font-weight:500;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase}
 .header-stat span{color:var(--accent);font-weight:600}
-.theme-toggle{width:32px;height:32px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text-muted);cursor:pointer;display:grid;place-items:center;transition:border-color .2s,color .2s}
+.theme-toggle{width:44px;height:44px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text-muted);cursor:pointer;display:grid;place-items:center;transition:border-color .2s,color .2s}
 .theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
-.theme-toggle svg{width:16px;height:16px}
+.theme-toggle svg{width:20px;height:20px}
 
 /* Hero */
 .hero{padding:80px 0 48px;border-bottom:1px solid var(--border)}
@@ -42,8 +42,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-he
 .stat-label{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-top:6px}
 
 /* Phase Nav */
-.phase-nav{display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:57px;z-index:90;background:var(--bg);border-bottom:1px solid var(--border);margin:0 -24px;padding:12px 24px 16px;transition:background-color .4s}
-.phase-link{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding:6px 14px;border:1px solid var(--border);border-radius:999px;text-decoration:none;transition:all .2s var(--ease);cursor:pointer}
+.phase-nav{display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:69px;z-index:90;background:var(--bg);border-bottom:1px solid var(--border);margin:0;padding:12px 24px 16px;transition:background-color .4s}
+.phase-link{display:inline-flex;align-items:center;min-height:44px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding:6px 14px;border:1px solid var(--border);border-radius:999px;text-decoration:none;transition:all .2s var(--ease);cursor:pointer}
 .phase-link:hover,.phase-link.active{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
 
 /* Sections */

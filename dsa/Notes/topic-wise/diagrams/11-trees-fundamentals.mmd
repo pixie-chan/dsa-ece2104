@@ -1,0 +1,9 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  T["A TREE: nodes joined so that there is exactly one path from the root to any node<br/>a binary tree adds one rule: each node has at most two children, called left and right"]
+  T --> V["THE VOCABULARY<br/>root: the one node with no parent<br/>leaf: a node with no children<br/>height: the number of edges on the longest path from the root down to a leaf<br/>degree: the number of children a node has"]
+  T --> S["THE SAMPLE TREE, 7 nodes, keys placed so in-order returns them sorted<br/>depth 0: 4<br/>depth 1: 2 and 6<br/>depth 2: 1, 3, 5, 7, all four are leaves"]
+  S --> L["WIDTH BY LEVEL<br/>the levels hold 1, 2 and 4 nodes, so the widest level is 4<br/>a level of a binary tree holds at most 2^depth nodes<br/>that is why a balanced tree has height near log2 n and why search stays fast"]
+  T --> R["TWO WAYS TO STORE IT<br/>array by level: slot 1 holds the root, left child of i is 2i, right child is 2i+1, parent is i/2<br/>node and pointer: 24 bytes per node, one malloc each, left at offset 8 and right at offset 16"]
+  R --> C["WHAT THE ARRAY PAYS FOR A BAD SHAPE, measured<br/>complete tree: 8 slots declared, 7 hold a key, 1 idle slot, 4 idle bytes<br/>right leaning chain: 128 slots declared for the same 7 keys, 121 idle slots, 484 idle bytes<br/>left leaning chain: 65 slots, 58 idle, 232 idle bytes<br/>the right chain stores 7 keys in 512 reserved bytes, so 5.47 percent of its slots hold a key"]
+  R --> C2["WHAT THE POINTERS PAY, measured<br/>7 nodes, 7 malloc calls of 24 bytes, 168 bytes requested, 168 usable<br/>allocator charges a 32 byte stride, so 224 bytes of heap per 7 nodes<br/>the shape is free and the nodes are not: the chain costs the same as the complete tree"]

@@ -1,0 +1,11 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  A["FINDING COMPLEXITY: count the operations, then name the class<br/>a count is evidence, a guess is not"]
+  A --> L1["LOOP 1, one loop over n values<br/>count = n<br/>measured at n = 1024: 1024 operations, checksum 523776 matches its closed form"]
+  A --> L2["LOOP 2, i and j both over n<br/>count = n x n<br/>measured at n = 1024: 1048576 operations"]
+  A --> L3["LOOP 3, i doubles while i &lt; n<br/>count = ceil(log2 n)<br/>measured at n = 1024: 10 operations"]
+  A --> L4["LOOP 4, j from i+1 to n-1, the pairs above the diagonal<br/>count = n(n-1)/2<br/>measured at n = 1024: 523776 operations"]
+  A --> L5["LOOP 5, j from 0 to i-1, the pairs below the diagonal<br/>count = n(n-1)/2, the same size as loop 4<br/>measured at n = 1024: 523776 operations"]
+  L2 --> R["READ THE TWO TRIANGLES AGAINST THE SQUARE<br/>nested 1048576, each triangle 523776, so the half full triangle is half the square, measured"]
+  A --> C["THE THREE CASES ARE ONE FUNCTION AND THREE KEYS<br/>linearSearch on 1024 distinct ints<br/>best case key 0: 1 comparison<br/>worst case key 1023 or an absent key: 1024 comparisons<br/>average over the present keys: 524800 / 1024 = 512.500000, which is (n+1)/2<br/>average over present and absent mixed: 590336 / 1088 = 542.588235"]
+  A --> G["WHY THE EXPONENT BEATS THE CONSTANT<br/>over one decade of n: n grows by 10, n^2 by 100, n^3 by 1000<br/>2^n grows by 2^90, 2^900 and 2^9000, a power of two, not a constant<br/>at n = 10 the exponential is only 1.024 times n^3, at n = 10000 it is 1.995e+2998 times n^3"]

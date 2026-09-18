@@ -1,0 +1,12 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  F["FORMULATION IN C: writing the structure down so the machine lays it out the way you expect<br/>the rule that produces every offset and every padding row below"]
+  F --> R["A member of size s and alignment a starts at the first offset that is a multiple of a,<br/>and the whole struct is padded up to a multiple of its own largest alignment"]
+  R --> N1["ARRAY: struct ArrayForm { int a[8]; }<br/>sizeof 32, alignof 4, one member, 0 padding<br/>element i sits at base + i x 4"]
+  R --> N2["LIST NODE: struct ListNodeForm { int data; ListNodeForm* next; }<br/>sizeof 16, alignof 8, padding 4 bytes at offsets 4 to 7<br/>check: payload 12 + padding 4 = 16 confirmed"]
+  R --> N3["STACK BY ARRAY: struct ArrayStackForm { int data[8]; size_t top; }<br/>sizeof 40, data at 0, top at 32, 0 padding"]
+  R --> N4["STACK BY LINKED LIST: struct LinkedStackForm { ListNodeForm* top; size_t count; }<br/>sizeof 16, top at 0, count at 8"]
+  R --> N5["QUEUE BY ARRAY: struct ArrayQueueForm { int data[8]; size_t front; size_t back; }<br/>sizeof 48, front at 32, back at 40"]
+  R --> N6["CIRCULAR QUEUE: struct CircularQueueForm { int data[8]; size_t front; size_t count; }<br/>sizeof 48, the count member is the third index and it is what separates full from empty"]
+  R --> N7["TREE NODE: struct TreeNodeForm { int key; TreeNodeForm* left; TreeNodeForm* right; }<br/>sizeof 24, padding 4 at offsets 4 to 7, left at 8, right at 16<br/>the second pointer is what separates a tree from a list: 8 bytes buys the branching"]
+  N7 --> S["THE SHEET IN ONE TABLE, measured<br/>eight structures together 240 bytes with 8 bytes of padding, 3.3 percent<br/>only two of the eight carry padding: a 4 byte payload next to an 8 byte pointer<br/>put the pointer first and the tail padding disappears, at the cost of reading the fields out of order"]

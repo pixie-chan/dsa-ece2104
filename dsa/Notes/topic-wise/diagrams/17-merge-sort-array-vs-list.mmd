@@ -1,0 +1,10 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"},"flowchart":{"wrappingWidth":620}}}%%
+graph TB
+  A["ARRAY VERSION<br/>merging copies values into a second array"]
+  B["LIST VERSION<br/>merging reassigns next pointers"]
+  A --> A1["one auxiliary buffer of n elements, reused at every level<br/>4096 bytes at n = 1024, 262144 bytes at n = 65536<br/>the heap was asked for 1 block, not one per level"]
+  B --> B1["0 blocks and 0 bytes of auxiliary buffer<br/>the relinking needs none<br/>extra space is the live stack frames only, O(log n)"]
+  A1 --> C["THE SAME ANSWER, BY TWO ROUTES<br/>comparison counts identical at every size, differing by 0<br/>301 against 301 at n = 64, 965633 against 965633 at n = 65536"]
+  B1 --> C
+  C --> T["TIMING AT n = 65536<br/>array 4.442 ms, list 7.265 ms<br/>the array is faster per comparison because a merge scans two arrays in order,<br/>while the list version allocates per node and chases pointers"]
+  C --> N["THE COST OF THE LIST NODES<br/>64 nodes cost 1024 bytes at 16 bytes per node, against a 256 byte buffer for the array<br/>the list pays for its nodes and saves its buffer"]

@@ -1,0 +1,9 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  M["MERGE SORT: split in half, sort each half, merge the two sorted halves in one linear pass<br/>the recursion tree is balanced by construction, so the depth is log2 n whatever the input looks like"]
+  M --> S["THE MERGE STEP IN ISOLATION, from lec16_18_sorts_run_output.txt<br/>left run 2 5 9 11, right run 1 4 8 10<br/>compare the two front elements, take the smaller, advance that side"]
+  S --> T["THE TRACE<br/>2 vs 1 take 1, 2 vs 4 take 2, 5 vs 4 take 4, 5 vs 8 take 5<br/>9 vs 8 take 8, 9 vs 10 take 9, 11 vs 10 take 10, right run empty so take 11<br/>comparisons this merge = 7, element copies = 8<br/>result 1 2 4 5 8 9 10 11"]
+  T --> B["THE BOUNDS<br/>a merge of p and q elements costs between min(p,q) and p+q-1 comparisons<br/>here 7 against the bounds 4 and 7: a merge stops comparing as soon as one run runs out"]
+  M --> C["COUNTS, measured at four sizes<br/>n = 8: 16 comparisons, 7 merges, depth 4<br/>n = 64: 301 comparisons, 63 merges, depth 7<br/>n = 1024: 8967 comparisons, 1023 merges, depth 11<br/>n = 65536: 965633 comparisons, 65535 merges, depth 17"]
+  C --> R["READ AGAINST THE CLOSED FORMS<br/>merges = n - 1 exactly at every size<br/>depth = log2(n) + 1 exactly at every size<br/>comparisons stay under n log2 n: 0.6667, 0.7839, 0.8757, 0.9209 of it"]
+  M --> P["THE PRICE<br/>array version: one auxiliary buffer of n elements, 262144 bytes at n = 65536<br/>list version: 0 blocks and 0 bytes of buffer, because merging relinks nodes instead of copying<br/>both O(n log n), comparison counts identical, 4.442 ms against 7.265 ms"]

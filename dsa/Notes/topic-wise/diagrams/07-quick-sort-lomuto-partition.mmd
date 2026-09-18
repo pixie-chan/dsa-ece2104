@@ -1,0 +1,11 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  Q["QUICK SORT: pick a pivot, move everything smaller to its left and larger to its right, then repeat on both sides<br/>the partition is one linear pass, so the total cost is the depth of the recursion"]
+  Q --> P["LOMUTO PARTITION, traced at n = 8<br/>before 0 5 1 2 6 4 7 3, pivot = 3 at index 7"]
+  P --> P2["one sweep with a boundary index i<br/>a[j] &lt;= pivot moves a[j] to the boundary and advances it<br/>after the sweep the pivot swaps into the boundary slot"]
+  P2 --> P3["result: pivot 3 lands at index 3<br/>left part 0 1 2, right part 6 4 7 5<br/>comparisons 7, swaps 3, invariant checked element by element"]
+  Q --> D["THE COST IS THE DEPTH<br/>a partition of n elements costs n-1 comparisons and at most n-1 swaps"]
+  D --> D1["BALANCED: depth log2(n) + 1, cost n log2 n<br/>measured at n = 1024, random input: lomuto-last 11972 comparisons, depth 23"]
+  D --> D2["DEGENERATE: depth n, cost n(n-1)/2<br/>measured at n = 1024, sorted input with the last element as pivot:<br/>523776 comparisons, depth 1024, swaps 0"]
+  D2 --> D3["THE TRACE OF THAT COLLAPSE at n = 8<br/>pivot 7 lands at 7, left size 7, right size 0<br/>then pivot 6 lands at 6, left 6, right 0, and so on down to 1<br/>7 + 6 + 5 + 4 + 3 + 2 + 1 = 28 = n(n-1)/2, and nothing ever needed to move"]
+  Q --> A["ALL-EQUAL INPUT, where the two schemes part<br/>Lomuto tests a[j] &lt;= pivot so every element joins the left part: 523776 comparisons, depth 1024<br/>Hoare walks two pointers toward each other and meets in the middle: 12286 comparisons, depth 11<br/>a measured factor of 43 at n = 1024, and 105.0 in time at n = 8192"]

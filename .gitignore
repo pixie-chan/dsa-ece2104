@@ -10,10 +10,13 @@ __pycache__/
 *.pyc
 
 # gate screenshots (regenerable, and they are megabytes of pixels)
+# the **/ matters: a bare ".qa/*.png" only matches a .qa folder at the repo
+# root, so the nested .qa in every notes project leaked through and landed
+# in the history anyway. This form covers both.
 ui-gate-*.png
 review-*.png
 zoom-*.png
-.qa/*.png
+**/.qa/*.png
 shots/*.png
 
 # course material that is not mine to republish (university handout, submissions)

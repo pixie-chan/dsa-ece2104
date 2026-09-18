@@ -1,0 +1,11 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  A["ASYMPTOTIC NOTATION: a way to describe how the cost grows, not how long it takes on one machine<br/>the certificate is always the same shape: a constant and a threshold"]
+  A --> O["BIG O, an upper bound<br/>f(n) &lt;= c x g(n) for all n at or past n0"]
+  A --> OM["OMEGA, a lower bound<br/>f(n) &gt;= c x g(n) for all n at or past n0"]
+  A --> TH["THETA, both bounds at once<br/>c1 x g(n) &lt;= f(n) &lt;= c2 x g(n) for all n at or past n0"]
+  O --> C["THE SCAN, measured on f(n) = 3n^2 + 5n + 7 against g(n) = 4n^2<br/>c = 1: last failure at n = 6, so n0 = 7, f = 189 and c x g = 196, certified for 19994 values of n<br/>c = 2: last failure at n = 1, so n0 = 2, f = 29 and c x g = 32, certified for 19999 values of n"]
+  OM --> C2["THE LOWER SIDE<br/>c = 3/4 certified from n = 1, smallest margin 12<br/>c = 9/10 fails at every n from 10 to 20000 and never recovers, so no n0 exists"]
+  TH --> C3["THE MEETING POINT<br/>c1 = 3/4 from n = 1 and c2 = 1/1 from n = 7, so n0 = max(1,7) = 7<br/>the shorter certificate is dropped because Theta needs one n0 that works for BOTH sides<br/>3/4 is 3 divided by 4, the ratio of the leading coefficients, so no smaller constant can work on either side"]
+  C3 --> S["WATCH IT CONVERGE<br/>f/g = 0.964286 at n = 7, 0.762675 at n = 100, 0.751252 at n = 1000, 0.750125 at n = 10000<br/>squeezed from above toward 3/4"]
+  A --> F["A CLAIM WITH NO CERTIFICATE<br/>is f(n) = 3n^2 + 5n + 7 equal to O(n)? Try c = 1000: it fails from n = 332 onward<br/>f(n)/n = 3n + 5 + 7/n measures 35.7 at n = 10 and 30005.0007 at n = 10000, and it grows without bound<br/>so f is O(n^2), and the scan shows it with a witness instead of an argument"]

@@ -1,0 +1,9 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  L["SINGLY LINKED LIST: nodes scattered on the heap, joined by one pointer each<br/>the list object itself holds only a head pointer, so its size does not grow with n"]
+  L --> N["THE NODE<br/>struct Node { int data; Node* next; }<br/>sizeof 16, offsetof(data) 0, offsetof(next) 8<br/>4 payload bytes, 4 padding bytes, 8 pointer bytes"]
+  N --> A["WHERE THE NODES LIVE, measured<br/>5 new Node calls at 0x...3050, 0x...3070, 0x...3090, 0x...30b0, 0x...30d0<br/>delta 32 bytes each, so they are adjacent here, but nothing promises that"]
+  L --> I["INSERT AT THE FRONT, three pointer writes<br/>p = new Node(v)<br/>p-&gt;next = head<br/>head = p"]
+  I --> I2["ORDER MATTERS<br/>write head = p first and p-&gt;next still holds 0,<br/>so the whole old list is lost: the links must be set before the head moves"]
+  I --> T["TRAVERSE: cur = head, then cur = cur-&gt;next until 0<br/>access by position is O(n), one dependent load per hop"]
+  T --> C["THE MEASURED PRICE OF THE SHAPE<br/>linked walk 2.45 ns per element against 0.19 ns for a sequential array walk<br/>12.64x for the same O(n) work<br/>16 bytes asked, 24 usable, 32 charged per node"]

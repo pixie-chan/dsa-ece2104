@@ -1,0 +1,12 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  P["A POINTER IS AN ADDRESS PLUS A TYPE<br/>the type is what makes p + 1 mean something"]
+  P --> S["sizeof on this machine, measured in lec05_run_output.txt<br/>char 1, short 2, int 4, long 8, float 4, double 8, void* 8"]
+  P --> Q["POINTER ARITHMETIC IS TYPE AWARE<br/>(char*)p + 1 moves 1 byte<br/>(int*)p + 1 moves 4 bytes<br/>(Node*)p + 1 moves 16 bytes"]
+  P --> L["THE NODE IN MEMORY<br/>struct Node { int data; Node* next; }<br/>sizeof 16, offsetof(data) 0, offsetof(next) 8"]
+  L --> L1["bytes 0 to 3: data, the 4 byte payload"]
+  L --> L2["bytes 4 to 7: PADDING, no member owns these 4 bytes"]
+  L --> L3["bytes 8 to 15: next, an 8 byte pointer"]
+  L2 --> W["WHY THE PADDING EXISTS<br/>an 8 byte pointer must start on an 8 byte boundary,<br/>so 4 bytes are spent to keep the alignment rule"]
+  W --> H["HEAP STRIDE<br/>requested 16 bytes per node, allocator hands out 24 usable and charges a 32 byte stride"]
+  H --> C["CHECK THE DELTA, NOT THE ADDRESS<br/>node 0 at 0x57a2bc523050, node 1 at 0x57a2bc523070, delta 32 bytes<br/>addresses move between runs, the stride does not"]

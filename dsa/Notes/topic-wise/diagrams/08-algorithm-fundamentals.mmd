@@ -1,0 +1,11 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  A["AN ALGORITHM: a finite sequence of unambiguous, effectively computable steps<br/>that takes zero or more inputs, produces one or more outputs, and terminates"]
+  A --> P1["INPUT: zero or more values are handed to it"]
+  A --> P2["OUTPUT: one or more results come back"]
+  A --> P3["DEFINITENESS: every step is stated exactly, no step is left to interpretation"]
+  A --> P4["FINITENESS: it ends after a finite number of steps"]
+  A --> P5["EFFECTIVENESS: every step is basic enough to be carried out"]
+  A --> W["WHAT BREAKS WHEN A PROPERTY IS MISSING<br/>a recursion with no base case violates finiteness:<br/>it never terminates, it runs the stack out"]
+  W --> E["THE MEASURED EVIDENCE, lec16_recursion_output.txt<br/>getrlimit(RLIMIT_STACK) says 8192 KiB<br/>one runaway frame measured 32 bytes<br/>predicted ceiling 8388608 / 32 = 262144 calls<br/>measured depth reached 261579, which is 8174 KiB against the 8192 KiB limit<br/>the child died on the guard page and the parent kept running"]
+  A --> C["HOW AN ALGORITHM IS JUDGED<br/>correctness first: every sort in lesson 16 was compared element by element with an independent reference sort<br/>then time: counted operations and wall clock<br/>then space: the auxiliary buffer, n elements for merge sort, O(1) for insertion sort"]

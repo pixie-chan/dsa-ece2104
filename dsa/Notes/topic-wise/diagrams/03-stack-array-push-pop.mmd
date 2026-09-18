@@ -1,0 +1,9 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  S["STACK BY ARRAY: an array plus one index<br/>LIFO: the last value pushed is the first value popped"]
+  S --> O["THE THREE OPERATIONS, each O(1)<br/>push(x): data[top] = x, then top++<br/>pop(): top--, then return data[top]<br/>top(): return data[top - 1], nothing changes"]
+  O --> T["THE TRACE, from lec11_15_run_output.txt<br/>push 10, top 0 to 1<br/>push 20, top 1 to 2<br/>push 30, top 2 to 3"]
+  T --> T2["pop gives 30, top back to 2<br/>pop gives 20, top back to 1<br/>pop gives 10, top back to 0<br/>inputs 10 20 30 came back 30 20 10: that is LIFO"]
+  S --> F["THE LIMIT IS REAL: 7 pushes into 5 slots<br/>push 1 to 5 stored, refusals 0<br/>push 6 REFUSED, refusals 1<br/>push 7 REFUSED, refusals 2<br/>contents untouched: 1 2 3 4 5"]
+  F --> F2["WHAT AN UNCHECKED PUSH WOULD HIT<br/>bench.data + 6 x sizeof(int) equals the canary address<br/>offsetof(CanaryBench, canary) = 24 bytes, exactly 6 ints in<br/>overflow is DETECTED here, not silently written"]
+  S --> C["COST, measured<br/>2,000,000 pushes and 2,000,000 pops asked the heap for 0 further bytes<br/>push 0.688 ns, pop 0.378 ns<br/>top end 0.1 ns per push against bottom end 484.7 ns, 4267.2x, because the bottom shifts everything"]

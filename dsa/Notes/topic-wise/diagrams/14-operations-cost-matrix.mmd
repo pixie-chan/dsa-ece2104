@@ -1,0 +1,10 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  O["DIFFERENT OPERATIONS: the same data, five shapes, and a different bill for each operation<br/>a structure is not good or bad on its own, it is good or bad at one operation"]
+  O --> A["ARRAY: contiguous, index arithmetic, no bookkeeping<br/>access element i: O(1), one read, base + i x sizeof(T)<br/>insert at the front: O(n), everything shifts<br/>insert at the back: O(1) amortised, O(n) on a grow<br/>delete at the front: O(n), everything shifts back<br/>search a value: O(n)"]
+  O --> L["LINKED LIST: nodes scattered, one pointer per hop<br/>access element i: O(n), one dependent load per hop<br/>insert at the front: O(1), two pointer writes<br/>insert at the back: O(1) with a tail pointer, O(n) without<br/>delete at the front: O(1), one pointer write plus one free<br/>search a value: O(n)"]
+  O --> S["STACK BY ARRAY: top only<br/>push and pop are O(1), one write and one index move<br/>no access by position, no insert in the middle"]
+  O --> Q["CIRCULAR QUEUE: front and rear only<br/>enqueue and dequeue are O(1), 3 writes: slot, rear, count<br/>one modulo per operation is the price of reuse"]
+  O --> T["BST: ordered by shape<br/>search, insert and delete cost the height h<br/>h is log n when balanced and n when the insert order degenerates"]
+  A --> M["THE MEASURED COLUMN, from the captures<br/>walk one element: array sequential 0.19 ns against linked 2.45 ns, 12.64x<br/>push 1 million: array 0.639 ns against linked 16.027 ns, 25.08x<br/>one queue operation: circular 0.531 ns against linked 14.023 ns, 26.42x<br/>memory per element: 4 bytes against 32 bytes charged, 8x"]
+  M --> V["WHAT THE NUMBERS ARE SAYING<br/>the O column says which structure survives growth, the ns column says what it costs now<br/>the linked form never wins on time here, and it still wins on one thing:<br/>no capacity limit, and an insert in the middle that moves pointers instead of data"]

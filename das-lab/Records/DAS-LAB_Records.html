@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DAS-LAB Lab Records: Experiments 0 to 4</title>
 <style>
 @page { size: A4; margin: 18mm 16mm; }
@@ -27,6 +28,14 @@ li { margin: 2px 0; }
 hr { border: 0; border-top: 1px dashed #b9c8db; margin: 14px 0; }
 .page-break { page-break-before: always; }
 strong { color: #000; }
+
+/* screen only: the experiment tables are wider than a phone, so let them
+   scroll inside their own box instead of pushing the page sideways.
+   Print keeps the plain A4 table layout. */
+@media screen {
+  table { display: block; overflow-x: auto; }
+  code { overflow-wrap: anywhere; }
+}
 </style>
 </head>
 <body>

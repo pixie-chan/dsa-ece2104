@@ -1,0 +1,11 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  A["ARRAY: one contiguous block, no bookkeeping<br/>int a[5] = 10 20 30 40 50, base &amp;a[0] = 0x7ffe7c3131b0, sizeof(int) = 4"]
+  A --> B["THE ONE FORMULA<br/>address of element i = base + i x sizeof(element)<br/>this single multiply is the whole reason indexing is O(1)"]
+  B --> C1["i = 0<br/>0x7ffe7c3131b0 + 0 x 4 = 0x7ffe7c3131b0<br/>value 10, byte offset 0"]
+  B --> C2["i = 1<br/>0x7ffe7c3131b0 + 1 x 4 = 0x7ffe7c3131b4<br/>value 20, byte offset 4"]
+  B --> C3["i = 2<br/>0x7ffe7c3131b0 + 2 x 4 = 0x7ffe7c3131b8<br/>value 30, byte offset 8"]
+  B --> C4["i = 3<br/>0x7ffe7c3131b0 + 3 x 4 = 0x7ffe7c3131bc<br/>value 40, byte offset 12"]
+  B --> C5["i = 4<br/>0x7ffe7c3131b0 + 4 x 4 = 0x7ffe7c3131c0<br/>value 50, byte offset 16"]
+  C5 --> D["THE CHECK THE CAPTURE PRINTS<br/>index 4 in ONE step equals &amp;a[4] ? yes<br/>one multiply, one add, one load: no walk"]
+  D --> E["WHY THE SHAPE MATTERS<br/>sequential walk 0.19 ns per element, scattered order 2.46 ns, linked walk 2.45 ns<br/>same O(n) work, 12.69x the time, because only the first one is contiguous"]

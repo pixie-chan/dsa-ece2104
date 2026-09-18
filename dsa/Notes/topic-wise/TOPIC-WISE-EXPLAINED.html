@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<script>
+  /* decide the sheet before the first paint, or a dark reader sees a light flash */
+  (function () {
+    try {
+      var saved = localStorage.getItem("topic-wise-theme");
+      if (!saved && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) saved = "dark";
+      if (saved) document.documentElement.setAttribute("data-theme", saved);
+    } catch (e) {}
+  })();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topic-wise Explained, ECE2104: the fourteen projected mid-term topics</title>
+<meta name="description" content="One section per topic for the ECE2104 Data Structures and Algorithms mid-term: the plain explanation, a hand-checkable trace, the measured proof from a real capture, the C formulation, the exam traps and numericals, with the answer keys in their own section.">
+<meta name="theme-color" content="#fafaf9">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Topic-wise Explained, ECE2104, projected mid-term scope">
+<meta property="og:description" content="The fourteen projected mid-term topics, one section each: mechanism, measured proof, C formulation, exam traps and numericals, with keys held separately.">
+<meta property="og:url" content="https://github.com/pixie-chan/dsa-ece2104">
+<meta property="og:image" content="diagrams/01-array-index-arithmetic.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23fafaf9'/%3E%3Cg fill='%231b4d7a'%3E%3Crect x='3' y='2' width='2' height='2'/%3E%3Crect x='3' y='5' width='2' height='2'/%3E%3Crect x='3' y='8' width='2' height='2'/%3E%3Crect x='6' y='8' width='7' height='2'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- NOSTATE: static single file study document with no server and no async data after load.
+     It fetches three Google font families on first paint (Instrument Serif, Instrument Sans,
+     IBM Plex Mono) and falls back to Georgia and the system sans offline, so there is no
+     runtime fetch and therefore no loading or error state. The only empty case is the nav
+     before any topic is scrolled to, and the nav marks the current topic on scroll. -->
+<style>
+/* tokens.css : extracted from DSA-MIDTERM-ROADMAP.html (the live file is the single source of
+   truth, this export must never drift from it).
+   The page renders the light theme by default; [data-theme="dark"] is the
+   user-toggleable override carried in the same file.
+   Regenerate with: python3 ~/scripts/export-tokens.py DSA-MIDTERM-ROADMAP.html
+*/
+:root {
+  color-scheme:light;
+  --bg:#fafaf9; --surface:#ffffff; --surface-2:#f2f0ec; --surface-3:#e6e3dd;
+  --line:#e2dfd9; --line-2:#c4bfb4; --rule:#d8d3c8;
+  --text:#1c1917; --text-2:#4a453f; --text-3:#635d54;
+  --accent:#1b4d7a; --risk:#7a3355; --ok:#3d6b3f; --warn:#7a5310;
+  --font-display:"Instrument Serif", Georgia, serif;
+  --font-body:"Instrument Sans", system-ui, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --text-xs:0.75rem; --text-sm:0.875rem; --text-base:1rem; --text-md:1.125rem;
+  --text-lg:1.375rem; --text-xl:1.75rem; --text-2xl:2.5rem; --text-3xl:clamp(2.75rem, 4.4vw, 4rem);
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+  --r-1:2px; --r-2:4px; --hair:1px;
+  --shadow-1:0 1px 0 var(--line);
+  --shadow-2:0 2px 0 var(--line-2), 0 12px 28px -20px rgba(28,25,23,.45);
+  --dur-1:120ms; --dur-2:200ms; --dur-3:420ms;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --w-reg:400; --w-med:500; --w-semi:600;
+}
+
+[data-theme="dark"] {
+  color-scheme:dark;
+  --bg:#14120f; --surface:#1d1a16; --surface-2:#262218; --surface-3:#322c22;
+  --line:#38322a; --line-2:#4f4739; --rule:#443c31;
+  --text:#f5f2ec; --text-2:#cdc6b8; --text-3:#a49b8b;
+  --accent:#7fb0d8; --risk:#d18fb0; --ok:#8fbe91; --warn:#d9b070;
+  --shadow-2:0 2px 0 var(--line-2), 0 12px 28px -20px rgba(0,0,0,.75);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font-body); font-size:var(--text-base); line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:0 var(--s-4) var(--s-9)}
+.measure{max-width:85ch}
+
+/* header */
+.masthead{border-bottom:var(--hair) solid var(--line); background:var(--surface)}
+.masthead__in{max-width:1180px; margin:0 auto; padding:var(--s-7) var(--s-4) var(--s-5)}
+.eyebrow{
+  font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--text-3); margin:0 0 var(--s-3)
+}
+h1{
+  font-family:var(--font-display); font-weight:400; font-size:var(--text-3xl);
+  line-height:1.04; margin:0 0 var(--s-3); letter-spacing:-.01em
+}
+.lede{font-size:var(--text-md); color:var(--text-2); max-width:62ch; margin:0}
+.masthead__meta{
+  display:flex; flex-wrap:wrap; gap:var(--s-3); margin-top:var(--s-5);
+  font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3)
+}
+.masthead__meta span{border:var(--hair) solid var(--line); padding:2px var(--s-2); border-radius:var(--r-1)}
+
+/* sticky nav */
+.nav{position:sticky; top:0; z-index:20; background:var(--surface);
+  border-bottom:var(--hair) solid var(--line); box-shadow:var(--shadow-1)}
+.nav__bar{max-width:1180px; margin:0 auto; padding:var(--s-2) var(--s-4);
+  display:flex; align-items:center; gap:var(--s-3)}
+.nav__label{font-family:var(--font-mono); font-size:var(--text-xs);
+  letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); white-space:nowrap}
+.chips{display:flex; gap:var(--s-2); overflow-x:auto; padding:var(--s-2) 0; flex:1;
+  scrollbar-width:thin}
+.chip{display:inline-flex; align-items:center; min-height:44px; gap:6px; white-space:nowrap;
+  border:var(--hair) solid var(--line-2); border-radius:999px; padding:4px var(--s-3);
+  font-size:var(--text-xs); color:var(--text-2); text-decoration:none;
+  transition:border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease)}
+.chip:hover{border-color:var(--accent); color:var(--accent)}
+.chip[aria-current="true"]{border-color:var(--accent); color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 8%, transparent)}
+.chip__n{font-family:var(--font-mono); color:var(--text-3)}
+.chip[aria-current="true"] .chip__n{color:var(--accent)}
+.toggle{border:var(--hair) solid var(--line-2); background:var(--surface); color:var(--text-2);
+  border-radius:var(--r-1); min-height:44px; padding:5px var(--s-3); font-family:var(--font-mono);
+  font-size:var(--text-xs); cursor:pointer; white-space:nowrap}
+.toggle:hover{border-color:var(--accent); color:var(--accent)}
+
+/* sections */
+.topic{padding:var(--s-8) 0 var(--s-6); border-bottom:var(--hair) solid var(--line)}
+.topic__head{display:flex; align-items:baseline; gap:var(--s-4); margin-bottom:var(--s-5)}
+.topic__n{font-family:var(--font-mono); font-size:var(--text-sm); color:var(--accent);
+  border:var(--hair) solid var(--line-2); border-radius:var(--r-1); padding:2px 8px;
+  flex:none}
+h2{font-family:var(--font-display); font-weight:400; font-size:var(--text-2xl);
+  line-height:1.1; margin:0; letter-spacing:-.01em}
+h3{font-family:var(--font-mono); font-size:var(--text-xs); font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--text-3);
+  margin:var(--s-7) 0 var(--s-3)}
+p{margin:0 0 var(--s-4); max-width:85ch}
+code{font-family:var(--font-mono); font-size:.92em; background:var(--surface-2);
+  padding:1px 5px; border-radius:var(--r-1)}
+pre.code{background:var(--surface-2); border:var(--hair) solid var(--line);
+  border-left:3px solid var(--accent); border-radius:var(--r-1);
+  padding:var(--s-4); overflow-x:auto; margin:0 0 var(--s-5); position:relative}
+pre.code code{background:none; padding:0; font-size:var(--text-sm); line-height:1.7;
+  color:var(--text)}
+pre.code::after{content:attr(data-lang); position:absolute; top:6px; right:10px;
+  font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto; margin:0 0 var(--s-5);
+  border:var(--hair) solid var(--line); border-radius:var(--r-1); background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:var(--text-sm)}
+caption{caption-side:top; text-align:left; padding:var(--s-3) var(--s-4);
+  font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.06em;
+  text-transform:uppercase; color:var(--text-3); border-bottom:var(--hair) solid var(--line)}
+th,td{padding:11px var(--s-4); text-align:left; vertical-align:top;
+  border-bottom:var(--hair) solid var(--line)}
+th{font-weight:600; font-size:var(--text-xs); letter-spacing:.06em; text-transform:uppercase;
+  color:var(--text-2); background:var(--surface-2); white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even){background:var(--surface-2)}
+td:first-child{color:var(--text-2); white-space:nowrap}
+
+/* figures */
+figure{margin:0 0 var(--s-6)}
+figure img{display:block; width:100%; height:auto; border:var(--hair) solid var(--line);
+  border-radius:var(--r-1); background:var(--surface)}
+figcaption{margin-top:var(--s-2); font-family:var(--font-mono); font-size:var(--text-xs);
+  color:var(--text-3)}
+hr{border:0; border-top:var(--hair) solid var(--rule); margin:var(--s-7) 0}
+ol{padding-left:var(--s-6); margin:0 0 var(--s-5); max-width:85ch}
+li{margin-bottom:var(--s-2)}
+strong{font-weight:600; color:var(--text)}
+
+/* the keys get their own frame so questions and answers never read as one block */
+#keys{background:var(--surface); border:var(--hair) solid var(--line-2);
+  border-left:3px solid var(--risk); border-radius:var(--r-1);
+  padding:var(--s-6) var(--s-5); margin-top:var(--s-7)}
+#keys h2{margin-bottom:var(--s-4)}
+
+footer{padding:var(--s-7) 0; color:var(--text-3); font-size:var(--text-sm);
+  font-family:var(--font-mono)}
+
+@media (max-width:720px){
+  .masthead__in{padding:var(--s-6) var(--s-4) var(--s-4)}
+  .nav__label{display:none}
+  .topic{padding:var(--s-7) 0 var(--s-5)}
+  th,td{padding:9px var(--s-3)}
+  #keys{padding:var(--s-5) var(--s-4)}
+}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead__in">
+    <p class="eyebrow">ECE2104 &middot; Data Structures and Algorithms &middot; Mid-Term</p>
+    <h1>Topic-wise Explained</h1>
+    <p class="lede">One section per topic, in the order the teacher projected them, not the order
+    the handout lists them. Every measured number is quoted with the capture file it came from.</p>
+    <div class="masthead__meta">
+      <span>14 topics</span><span>7 capture files</span><span>answer keys held separately</span>
+      <span>g++ 15.2.0</span><span>Ubuntu 26.04 x86-64</span>
+    </div>
+  </div>
+</header>
+<nav class="nav" aria-label="Topic navigation">
+  <div class="nav__bar">
+    <span class="nav__label">Topics</span>
+    <div class="chips" role="list">
+<a class="chip" href="#t1"><span class="chip__n">1</span>Array</a>
+<a class="chip" href="#t2"><span class="chip__n">2</span>Pointers</a>
+<a class="chip" href="#t3"><span class="chip__n">3</span>Stack by Array</a>
+<a class="chip" href="#t4"><span class="chip__n">4</span>Queue</a>
+<a class="chip" href="#t5"><span class="chip__n">5</span>Linked List</a>
+<a class="chip" href="#t6"><span class="chip__n">6</span>Merge Sort</a>
+<a class="chip" href="#t7"><span class="chip__n">7</span>Quick Sort</a>
+<a class="chip" href="#t8"><span class="chip__n">8</span>Algorithm fundamentals</a>
+<a class="chip" href="#t9"><span class="chip__n">9</span>Asymptotic notation</a>
+<a class="chip" href="#t10"><span class="chip__n">10</span>Finding Complexity</a>
+<a class="chip" href="#t11"><span class="chip__n">11</span>Trees fundamentals</a>
+<a class="chip" href="#t12"><span class="chip__n">12</span>Formulation in C</a>
+<a class="chip" href="#t13"><span class="chip__n">13</span>Tree types and BST</a>
+<a class="chip" href="#t14"><span class="chip__n">14</span>Different Operations</a>
+    </div>
+    <button class="toggle" type="button" id="theme-toggle" aria-live="polite">dark</button>
+  </div>
+</nav>
+<main class="wrap" id="top">
+<h1>Topic-wise Explained · ECE2104 Data Structures and Algorithms · Mid-Term</h1>
+<p>One section per topic, in the order the teacher projected them in class, not the order the</p>
+<p>handout lists them. Every measured number below is quoted with the capture file it came from.</p>
+<p>Nothing in this file is typed from memory.</p>
+<div class="tbl-wrap">
+<table>
+<caption>Table 1</caption>
+<thead><tr>
+<th scope="col">Item</th>
+<th scope="col">Value</th>
+</tr></thead><tbody>
+<tr><td>Course</td><td>ECE2104, Data Structures and Algorithms, MUJ Semester 3</td></tr>
+<tr><td>Set</td><td>the 14 topics of the projected list <code>Syllabus_MTE</code></td></tr>
+<tr><td>Scope source</td><td>the Notepad list shown in class, not the handout lecture plan</td></tr>
+<tr><td>Answer keys</td><td>last section of this file, one key per topic, numbered 1 to 1 with the questions</td></tr>
+<tr><td>Measured on</td><td>Ubuntu 26.04, Linux 7.0.0-31-generic, g++ 15.2.0, x86-64</td></tr>
+<tr><td>Captures quoted</td><td><code>lec05_run_output.txt</code>, <code>lec11_15_run_output.txt</code>, <code>lec16_recursion_output.txt</code>, <code>lec16_18_sorts_run_output.txt</code>, <code>lec19_21_trees_run_output.txt</code>, <code>lec22_analysis_run_output.txt</code>, <code>lec23_formulations_run_output.txt</code></td></tr>
+</tbody></table></div>
+<h2>Scope: the projected list against the handout</h2>
+<p>The list wins for the paper. It was projected in class, and it is checkable against the paper on</p>
+<p>the day. The handout is still the only document that numbers anything, so every topic below also</p>
+<p>carries its handout lecture number where a row exists.</p>
+<div class="tbl-wrap">
+<table>
+<caption>Scope: the projected list against the handout</caption>
+<thead><tr>
+<th scope="col">Question</th>
+<th scope="col">Course handout</th>
+<th scope="col">Projected list (<code>Syllabus_MTE</code>)</th>
+</tr></thead><tbody>
+<tr><td>Where does the mid-term block end?</td><td>After lecture 16</td><td>No lecture span given, only topic names</td></tr>
+<tr><td>Trees, BST, traversals</td><td>Lectures 17 to 19, tagged End Term</td><td>Named in scope: Trees fundamentals, Tree types and BST</td></tr>
+<tr><td>Merge sort and quick sort</td><td>Lectures 27 and 29, tagged End Term</td><td>Named in scope: Merge Sort, Quick Sort</td></tr>
+<tr><td>Asymptotic notation, finding complexity</td><td>Never scheduled: the token appears 0 times in the lecture plan</td><td>Named in scope: Asymptotic notation, Finding Complexity</td></tr>
+</tbody></table></div>
+<div class="tbl-wrap">
+<table>
+<caption>Scope: the projected list against the handout</caption>
+<thead><tr>
+<th scope="col">Topic</th>
+<th scope="col">In the handout</th>
+<th scope="col">Textbook used where no handout row exists</th>
+</tr></thead><tbody>
+<tr><td>Array</td><td>Lectures 1 to 4, mid-term block</td><td>handout row exists</td></tr>
+<tr><td>Pointers</td><td>Lectures 3 to 5, mid-term block</td><td>handout row exists, detail from Kanetkar, <em>Let Us C</em></td></tr>
+<tr><td>Stack by Array</td><td>Lecture 11, mid-term block</td><td>handout row exists</td></tr>
+<tr><td>Queue</td><td>Lectures 13 to 15, mid-term block</td><td>handout row exists</td></tr>
+<tr><td>Linked List</td><td>Lectures 6 to 8, mid-term block</td><td>handout row exists</td></tr>
+<tr><td>Merge Sort</td><td>Lecture 27, tagged End Term</td><td>handout row exists, tagged out of block</td></tr>
+<tr><td>Quick Sort</td><td>Lecture 29, tagged End Term</td><td>handout row exists, tagged out of block</td></tr>
+<tr><td>Algorithm fundamentals</td><td>spread through the plan, never a single row</td><td>CLRS, <em>Introduction to Algorithms</em>, chapter 1</td></tr>
+<tr><td>Asymptotic notation</td><td>no row at all, never scheduled</td><td>Goodrich and Tamassia, <em>Algorithm Design</em>, CLRS chapter 3</td></tr>
+<tr><td>Finding Complexity</td><td>no row at all, never scheduled</td><td>CLRS chapter 3, operation counting measured</td></tr>
+<tr><td>Trees fundamentals</td><td>Lecture 17, tagged End Term</td><td>handout row exists, tagged out of block, detail from Drozdek</td></tr>
+<tr><td>Formulation in C</td><td>implied by every implementation row</td><td>Kanetkar, <em>Let Us C</em>, structs and pointers</td></tr>
+<tr><td>Tree types and BST</td><td>Lectures 18 to 19, tagged End Term</td><td>Drozdek, <em>Data Structures and Algorithms in C++</em>, Weiss chapter 4</td></tr>
+<tr><td>Different Operations</td><td>implied by the session outcomes</td><td>CLRS chapter 10 and 11, measured operation matrix</td></tr>
+</tbody></table></div>
+<p>Four of the fourteen are not in the mid-term block of the handout at all, and two of those are</p>
+<p>never scheduled anywhere in the plan. Those are taught here from the textbook named beside them.</p>
+<hr>
+<section class="topic" id="t1" aria-labelledby="t1-h"><header class="topic__head"><span class="topic__n">1</span><h2 id="t1-h">Array</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the mid-term block, handout lectures 1 to 4. Source: capture <code>lec05_run_output.txt</code>, lesson <code>05_ds_memory_representation.cpp</code>.</em></p>
+<p>An array is a fixed number of values of one type, stored end to end in a single block. It exists</p>
+<p>because the machine can compute where an element is instead of searching for it. Element <code>i</code> sits</p>
+<p>at <code>base + i × sizeof(element)</code>, so reading <code>a[4]</code> is one multiply, one add and one load, however</p>
+<p>long the array is. That single formula is why indexed access is O(1). The price is that the length</p>
+<p>is fixed when the array is created, and that inserting or deleting at the front shifts every</p>
+<p>element after it.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Index</th>
+<th scope="col">Address, from the measured base</th>
+<th scope="col">Byte offset</th>
+<th scope="col">Value</th>
+</tr></thead><tbody>
+<tr><td>0</td><td>0x7ffe7c3131b0 + 0 × 4 = 0x7ffe7c3131b0</td><td>0</td><td>10</td></tr>
+<tr><td>1</td><td>0x7ffe7c3131b0 + 1 × 4 = 0x7ffe7c3131b4</td><td>4</td><td>20</td></tr>
+<tr><td>2</td><td>0x7ffe7c3131b0 + 2 × 4 = 0x7ffe7c3131b8</td><td>8</td><td>30</td></tr>
+<tr><td>3</td><td>0x7ffe7c3131b0 + 3 × 4 = 0x7ffe7c3131bc</td><td>12</td><td>40</td></tr>
+<tr><td>4</td><td>0x7ffe7c3131b0 + 4 × 4 = 0x7ffe7c3131c0</td><td>16</td><td>50</td></tr>
+</tbody></table></div>
+<p>The capture prints the arithmetic back: index 4 in one step equals <code>&amp;a[4]</code>, yes.</p>
+<figure><img src="diagrams/01-array-index-arithmetic.png" alt="Array index arithmetic" loading="lazy" width="1400" height="900"><figcaption>Array index arithmetic</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td><code>sizeof(int)</code></td><td>4 bytes</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>byte stride between neighbours</td><td>exactly 4</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>sequential walk</td><td>0.19 ns per element</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>same array, scattered order</td><td>2.46 ns per element</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>linked walk, one hop per element</td><td>2.45 ns per element</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>ratios the capture prints</td><td>12.69× and 12.64×</td><td><code>lec05_run_output.txt</code></td></tr>
+</tbody></table></div>
+<p>Both walks visit every element once, so both are O(n). The 12.69× is the shape, not the count.</p>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    int a[5] = {10, 20, 30, 40, 50};
+    int *p = a;            /* the array name decays to a pointer to element 0 */
+    int x = a[3];          /* the same as *(a + 3): one multiply and one add */
+    int n = (int)(sizeof a / sizeof a[0]);   /* 5, works only where the array is visible */
+    printf("%d %d %d %d\n", *p, x, n, p[4]);
+    return 0;
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td><code>a[i]</code> is <code>*(a + i)</code>, not a lookup</td><td>say the multiply and the add, not "the computer knows"</td></tr>
+<tr><td>the array name is not the array</td><td><code>sizeof(a)</code> is 20 in the block, but 8 inside a function, because it decayed to a pointer</td></tr>
+<tr><td>the last valid index is <code>n - 1</code></td><td><code>a[5]</code> on a 5 element array is undefined behaviour, not a zero</td></tr>
+<tr><td>indexing is 0 based</td><td>the first element is index 0, so the offset of element i is <code>i × 4</code>, never <code>(i - 1) × 4</code></td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li><code>int a[5] = {10,20,30,40,50};</code> starts at 0x7ffe7c3131b0 and <code>sizeof(int) = 4</code>. Give <code>&amp;a[3]</code> and the value stored there.</li>
+<li>For the same array give the byte offset of <code>a[4]</code> and its address.</li>
+<li><code>int a[8]</code> starts at 0x1000 and <code>sizeof(int) = 4</code>. Give the total bytes, <code>&amp;a[5]</code> and <code>&amp;a[7]</code>.</li>
+<li><code>int a[1024]</code> starts at 0x2000. Give <code>&amp;a[1023]</code>, and say how many memory steps the address computation costs against how many loads a walk of the whole array costs.</li>
+<li>The capture prints 0.19 ns per element sequential and 2.46 ns scattered. Quote both times, the ratio the capture prints, and say which one is O(1) per element.</li>
+<li>Give <code>sizeof(char)</code>, <code>sizeof(short)</code>, <code>sizeof(int)</code>, <code>sizeof(long)</code>, <code>sizeof(float)</code>, <code>sizeof(double)</code> and <code>sizeof(void*)</code> on this machine.</li>
+<li>Give <code>sizeof</code> and every member offset for <code>struct P2 { char a; int b; char c; };</code>.</li>
+<li><code>struct Node { int data; Node* next; };</code> is 16 bytes and not 12. Say where the 4 extra bytes sit and why.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t2" aria-labelledby="t2-h"><header class="topic__head"><span class="topic__n">2</span><h2 id="t2-h">Pointers</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the mid-term block, handout lectures 3 to 5. Source: capture <code>lec05_run_output.txt</code>, textbook Kanetkar, Let Us C, chapter on pointers.</em></p>
+<p>A pointer is a variable that holds an address, and the type it points at decides what <code>p + 1</code></p>
+<p>means. That is the whole idea: the compiler multiplies by the size of the pointee, so</p>
+<p><code>(char*)p + 1</code> moves 1 byte while <code>(int*)p + 1</code> moves 4 and <code>(Node*)p + 1</code> moves 16. Pointers</p>
+<p>exist because a structure whose elements live in different places needs a way to say where the</p>
+<p>next one is. On this machine an address is 64 bits, so a pointer is 8 bytes, and that 8 byte</p>
+<p>alignment rule is what pushes 4 bytes of padding into a node that holds a 4 byte <code>int</code>.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Struct</th>
+<th scope="col"><code>sizeof</code></th>
+<th scope="col">Offset 0</th>
+<th scope="col">Padding</th>
+<th scope="col">Pointer</th>
+</tr></thead><tbody>
+<tr><td><code>Node { int data; Node* next; }</code></td><td>16</td><td><code>data</code>, 4 bytes</td><td>4 bytes at offsets 4 to 7</td><td><code>next</code>, 8 bytes at offset 8</td></tr>
+<tr><td><code>P1 { int a; char b; char c; }</code></td><td>8</td><td><code>a</code> at 0</td><td>none, <code>b</code> at 4, <code>c</code> at 5</td><td>none</td></tr>
+<tr><td><code>P2 { char a; int b; char c; }</code></td><td>12</td><td><code>a</code> at 0</td><td>3 bytes at 1 to 3, then 3 at 9 to 11</td><td>none</td></tr>
+<tr><td><code>P3 { char a; char b; int c; }</code></td><td>8</td><td><code>a</code> at 0, <code>b</code> at 1</td><td>2 bytes at 2 to 3</td><td>none</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/02-pointer-arithmetic.png" alt="Pointer arithmetic and the node layout" loading="lazy" width="1400" height="900"><figcaption>Pointer arithmetic and the node layout</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td><code>sizeof(void*)</code></td><td>8 bytes</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td><code>sizeof(Node)</code></td><td>16, <code>alignof(Node)</code> 8</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>node offsets</td><td><code>data</code> 0, <code>next</code> 8</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>heap stride between 5 nodes</td><td>32 bytes each</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>requested against handed out</td><td>16 asked, 24 usable</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>four nested frames</td><td>0x...3154, 0x...3124, 0x...30f4, 0x...30c4</td><td><code>lec05_run_output.txt</code></td></tr>
+</tbody></table></div>
+<p>The frames step 48 bytes apart and the innermost is the lowest address, so this stack grows down.</p>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stdlib.h&gt;
+
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+struct Node *push_front(struct Node *head, int v) {
+    struct Node *p = (struct Node *)malloc(sizeof(struct Node));   /* 16 bytes asked for */
+    if (!p) return head;
+    p-&gt;data = v;
+    p-&gt;next = head;      /* the link first */
+    return p;            /* then the head moves, or the old list is lost */
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td><code>p + 1</code> is type aware</td><td>it moves <code>sizeof(*p)</code> bytes, so 4 for an <code>int*</code> and 16 for a <code>Node*</code></td></tr>
+<tr><td>order of the two link statements</td><td><code>head = p</code> before <code>p-&gt;next = head</code> drops the entire old list</td></tr>
+<tr><td>a dangling pointer is not a null pointer</td><td><code>free(p)</code> then <code>p-&gt;next</code> reads freed memory, and nulling <code>p</code> afterwards does not repair it</td></tr>
+<tr><td>padding is not slack to use</td><td>bytes 4 to 7 of a node belong to no member, and writing there is undefined behaviour</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>State <code>sizeof(void*)</code> on this machine and say why it is that size.</li>
+<li>Give the distance <code>(char*)p + 1</code>, <code>(int*)p + 1</code> and <code>(Node*)p + 1</code> each move.</li>
+<li>Break the 16 bytes of <code>Node { int data; Node* next; }</code> into payload, padding and pointer, with the offset of each.</li>
+<li>Five nodes sit at 0x57a2bc523050, 0x...3070, 0x...3090, 0x...30b0, 0x...30d0. Give the stride, and the heap charged for 5 nodes and for 1000 nodes.</li>
+<li>A <code>double</code> lives at 0x7ffe7c3131a8. Say whether that satisfies the alignment rule, and why.</li>
+<li>A linked list holds 300 integers. Give the bytes requested, the bytes reported usable, the bytes charged at the measured stride, the bytes the same 300 values cost in an array, and the ratio of charged to array.</li>
+<li>The capture records four nested frames at 0x7ffe7c313154, 0x7ffe7c313124, 0x7ffe7c3130f4 and 0x7ffe7c3130c4. Give the stride, and say which direction the stack grows.</li>
+<li>Both a sequential array walk and a scattered array walk are O(n). Explain why one is 12.69× slower than the other.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t3" aria-labelledby="t3-h"><header class="topic__head"><span class="topic__n">3</span><h2 id="t3-h">Stack by Array</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the mid-term block, handout lecture 11. Source: capture <code>lec11_15_run_output.txt</code>, lesson <code>11_stack_array.cpp</code>.</em></p>
+<p>A stack is a list where you may only touch one end, and that end is the top. Last in, first out:</p>
+<p>the value pushed most recently is the first one popped. It exists because a huge number of</p>
+<p>problems need exactly that order, from matching brackets to remembering where a function was</p>
+<p>called from. Storing it in an array means the whole structure is one array plus one index: push</p>
+<p>writes at the index and moves it, pop moves it back and returns the slot. Both are O(1), and</p>
+<p>after the array exists nothing else is allocated.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Operation</th>
+<th scope="col">Effect</th>
+<th scope="col">Cost</th>
+</tr></thead><tbody>
+<tr><td><code>push(x)</code></td><td><code>data[top] = x; top++</code></td><td>O(1), one write, one index move</td></tr>
+<tr><td><code>pop()</code></td><td><code>top--; return data[top]</code></td><td>O(1)</td></tr>
+<tr><td><code>top()</code></td><td><code>return data[top - 1]</code></td><td>O(1), nothing changes</td></tr>
+</tbody></table></div>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Step</th>
+<th scope="col"><code>top</code> after</th>
+<th scope="col">Contents, bottom to top</th>
+</tr></thead><tbody>
+<tr><td>push(10)</td><td>1</td><td>10</td></tr>
+<tr><td>push(20)</td><td>2</td><td>10 20</td></tr>
+<tr><td>push(30)</td><td>3</td><td>10 20 30</td></tr>
+<tr><td>pop() gives 30</td><td>2</td><td>10 20</td></tr>
+<tr><td>pop() gives 20</td><td>1</td><td>10</td></tr>
+<tr><td>pop() gives 10</td><td>0</td><td>empty</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/03-stack-array-push-pop.png" alt="Stack by array: push, pop and the capacity limit" loading="lazy" width="1400" height="900"><figcaption>Stack by array: push, pop and the capacity limit</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td><code>sizeof(ArrayStack&lt;int,5&gt;)</code></td><td>40 bytes</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>the five <code>int</code>s alone</td><td>20 bytes</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>offsets</td><td><code>data</code> 0, <code>top</code> 24, <code>refusals</code> 32</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>7 pushes into 5 slots</td><td>2 refused, contents untouched</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>unchecked slot 6 address</td><td>equals the canary address</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>2,000,000 pushes and pops</td><td>0 further heap blocks, 0 further bytes</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>per operation</td><td>push 0.688 ns, pop 0.378 ns</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>top end against bottom end</td><td>0.1 ns against 484.7 ns, 4267.2×</td><td><code>lec11_15_run_output.txt</code></td></tr>
+</tbody></table></div>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stddef.h&gt;
+
+#define CAP 5
+struct ArrayStack {
+    int data[CAP];
+    size_t top;
+};
+
+void push(struct ArrayStack *s, int x) {
+    if (s-&gt;top &lt; CAP) s-&gt;data[s-&gt;top++] = x;   /* refuse, never overwrite */
+}
+
+int pop(struct ArrayStack *s, int *out) {
+    if (s-&gt;top == 0) return 0;                 /* underflow, reported */
+    *out = s-&gt;data[--s-&gt;top];
+    return 1;
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>overflow and underflow are different failures</td><td>an array stack can do both; a linked stack can only underflow</td></tr>
+<tr><td>the index is the next free slot</td><td><code>top</code> is a count and an index at once, so <code>data[top]</code> is written before <code>top++</code></td></tr>
+<tr><td>a bottom anchored stack shifts everything</td><td>484.7 ns per push against 0.1 ns, measured, for the same 20,000 pushes</td></tr>
+<tr><td>padding after the array</td><td><code>top</code> lands at offset 24 and not 20, because <code>size_t</code> needs an 8 byte boundary</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>A 5 slot array stack is pushed 10, then 20, then 30. Give the output of <code>pop()</code>, then <code>pop()</code>, then <code>top()</code>.</li>
+<li>Seven values, 1 to 7, are pushed into a 5 slot array stack. Give the number refused, the contents afterwards, and the drain output.</li>
+<li><code>sizeof(ArrayStack&lt;int,5&gt;)</code> is 40 and the five <code>int</code>s are 20 bytes. Break the 40 into array, padding and bookkeeping, and give the three offsets.</li>
+<li>Say why <code>offsetof(top)</code> is 24 and not 20.</li>
+<li>An unchecked push would write at <code>data + 6 × sizeof(int)</code>. Say what lives there and what the capture measures at that address.</li>
+<li>Two million pushes and two million pops asked the heap for how many blocks and how many bytes? Give the per operation times as well.</li>
+<li>A bottom anchored stack costs 484.7 ns per push and a top anchored one 0.1 ns. Give both and the ratio the capture prints.</li>
+<li>A 5 slot array stack object is 40 bytes and holds 20 bytes of values. Give the payload percentage of the object.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t4" aria-labelledby="t4-h"><header class="topic__head"><span class="topic__n">4</span><h2 id="t4-h">Queue</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the mid-term block, handout lectures 13 to 15. Source: capture <code>lec11_15_run_output.txt</code>, lessons <code>13_queue_array.cpp</code> and <code>14_queue_linked_circular.cpp</code>.</em></p>
+<p>A queue is a list where elements enter at one end and leave at the other. First in, first out:</p>
+<p>the element that has waited longest leaves first. It exists because arrival order is what matters</p>
+<p>for a printer spool, a scheduler and a breadth first walk. In an array you keep two indices, one</p>
+<p>at each end: enqueue writes at the rear, dequeue reads at the front. Both are O(1). The catch is</p>
+<p>that both indices only move forward, so the free slots behind the front become unreachable, and</p>
+<p>that is the problem the circular form solves.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Operation</th>
+<th scope="col">Effect</th>
+<th scope="col">Cost</th>
+</tr></thead><tbody>
+<tr><td><code>enqueue(x)</code></td><td>write at rear, then <code>rear++</code></td><td>O(1)</td></tr>
+<tr><td><code>dequeue()</code></td><td>read at front, then <code>front++</code></td><td>O(1)</td></tr>
+<tr><td><code>count</code></td><td><code>(rear - front + capacity) mod capacity</code></td><td>O(1)</td></tr>
+</tbody></table></div>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Step</th>
+<th scope="col"><code>front</code></th>
+<th scope="col"><code>rear</code></th>
+<th scope="col">size</th>
+<th scope="col">Slots</th>
+</tr></thead><tbody>
+<tr><td>5 enqueues</td><td>0</td><td>5</td><td>5</td><td><code>1 2 3 4 5</code></td></tr>
+<tr><td>3 dequeues</td><td>3</td><td>5</td><td>2</td><td><code>-- -- -- 4 5</code></td></tr>
+<tr><td>enqueue(6)</td><td>3</td><td>5</td><td>2</td><td>REFUSED, <code>rear</code> is at capacity</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/04-queue-fifo-indices.png" alt="Queue: FIFO, the wasted slots, and the ring" loading="lazy" width="1400" height="900"><figcaption>Queue: FIFO, the wasted slots, and the ring</figcaption></figure>
+<figure><img src="diagrams/16-circular-queue-wrap.png" alt="Circular queue: the index trajectory through two wrap-arounds" loading="lazy" width="1400" height="900"><figcaption>Circular queue: the index trajectory through two wrap-arounds</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td>FIFO order</td><td>10 20 30 in, 10 20 30 out</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td><code>sizeof(NaiveQueue&lt;int,5&gt;)</code></td><td>48 bytes</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td><code>sizeof(CircularQueue&lt;int,5&gt;)</code></td><td>64 bytes</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>slots lost at the refusal</td><td>3 of 5</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>naive against circular on the same script</td><td>3 refusals against 0</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>wrap-arounds on a 5 slot ring</td><td>2</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>circular cost per operation</td><td>0.531 ns</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>linked queue cost per operation</td><td>14.023 ns</td><td><code>lec11_15_run_output.txt</code></td></tr>
+</tbody></table></div>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stddef.h&gt;
+
+#define CAP 5
+struct CircularQueue {
+    int data[CAP];
+    size_t front;
+    size_t count;
+};
+
+int enqueue(struct CircularQueue *q, int x) {
+    if (q-&gt;count == CAP) return 0;                       /* full, refuse */
+    q-&gt;data[(q-&gt;front + q-&gt;count) % CAP] = x;
+    q-&gt;count++;
+    return 1;
+}
+
+int dequeue(struct CircularQueue *q, int *out) {
+    if (q-&gt;count == 0) return 0;                         /* empty, refuse */
+    *out = q-&gt;data[q-&gt;front];
+    q-&gt;front = (q-&gt;front + 1) % CAP;
+    q-&gt;count--;
+    return 1;
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>the naive queue's dead end</td><td>after a full drain <code>front</code> and <code>rear</code> both equal capacity, so <code>empty</code> and <code>full</code> are both true and it can never enqueue again</td></tr>
+<tr><td>a count member is not optional in the ring</td><td><code>front == rear</code> means empty and it is also what <code>capacity</code> enqueues produce</td></tr>
+<tr><td>the wrapped subtraction</td><td>a bare unsigned <code>(rear - front)</code> gives 18446744073709551615, which is why <code>+ capacity</code> is in the formula</td></tr>
+<tr><td>the sentinel design costs a slot</td><td>the count design stores all 5 slots, the sentinel design stores 4 of 5</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Enqueue 10, then 20, then 30, then dequeue twice. Give both values that leave.</li>
+<li>A naive array queue of capacity 5 has had 5 enqueues and 3 dequeues. Give <code>front</code>, <code>rear</code>, <code>size</code> and the number of free slots below <code>front</code>.</li>
+<li>In that state, <code>enqueue(6)</code> is attempted. Say what happens and why, with the two numbers that disagree.</li>
+<li>After the queue is fully drained, <code>front = 5</code> and <code>rear = 5</code>, <code>size = 0</code>. Say what <code>empty()</code> and <code>full()</code> each return, and what the queue can never do again without a reset.</li>
+<li>A circular queue has capacity 5, <code>front = 2</code>, <code>rear = 4</code>. Give the element count, the slot the next enqueue writes, the new <code>rear</code>, and the count after that enqueue. Is it full then?</li>
+<li>The capture's trajectory makes 10 enqueues into a 5 slot ring. Give the number of wrap-arounds and say what a naive queue would have done after 5.</li>
+<li>Evaluate <code>count = (rear - front + capacity) mod capacity</code> for <code>front = 3</code>, <code>rear = 2</code>, capacity 5, and give the bare unsigned difference as well.</li>
+<li>A circular queue costs 0.531 ns per operation and a linked queue 14.023 ns. Give both and the ratio the capture prints.</li>
+<li>Say how many of its 5 slots each of the two full detection designs can store.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t5" aria-labelledby="t5-h"><header class="topic__head"><span class="topic__n">5</span><h2 id="t5-h">Linked List</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the mid-term block, handout lectures 6 to 8. Source: capture <code>lec05_run_output.txt</code>, lessons <code>06_linked_list_representation.cpp</code>, <code>07_linked_list_operations.cpp</code>, <code>08_linked_list_searching_apps.cpp</code>.</em></p>
+<p>A linked list stores each value in its own small block, with a pointer to the next block. The</p>
+<p>list object itself holds only a head pointer, so it does not care how many elements exist. It</p>
+<p>exists because an array cannot grow and cannot insert in the middle without shifting. Here</p>
+<p>inserting at the front is three pointer writes whatever the length is, and no element moves. The</p>
+<p>price is that reaching element i means following i pointers one at a time, and that every node is</p>
+<p>a separate allocation with its own overhead.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Field</th>
+<th scope="col">Offset</th>
+<th scope="col">Size</th>
+<th scope="col">Note</th>
+</tr></thead><tbody>
+<tr><td><code>data</code></td><td>0</td><td>4</td><td>the payload</td></tr>
+<tr><td>padding</td><td>4</td><td>4</td><td>no member owns these bytes</td></tr>
+<tr><td><code>next</code></td><td>8</td><td>8</td><td>address of the next node, 0 marks the end</td></tr>
+</tbody></table></div>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Step</th>
+<th scope="col">Writes</th>
+<th scope="col">Cost</th>
+</tr></thead><tbody>
+<tr><td><code>p = malloc(sizeof *p)</code></td><td>allocator call</td><td>one allocation</td></tr>
+<tr><td><code>p-&gt;next = head</code></td><td>one pointer write</td><td>O(1)</td></tr>
+<tr><td><code>head = p</code></td><td>one pointer write</td><td>O(1)</td></tr>
+<tr><td>traverse to position i</td><td><code>cur = cur-&gt;next</code> i times</td><td>O(i)</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/05-linked-list-node-insert.png" alt="Linked list: node layout, head insertion, traversal" loading="lazy" width="1400" height="900"><figcaption>Linked list: node layout, head insertion, traversal</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td><code>sizeof(Node)</code></td><td>16, offsets 0 and 8</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>five <code>new Node</code> addresses</td><td>0x...3050 to 0x...30d0, stride 32</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>requested, usable, charged</td><td>16, 24, 32 bytes</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>linked walk</td><td>2.45 ns per element</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>sequential array walk</td><td>0.19 ns per element</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>search 30 in a 5 node list</td><td>3 comparisons</td><td><code>lec08</code> lesson run</td></tr>
+<tr><td>search an absent key</td><td>5 comparisons, the whole list</td><td><code>lec08</code> lesson run</td></tr>
+</tbody></table></div>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stddef.h&gt;
+#include &lt;stdlib.h&gt;
+
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+struct Node *push_front(struct Node *head, int v) {
+    struct Node *p = (struct Node *)malloc(sizeof(struct Node));
+    if (!p) return head;
+    p-&gt;data = v;
+    p-&gt;next = head;      /* link first */
+    return p;            /* the new head */
+}
+
+size_t length(const struct Node *head) {
+    size_t n = 0;
+    for (const struct Node *c = head; c; c = c-&gt;next) n++;
+    return n;
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>the two link statements have an order</td><td><code>head = p</code> before <code>p-&gt;next = head</code> loses the whole old list</td></tr>
+<tr><td>access is O(n), not O(1)</td><td>a linked list cannot binary search, there is no index arithmetic to jump with</td></tr>
+<tr><td>deleting needs the predecessor</td><td>a singly linked list must walk to the node before the one being removed, so deletion by value is O(n)</td></tr>
+<tr><td>the node is not the payload</td><td>16 bytes asked for, 24 usable, 32 charged, and the difference is allocator bookkeeping</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>The list is <code>10 -&gt; 20 -&gt; 30 -&gt; NULL</code>. Give the traversal output and <code>sizeof</code> of one node.</li>
+<li>Break the node's 16 bytes into payload, padding and pointer, with the offset of each.</li>
+<li>Given <code>10 -&gt; 20 -&gt; 40 -&gt; 50 -&gt; NULL</code>, insert 30 so the list stays sorted. Give the pointer writes and the cost.</li>
+<li>For the same list, delete the last node. Give the pointer writes, the cost, and why it is not O(1).</li>
+<li>A linked list holds 300 integers. Give the bytes requested, the bytes the allocator reports usable, the bytes charged at the measured stride, the bytes the same 300 values cost in an array, and the ratio of charged to array.</li>
+<li>The list is <code>10 -&gt; 20 -&gt; 30 -&gt; 40 -&gt; 50 -&gt; NULL</code>. Give the comparison count for searching 30 and for searching 35, and say why the second is larger.</li>
+<li>For that 5 node list give the best, worst and average comparison counts for a successful search.</li>
+<li>Explain in one line why a sorted linked list cannot answer a query in O(log n) the way a sorted array can.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t6" aria-labelledby="t6-h"><header class="topic__head"><span class="topic__n">6</span><h2 id="t6-h">Merge Sort</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the handout, tagged End Term, lecture 27. Source: capture <code>lec16_18_sorts_run_output.txt</code>, lesson <code>17_merge_sort.cpp</code>.</em></p>
+<p>Merge sort splits the data in half, sorts each half the same way, then merges the two sorted</p>
+<p>halves in one linear pass. It exists because it makes a guarantee the simple sorts cannot: the</p>
+<p>split is by position, so the recursion tree is balanced whatever the values are. The depth is</p>
+<p>log2 n for every input, and the cost is about n log2 n comparisons in the best, average and worst</p>
+<p>case. It is stable too, because the merge takes from the left run when two keys are equal. The</p>
+<p>price is a second copy of the data.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Step</th>
+<th scope="col">Left front</th>
+<th scope="col">Right front</th>
+<th scope="col">Take</th>
+<th scope="col">Result so far</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>2</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>2</td><td>2</td><td>4</td><td>2</td><td>1 2</td></tr>
+<tr><td>3</td><td>5</td><td>4</td><td>4</td><td>1 2 4</td></tr>
+<tr><td>4</td><td>5</td><td>8</td><td>5</td><td>1 2 4 5</td></tr>
+<tr><td>5</td><td>9</td><td>8</td><td>8</td><td>1 2 4 5 8</td></tr>
+<tr><td>6</td><td>9</td><td>10</td><td>9</td><td>1 2 4 5 8 9</td></tr>
+<tr><td>7</td><td>11</td><td>10</td><td>10</td><td>1 2 4 5 8 9 10</td></tr>
+<tr><td>8</td><td>11</td><td>empty</td><td>11</td><td>1 2 4 5 8 9 10 11</td></tr>
+</tbody></table></div>
+<p>Comparisons in that merge: 7, against the bounds 4 and 7 for runs of 4 and 4.</p>
+<figure><img src="diagrams/06-merge-sort-merge-step.png" alt="Merge sort: the merge step and the recursion tree" loading="lazy" width="1400" height="900"><figcaption>Merge sort: the merge step and the recursion tree</figcaption></figure>
+<figure><img src="diagrams/15-merge-sort-recursion-tree.png" alt="Merge sort recursion tree" loading="lazy" width="1400" height="900"><figcaption>Merge sort recursion tree</figcaption></figure>
+<figure><img src="diagrams/17-merge-sort-array-vs-list.png" alt="Merge sort: the array buffer against the list relinking" loading="lazy" width="1400" height="900"><figcaption>Merge sort: the array buffer against the list relinking</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">n</th>
+<th scope="col">comparisons</th>
+<th scope="col">merges</th>
+<th scope="col">n − 1</th>
+<th scope="col">element copies</th>
+<th scope="col">n log₂ n</th>
+<th scope="col">depth</th>
+<th scope="col">log₂ n + 1</th>
+</tr></thead><tbody>
+<tr><td>8</td><td>16</td><td>7</td><td>7</td><td>24</td><td>24</td><td>4</td><td>4</td></tr>
+<tr><td>64</td><td>301</td><td>63</td><td>63</td><td>384</td><td>384</td><td>7</td><td>7</td></tr>
+<tr><td>1024</td><td>8967</td><td>1023</td><td>1023</td><td>10240</td><td>10240</td><td>11</td><td>11</td></tr>
+<tr><td>65536</td><td>965633</td><td>65535</td><td>65535</td><td>1048576</td><td>1048576</td><td>17</td><td>17</td></tr>
+</tbody></table></div>
+<p>All rows from <code>lec16_18_sorts_run_output.txt</code>. Merges equal n − 1 and depth equals log₂ n + 1</p>
+<p>exactly at every size. The auxiliary buffer is one block, not one per level: 4096 bytes at</p>
+<p>n = 1024, 262144 bytes at n = 65536. The linked list version allocated 0 blocks and 0 bytes for a</p>
+<p>buffer, and its comparison counts differed from the array version by 0 at every size.</p>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>void merge(int *a, int lo, int mid, int hi, int *buf) {
+    int i = lo, j = mid, k = lo;
+    while (i &lt; mid &amp;&amp; j &lt; hi)
+        buf[k++] = (a[i] &lt;= a[j]) ? a[i++] : a[j++];   /* &lt;= keeps it stable */
+    while (i &lt; mid) buf[k++] = a[i++];
+    while (j &lt; hi)  buf[k++] = a[j++];
+    for (int t = lo; t &lt; hi; t++) a[t] = buf[t];
+}
+
+void merge_sort(int *a, int lo, int hi, int *buf) {
+    if (hi - lo &lt; 2) return;                  /* base case: one element is sorted */
+    int mid = lo + (hi - lo) / 2;             /* no overflow, no midpoint bug */
+    merge_sort(a, lo, mid, buf);
+    merge_sort(a, mid, hi, buf);
+    merge(a, lo, mid, hi, buf);
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>the measured count is not n log₂ n</td><td>it is below it, 0.6667 to 0.9209 of it, because a merge stops when one run empties</td></tr>
+<tr><td>merges are n − 1, not n</td><td>7 merges at n = 8, 65535 at n = 65536, measured</td></tr>
+<tr><td>the buffer is n, not n log n</td><td>one buffer reused at every level, 4096 bytes at n = 1024</td></tr>
+<tr><td>stability comes from <code>&lt;=</code></td><td>writing <code>&lt;</code> takes from the right run on a tie and the sort stops being stable</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Merge <code>2 5 9 11</code> with <code>1 4 8 10</code>. Give the comparisons, the result, and the two bounds for a merge of 4 and 4 elements.</li>
+<li>Merge sort <code>0 5 1 2 6 4 7 3</code> (the capture's seed 20260918). Give the number of merges, the element copies, the comparisons and the recursion depth.</li>
+<li>At n = 1024 the measured comparisons are 8967 against n log₂ n = 10240. Give the ratio the capture prints.</li>
+<li>At n = 65536 give the measured depth and the closed form log₂ n + 1.</li>
+<li>Give the auxiliary array bytes requested and the allocator usable size at n = 1024.</li>
+<li>The list version at n = 64: give the blocks and bytes it allocated for a buffer, and its comparison count against the array version.</li>
+<li>Write the recurrence for merge sort and solve it for n a power of two. State the Θ class.</li>
+<li>Give the worst case comparison bound for merge sort at n = 8 using n·⌈log₂ n⌉ − 2^⌈log₂ n⌉ + 1, and compare it with the measured 16.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t7" aria-labelledby="t7-h"><header class="topic__head"><span class="topic__n">7</span><h2 id="t7-h">Quick Sort</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the handout, tagged End Term, lecture 29. Source: capture <code>lec16_18_sorts_run_output.txt</code>, lesson <code>18_quick_sort.cpp</code>.</em></p>
+<p>Quick sort picks a pivot, moves everything smaller to its left and everything larger to its right,</p>
+<p>then repeats on both sides. It exists because that partition is a single linear pass that works in</p>
+<p>place, so it needs no second copy of the data. Its cost is the depth of the recursion: log₂ n</p>
+<p>levels when the pivot splits the range evenly, n levels when it does not. Nothing is guaranteed</p>
+<p>about the split, because the split is decided by the data and the pivot rule together. That is why</p>
+<p>the pivot choice is the whole subject of this topic.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Step</th>
+<th scope="col"><code>[lo,hi)</code></th>
+<th scope="col">pivot</th>
+<th scope="col">lands at</th>
+<th scope="col">left size</th>
+<th scope="col">right size</th>
+<th scope="col">comparisons</th>
+<th scope="col">swaps</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>[0,8)</td><td>3 at index 7</td><td>3</td><td>3</td><td>4</td><td>7</td><td>3</td></tr>
+<tr><td>2, sorted input</td><td>[0,8)</td><td>7 at index 7</td><td>7</td><td>7</td><td>0</td><td>7</td><td>0</td></tr>
+<tr><td>3</td><td>[0,7)</td><td>6 at index 6</td><td>6</td><td>6</td><td>0</td><td>6</td><td>0</td></tr>
+<tr><td>4</td><td>[0,6)</td><td>5 at index 5</td><td>5</td><td>5</td><td>0</td><td>5</td><td>0</td></tr>
+</tbody></table></div>
+<p>Steps 2 to 4 continue down to 1, and 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28, which is n(n − 1)/2 at</p>
+<p>n = 8. On the sorted input nothing ever needs to move, so the swaps column stays 0.</p>
+<figure><img src="diagrams/07-quick-sort-lomuto-partition.png" alt="Quick sort: the Lomuto partition and the degenerate case" loading="lazy" width="1400" height="900"><figcaption>Quick sort: the Lomuto partition and the degenerate case</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Input</th>
+<th scope="col">Variant</th>
+<th scope="col">n</th>
+<th scope="col">comparisons</th>
+<th scope="col">swaps</th>
+<th scope="col">depth</th>
+</tr></thead><tbody>
+<tr><td>random</td><td>lomuto-last</td><td>1024</td><td>11972</td><td>4988</td><td>23</td></tr>
+<tr><td>random</td><td>hoare-first</td><td>1024</td><td>15713</td><td>2458</td><td>23</td></tr>
+<tr><td>sorted</td><td>lomuto-last</td><td>1024</td><td>523776</td><td>0</td><td>1024</td></tr>
+<tr><td>sorted</td><td>lomuto-median3</td><td>1024</td><td>9229</td><td>1024</td><td>11</td></tr>
+<tr><td>all-equal</td><td>lomuto-last</td><td>1024</td><td>523776</td><td>0</td><td>1024</td></tr>
+<tr><td>all-equal</td><td>hoare-first</td><td>1024</td><td>12286</td><td>5120</td><td>11</td></tr>
+</tbody></table></div>
+<p>All rows from <code>lec16_18_sorts_run_output.txt</code>. Read them against the two closed forms the capture</p>
+<p>prints: n(n − 1)/2 = 523776 and n log₂ n = 10240 at n = 1024. At n = 8192 on all-equal input the</p>
+<p>capture measures 139260 comparisons in 0.131 ms for hoare-median3 against 33550336 comparisons in</p>
+<p>13.760 ms for lomuto-last, a factor of 105.0 in time from the pivot choice alone.</p>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>int lomuto(int *a, int lo, int hi) {
+    int pivot = a[hi - 1];            /* last element as pivot */
+    int i = lo;
+    for (int j = lo; j &lt; hi - 1; j++) {
+        if (a[j] &lt;= pivot) {          /* &lt;= sends every equal element left */
+            int t = a[i]; a[i] = a[j]; a[j] = t;
+            i++;
+        }
+    }
+    int t = a[i]; a[i] = a[hi - 1]; a[hi - 1] = t;
+    return i;                          /* the pivot's final index */
+}
+
+void quick_sort(int *a, int lo, int hi) {
+    if (hi - lo &lt; 2) return;
+    int p = lomuto(a, lo, hi);
+    quick_sort(a, lo, p);              /* the pivot is already in place */
+    quick_sort(a, p + 1, hi);
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>the worst case is reachable with real data</td><td>sorted input with a last element pivot gives 523776 comparisons and depth 1024 at n = 1024</td></tr>
+<tr><td>all-equal input is not a best case</td><td>Lomuto sends every equal element left, so it is quadratic, and median-of-three does not rescue it</td></tr>
+<tr><td>quick sort is not stable</td><td>the partition swaps elements across the whole range, so equal keys change order</td></tr>
+<tr><td>median-of-three does not remove the bound</td><td>it decides which inputs reach the quadratic case, not whether the case exists</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Lomuto partition on <code>0 5 1 2 6 4 7 3</code> with the last element as pivot. Give the pivot's final index, the comparisons, the swaps, and the array after the partition.</li>
+<li>The same code on the already sorted <code>0 1 2 3 4 5 6 7</code>. Give the comparisons, the recursion depth and the swaps.</li>
+<li>At n = 1024 on sorted input with the last element as pivot, give the comparisons and the depth, and the two closed forms they equal.</li>
+<li>At n = 1024 on all-equal input, give comparisons and depth for lomuto-last and for hoare-first.</li>
+<li>Give the ratio between those two comparison counts, as the capture states it.</li>
+<li>At n = 8192 on all-equal input, give the fastest and the slowest variant with their comparison counts and times, and the factor the capture prints.</li>
+<li>At n = 65536 on random input, give the swap counts for lomuto-last and for hoare-first.</li>
+<li>Is quick sort stable? Answer in one line with the reason.</li>
+<li>On the sorted input at n = 8, median-of-three samples <code>a[0] = 0</code>, <code>a[3] = 3</code>, <code>a[7] = 7</code>. Give the index it picks and why that is the pivot that splits the range in half.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t8" aria-labelledby="t8-h"><header class="topic__head"><span class="topic__n">8</span><h2 id="t8-h">Algorithm fundamentals</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: never as a single row, spread through the handout plan. Source: capture <code>lec22_analysis_run_output.txt</code>, lesson <code>22_algorithm_analysis.cpp</code>, textbook CLRS, Introduction to Algorithms.</em></p>
+<p>An algorithm is a finite sequence of unambiguous, effectively computable steps that takes zero or</p>
+<p>more inputs, produces one or more outputs, and terminates. The definition exists because those</p>
+<p>five properties are exactly the things that can go wrong, and each one can be checked. An</p>
+<p>algorithm is judged on three axes: is it correct, how much time does it take, and how much extra</p>
+<p>space does it need. Correctness is checked first, and it is checked by comparison against an</p>
+<p>independent answer, never by inspection.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Property</th>
+<th scope="col">Meaning</th>
+<th scope="col">What breaks without it</th>
+</tr></thead><tbody>
+<tr><td>Input</td><td>zero or more values are given</td><td>nothing to work on</td></tr>
+<tr><td>Output</td><td>one or more results come back</td><td>no answer to hand in</td></tr>
+<tr><td>Definiteness</td><td>every step is stated exactly</td><td>the same input can give two answers</td></tr>
+<tr><td>Finiteness</td><td>it ends after a finite number of steps</td><td>a recursion with no base case runs the stack out</td></tr>
+<tr><td>Effectiveness</td><td>every step is basic enough to carry out</td><td>the steps cannot be executed at all</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/08-algorithm-fundamentals.png" alt="Algorithm fundamentals and the missing base case" loading="lazy" width="1400" height="900"><figcaption>Algorithm fundamentals and the missing base case</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td>stack limit, <code>getrlimit(RLIMIT_STACK)</code></td><td>8192 KiB</td><td><code>lec16_recursion_output.txt</code></td></tr>
+<tr><td>one runaway frame</td><td>32 bytes</td><td><code>lec16_recursion_output.txt</code></td></tr>
+<tr><td>predicted ceiling</td><td>8388608 / 32 = 262144 calls</td><td><code>lec16_recursion_output.txt</code></td></tr>
+<tr><td>depth actually reached</td><td>261579 calls</td><td><code>lec16_recursion_output.txt</code></td></tr>
+<tr><td>that depth in memory</td><td>8174 KiB against the 8192 KiB limit</td><td><code>lec16_recursion_output.txt</code></td></tr>
+<tr><td>correctness check used</td><td>element by element against an independent reference sort</td><td><code>lec16_18_sorts_run_output.txt</code></td></tr>
+</tbody></table></div>
+<p>The difference between prediction and measurement is 565 calls, 0.215530 percent. The child died</p>
+<p>on the guard page, and the parent kept running, so the failure was reported instead of guessed.</p>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>/* the five properties, made checkable in code */
+int sum_to(int n) {                 /* input: n. output: one int */
+    if (n &lt;= 0) return 0;           /* definiteness and finiteness: the base case */
+    return n + sum_to(n - 1);       /* effectiveness: one add per step */
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>a recursion with no base case violates finiteness</td><td>name finiteness, and give the measured depth and the limit</td></tr>
+<tr><td>correctness before complexity</td><td>a fast wrong answer is worth nothing, so state the reference comparison first</td></tr>
+<tr><td>an algorithm is not a program</td><td>the algorithm is the step sequence, the program is one implementation of it</td></tr>
+<tr><td>a stack overflow is not a wrong answer</td><td>the code dies with a fault, it does not return a bad number</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Name the five properties of an algorithm.</li>
+<li>Say which property a recursion with no base case violates.</li>
+<li>Give the measured stack limit, the measured frame stride of the runaway, the predicted ceiling and the depth actually reached.</li>
+<li>State the difference between an algorithm and a program in one line.</li>
+<li>Say why correctness is checked before complexity, and name the check this project used.</li>
+<li>At n = 8 the reference checksum is 14498326412155018299. Say which four runs produced that same value and what that proves.</li>
+<li>Give the time complexity of searching for a value in an unsorted array of n elements, best and worst case.</li>
+<li>Name the three axes an algorithm is judged on.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t9" aria-labelledby="t9-h"><header class="topic__head"><span class="topic__n">9</span><h2 id="t9-h">Asymptotic notation</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: not in the handout, the token appears 0 times in the lecture plan. Source: capture <code>lec22_analysis_run_output.txt</code>, textbook Goodrich and Tamassia, Algorithm Design, and CLRS chapter 3.</em></p>
+<p>Asymptotic notation describes how a cost grows with the input size, not how long one run takes on</p>
+<p>one machine. Big O is an upper bound: past some input size the cost stays under a constant times</p>
+<p>a model function. Ω is the matching lower bound, and Θ is both at once. The notation exists so two algorithms can be compared without timing them, and the</p>
+<p>comparison is only meaningful when the certificate is stated: which constant, and from which</p>
+<p>input size. That pair is checkable by evaluating both sides of the inequality.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Claim</th>
+<th scope="col">Meaning</th>
+<th scope="col">Certificate shape</th>
+</tr></thead><tbody>
+<tr><td>f is O(g)</td><td>f(n) ≤ c·g(n) for all n ≥ n₀</td><td>one constant c, one threshold n₀</td></tr>
+<tr><td>f is Ω(g)</td><td>f(n) ≥ c·g(n) for all n ≥ n₀</td><td>one constant c, one threshold n₀</td></tr>
+<tr><td>f is Θ(g)</td><td>c₁·g(n) ≤ f(n) ≤ c₂·g(n) for all n ≥ n₀</td><td>two constants, one shared n₀</td></tr>
+</tbody></table></div>
+<p>For f(n) = 3n² + 5n + 7 against g(n) = 4n², scanned over n = 1 to 20000:</p>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Candidate c</th>
+<th scope="col">Upper bound f ≤ c·g</th>
+<th scope="col">Lower bound f ≥ c·g</th>
+</tr></thead><tbody>
+<tr><td>3/4</td><td>fails from n = 1, no n₀</td><td>certified from n = 1, smallest margin 12</td></tr>
+<tr><td>9/10</td><td>certified from n = 10, margin 3</td><td>fails from n = 10, never recovers</td></tr>
+<tr><td>1/1</td><td>certified from n = 7, margin 7</td><td>fails from n = 7, no n₀</td></tr>
+<tr><td>2/1</td><td>certified from n = 2, margin 3</td><td>fails from n = 2, no n₀</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/09-asymptotic-certificate.png" alt="The asymptotic certificate" loading="lazy" width="1400" height="900"><figcaption>The asymptotic certificate</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td>c = 1 upper bound</td><td>last failure n = 6, n₀ = 7, f = 189 against c·g = 196</td><td><code>lec22_analysis_run_output.txt</code></td></tr>
+<tr><td>tail verified for c = 1</td><td>19994 values of n</td><td><code>lec22_analysis_run_output.txt</code></td></tr>
+<tr><td>largest lower bound constant</td><td>3/4, certified from n = 1</td><td><code>lec22_analysis_run_output.txt</code></td></tr>
+<tr><td>3/4 as an upper bound</td><td>fails at n = 1</td><td><code>lec22_analysis_run_output.txt</code></td></tr>
+<tr><td>Θ certificate</td><td>c₁ = 3/4 from n = 1, c₂ = 1 from n = 7, n₀ = max(1,7) = 7</td><td><code>lec22_analysis_run_output.txt</code></td></tr>
+<tr><td>violations at n₀ = 7</td><td>0 below, 0 above, over 19994 values</td><td><code>lec22_analysis_run_output.txt</code></td></tr>
+<tr><td>f/g convergence</td><td>f(n)/g(n) → 3/4 as n → ∞: 0.964286, 0.762675, 0.751252, 0.750125 at n = 7, 100, 1000, 10000</td><td><code>lec22_analysis_run_output.txt</code></td></tr>
+<tr><td>the O(n) claim</td><td>c = 1000 fails from n = 332</td><td><code>lec22_analysis_run_output.txt</code></td></tr>
+</tbody></table></div>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>/* a certificate is a constant and a threshold, and both can be checked in code */
+int certifies_upper(long long (*f)(long long), long long (*g)(long long),
+                    double c, long long n0, long long limit) {
+    for (long long n = n0; n &lt;= limit; n++)
+        if ((double)f(n) &gt; c * (double)g(n)) return 0;   /* the bound is broken */
+    return 1;                                            /* certified over the tail */
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>the constant is not the class</td><td>100·n is still O(n), and 3n² + 5n + 7 is still O(n²)</td></tr>
+<tr><td>Θ needs one n₀ for both sides</td><td>the certificate from n = 1 is dropped when the upper bound needs n = 7</td></tr>
+<tr><td>the constant is the ratio of leading coefficients</td><td>3 divided by 4 is 3/4, and no smaller constant works on either side</td></tr>
+<tr><td>an absent certificate is not a proof</td><td>"f is O(n)" fails the scan, and the measured ratio f(n)/n grows without bound</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Write the formal definition of Θ(g(n)) in one line.</li>
+<li>Show that 3n² + 5n + 7 is O(n²) using the capture's certificate for c = 1. Give the last failing n, n₀, and both sides at n₀.</li>
+<li>Repeat for c = 2, and say why a looser constant buys a smaller n₀.</li>
+<li>Give the largest constant that works as a lower bound for that f and g, and say at which constant the lower bound dies.</li>
+<li>Give the full Θ certificate for that pair: c₁, c₂, n₀, and the number of violations on each side.</li>
+<li>Show that 3n² + 5n + 2 is O(n²). Give the smallest integer c and the smallest n₀ that work with it, and verify at n₀ − 1 and at n₀.</li>
+<li>Give the measured values of f(n)/n at n = 10, 100, 1000 and 10000, and say what they prove about the claim f is O(n).</li>
+<li>Give the thresholds n₀ at which n² overtakes k·n·log₂ n for k = 8, k = 64 and k = 1024.</li>
+<li>The capture prints the growth of 2ⁿ against n³ over one decade of n. Give the factor for 2ⁿ and for n³, and the ratio at n = 10000.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t10" aria-labelledby="t10-h"><header class="topic__head"><span class="topic__n">10</span><h2 id="t10-h">Finding Complexity</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: not in the handout, the token appears 0 times in the lecture plan. Source: capture <code>lec22_analysis_run_output.txt</code>, lesson <code>22_algorithm_analysis.cpp</code>.</em></p>
+<p>Finding complexity means counting the operations an algorithm performs and then naming the class</p>
+<p>of that count, written as a bound on a model function. It exists because the class is what decides</p>
+<p>whether a solution survives a larger input, and because a count can be checked while a guess</p>
+<p>cannot. The count comes from the loop structure: one pass over n values is n, two nested passes</p>
+<p>are n squared, halving each step is log2 n, and a triangular loop is n(n - 1)/2. Best, worst and</p>
+<p>average case are then the same function measured on different inputs.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Loop shape</th>
+<th scope="col">Count</th>
+<th scope="col">At n = 1024, measured</th>
+</tr></thead><tbody>
+<tr><td><code>for (i = 0; i &lt; n; i++)</code></td><td>n</td><td>1024</td></tr>
+<tr><td><code>for (i...) for (j...)</code></td><td>n²</td><td>1048576</td></tr>
+<tr><td><code>for (i = 1; i &lt; n; i *= 2)</code></td><td>⌈log₂ n⌉</td><td>10</td></tr>
+<tr><td><code>for (j = i+1; j &lt; n; j++)</code></td><td>n(n − 1)/2</td><td>523776</td></tr>
+<tr><td><code>for (j = 0; j &lt; i; j++)</code></td><td>n(n − 1)/2</td><td>523776</td></tr>
+</tbody></table></div>
+<p>Every count above was printed by the program next to a closed form it computed independently, and</p>
+<p>the verdict column in the capture reads match for all of them.</p>
+<figure><img src="diagrams/10-finding-complexity-loop-counts.png" alt="Finding complexity: loop counts and the three cases" loading="lazy" width="1400" height="900"><figcaption>Finding complexity: loop counts and the three cases</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Case</th>
+<th scope="col">Input</th>
+<th scope="col">Comparisons</th>
+<th scope="col">Closed form</th>
+</tr></thead><tbody>
+<tr><td>best</td><td>key 0, present at index 0</td><td>1</td><td>1</td></tr>
+<tr><td>worst</td><td>key 1023, present at the last index</td><td>1024</td><td>n = 1024</td></tr>
+<tr><td>worst, absent</td><td>key 5000</td><td>1024</td><td>n = 1024, the whole array</td></tr>
+<tr><td>average, present keys</td><td>all 1024 keys</td><td>512.500000</td><td>(n + 1)/2</td></tr>
+<tr><td>average, present and absent mixed</td><td>1088 keys</td><td>542.588235</td><td>590336 / 1088</td></tr>
+</tbody></table></div>
+<p>All rows from <code>lec22_analysis_run_output.txt</code>. Σ comparisons over the 1024 present keys is 524800,</p>
+<p>and the capture checks that against 1024 × 1025 / 2.</p>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stddef.h&gt;
+
+size_t count_ops(size_t n) {
+    size_t ops = 0;
+    for (size_t i = 0; i &lt; n; i++)      /* n */
+        ops++;
+    for (size_t i = 0; i &lt; n; i++)      /* n * n */
+        for (size_t j = 0; j &lt; n; j++)
+            ops++;
+    for (size_t i = 1; i &lt; n; i *= 2)   /* ceil(log2 n) */
+        ops++;
+    for (size_t i = 0; i &lt; n; i++)      /* n(n-1)/2 */
+        for (size_t j = i + 1; j &lt; n; j++)
+            ops++;
+    return ops;
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>count, then name the class</td><td>giving the class without the count is a guess, and the marks are for the count</td></tr>
+<tr><td>the triangular loop is half the square</td><td>523776 against 1048576 at n = 1024, measured</td></tr>
+<tr><td>best case is not average case</td><td>1 comparison against 542.588235 for one function</td></tr>
+<tr><td>the exponent beats the constant</td><td>over one decade of n, n grows by 10, n² by 100, 2ⁿ by 2⁹⁰</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Give the exact iteration count and the Θ class of <code>for (i = 1; i &lt;= n; i++) for (j = 1; j &lt;= i; j++) work();</code>. Evaluate at n = 10 and n = 100.</li>
+<li>Give the operation count for two nested loops over n at n = 1024, and the count for one loop over n at the same size.</li>
+<li>Give the count for the two triangular loops at n = 1024 and read both against the nested count.</li>
+<li>Give the count for a loop that doubles its counter while it is below n, at n = 1024.</li>
+<li>A loop body runs n² times and a second loop beside it halves a counter until it reaches 1. At n = 1024 give both counts, the total, the dominant term and the Θ class.</li>
+<li><code>linearSearch</code> walks 1024 distinct ints from index 0. Give the comparisons for key 0, for key 1023, and for an absent key.</li>
+<li>Give the average comparisons for a successful search and for a mixed set of present and absent keys, and the two fractions behind them.</li>
+<li>Give the factor by which each of n, n², n³ and 2^n multiplies when n is multiplied by 10.</li>
+<li><code>2^10000</code> is capped in the capture. Give the decimal exponent and the number of decimal digits, and say why the value itself cannot be printed.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t11" aria-labelledby="t11-h"><header class="topic__head"><span class="topic__n">11</span><h2 id="t11-h">Trees fundamentals</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the handout, tagged End Term, lecture 17. Source: capture <code>lec19_21_trees_run_output.txt</code>, lesson <code>19_tree_representation.cpp</code>, textbook Drozdek, Data Structures and Algorithms in C++.</em></p>
+<p>A tree is a set of nodes joined so that there is exactly one path from the root to any node, and</p>
+<p>no cycles. A binary tree adds one rule: each node has at most two children, called left and right.</p>
+<p>Trees exist because they turn a linear search into a decision at every step: at each node you</p>
+<p>throw away one of two whole subtrees. That is what makes a search cost the height of the tree</p>
+<p>instead of the number of nodes. The vocabulary is small: root, leaf, height, degree, depth.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Term</th>
+<th scope="col">Meaning</th>
+</tr></thead><tbody>
+<tr><td>root</td><td>the one node with no parent</td></tr>
+<tr><td>leaf</td><td>a node with no children</td></tr>
+<tr><td>height</td><td>the number of edges on the longest path from the root to a leaf</td></tr>
+<tr><td>degree</td><td>the number of children of a node</td></tr>
+<tr><td>depth of a node</td><td>the number of edges from the root down to it</td></tr>
+</tbody></table></div>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Representation</th>
+<th scope="col">Child of i</th>
+<th scope="col">Parent of i</th>
+<th scope="col">Cost</th>
+</tr></thead><tbody>
+<tr><td>array by level, slot 1 is the root</td><td>left 2i, right 2i + 1</td><td>i / 2, integer division</td><td>4 bytes per slot, shape decides how many slots</td></tr>
+<tr><td>node plus pointers</td><td>follow <code>left</code> at offset 8</td><td>walk from the root</td><td>24 bytes per node, 7 allocations for 7 nodes</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/11-trees-fundamentals.png" alt="Trees: vocabulary, storage and what each form pays" loading="lazy" width="1400" height="900"><figcaption>Trees: vocabulary, storage and what each form pays</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Shape</th>
+<th scope="col">Slots declared</th>
+<th scope="col">Slots holding a key</th>
+<th scope="col">Idle slots</th>
+<th scope="col">Idle bytes</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td>complete tree, 7 keys</td><td>8</td><td>7</td><td>1</td><td>4</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>right leaning chain, 7 keys</td><td>128</td><td>7</td><td>121</td><td>484</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>left leaning chain, 7 keys</td><td>65</td><td>7</td><td>58</td><td>232</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>pointer form, complete, 7 nodes</td><td>7 allocations</td><td>7</td><td>0</td><td>0</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>pointer form, chain, 7 nodes</td><td>7 allocations</td><td>7</td><td>0</td><td>0</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+</tbody></table></div>
+<p>The right chain stores 7 keys of 4 bytes and reserves 512 bytes to do it, so 5.47 percent of its</p>
+<p>slots hold a key. The pointer form charged 224 bytes of heap for the same 7 nodes, 7 × 32.</p>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stdlib.h&gt;
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/* array by level: slot 1 holds the root, slot 0 stays unused */
+#define LEFT(i)  (2 * (i))
+#define RIGHT(i) (2 * (i) + 1)
+#define PARENT(i) ((i) / 2)
+
+int height(const struct Node *n) {
+    if (!n) return 0;                    /* an empty tree has height 0 */
+    int l = height(n-&gt;left), r = height(n-&gt;right);
+    return 1 + (l &gt; r ? l : r);
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>height against depth</td><td>height counts down from a node to a leaf, depth counts from the root down to a node, and the two only agree on the root</td></tr>
+<tr><td>the array pays by shape, not by node count</td><td>128 slots for 7 keys in a right leaning chain, measured</td></tr>
+<tr><td>the pointer form pays by node</td><td>7 allocations for the chain, the same as for the complete tree</td></tr>
+<tr><td>the level capacity is 2^depth</td><td>a level at depth d holds at most 2^d nodes, which is why a balanced tree is short</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Define root, leaf, height and degree, one line each.</li>
+<li>The sample tree holds 4 at the root, 2 and 6 below it, and 1, 3, 5, 7 below those. Give the nodes at each depth and the widest level.</li>
+<li>Give the maximum number of nodes on a level at depth d, and the maximum number of nodes in a binary tree of height h.</li>
+<li>A complete binary tree has height 9. Give the maximum and the minimum number of nodes, with the formula for each.</li>
+<li>In the array representation, slot 5 holds 50. Give its left child slot, its right child slot and its parent slot with the values the capture prints.</li>
+<li>A complete 7 node tree is stored by level. Give the slots declared, the slots holding a key, the idle slots and the idle bytes.</li>
+<li>The same 7 keys are skewed into a right leaning chain. Give the slots declared, the idle slots and the idle bytes, and the percentage of slots that hold a key.</li>
+<li>The pointer form stores 7 nodes. Give the allocation count, the bytes requested, and the heap charged at the measured stride.</li>
+<li>Give the measured depth of the 7 node named tree and of the 7 node chain, the bytes per frame, and the peak stack bytes for the chain.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t12" aria-labelledby="t12-h"><header class="topic__head"><span class="topic__n">12</span><h2 id="t12-h">Formulation in C</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: never as a single row, implied by every implementation row of the handout. Source: capture <code>lec23_formulations_run_output.txt</code>, lesson <code>23_structure_formulations.cpp</code>, textbook Kanetkar, Let Us C, structs and pointers.</em></p>
+<p>Formulation in C means writing the structure down so that the machine lays it out the way you</p>
+<p>expect. Two rules produce every offset and every padding row: a member of size s and alignment a</p>
+<p>starts at the first offset that is a multiple of a, and the whole struct is padded up to a</p>
+<p>multiple of its own largest alignment. The topic exists because the paper asks for the byte</p>
+<p>arithmetic, not for prose: sizeof, the offset of each member, how much padding there is, and which</p>
+<p>layout wastes less.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Structure</th>
+<th scope="col">Declaration</th>
+<th scope="col"><code>sizeof</code></th>
+<th scope="col">Padding</th>
+</tr></thead><tbody>
+<tr><td>array</td><td><code>struct ArrayForm { int a[8]; };</code></td><td>32</td><td>0</td></tr>
+<tr><td>list node</td><td><code>struct ListNodeForm { int data; ListNodeForm* next; };</code></td><td>16</td><td>4 bytes at 4 to 7</td></tr>
+<tr><td>stack by array</td><td><code>struct ArrayStackForm { int data[8]; size_t top; };</code></td><td>40</td><td>0</td></tr>
+<tr><td>stack by linked list</td><td><code>struct LinkedStackForm { ListNodeForm* top; size_t count; };</code></td><td>16</td><td>0</td></tr>
+<tr><td>queue by array</td><td><code>struct ArrayQueueForm { int data[8]; size_t front; size_t back; };</code></td><td>48</td><td>0</td></tr>
+<tr><td>circular queue</td><td><code>struct CircularQueueForm { int data[8]; size_t front; size_t count; };</code></td><td>48</td><td>0</td></tr>
+<tr><td>tree node</td><td><code>struct TreeNodeForm { int key; TreeNodeForm* left; TreeNodeForm* right; };</code></td><td>24</td><td>4 bytes at 4 to 7</td></tr>
+<tr><td>BST wrapper</td><td><code>class BstForm { TreeNodeForm* root_; size_t count_; };</code></td><td>16</td><td>0</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/12-formulation-in-c-memory-layout.png" alt="Formulation in C: the memory layout of every structure" loading="lazy" width="1400" height="900"><figcaption>Formulation in C: the memory layout of every structure</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td>eight structures together</td><td>240 bytes, 8 bytes of padding, 3.3 percent</td><td><code>lec23_formulations_run_output.txt</code></td></tr>
+<tr><td>structures carrying padding</td><td>2 of the 8</td><td><code>lec23_formulations_run_output.txt</code></td></tr>
+<tr><td>list node check</td><td>payload 12 + padding 4 = 16, confirmed</td><td><code>lec23_formulations_run_output.txt</code></td></tr>
+<tr><td>tree node check</td><td>payload 20 + padding 4 = 24, confirmed</td><td><code>lec23_formulations_run_output.txt</code></td></tr>
+<tr><td>wasted percentage, list node</td><td>25.0</td><td><code>lec23_formulations_run_output.txt</code></td></tr>
+<tr><td>wasted percentage, tree node</td><td>16.7</td><td><code>lec23_formulations_run_output.txt</code></td></tr>
+<tr><td>BST wrapper mirror check</td><td>16 against 16, identical layout confirmed</td><td><code>lec23_formulations_run_output.txt</code></td></tr>
+</tbody></table></div>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;assert.h&gt;
+#include &lt;stddef.h&gt;
+
+struct ListNodeForm {
+    int data;                  /* offset 0, size 4 */
+    struct ListNodeForm *next; /* offset 8, size 8, 4 padding bytes at 4 to 7 */
+};
+
+struct TreeNodeForm {
+    int key;                   /* offset 0, size 4 */
+    struct TreeNodeForm *left; /* offset 8 */
+    struct TreeNodeForm *right;/* offset 16 */
+};
+
+/* the check the sheet performs on itself, in code */
+static_assert(sizeof(struct ListNodeForm) == 16, "list node is 16 bytes");
+static_assert(offsetof(struct ListNodeForm, next) == 8, "next sits at offset 8");
+static_assert(sizeof(struct TreeNodeForm) == 24, "tree node is 24 bytes");</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>write <code>sizeof(Node)</code> and show the struct on its own line</td><td><code>sizeof(Node{int; Node*})</code> is not valid C, and a struct type name is not a value</td></tr>
+<tr><td>the rule, not the table</td><td>state the multiple of alignment rule, then the offsets follow from it</td></tr>
+<tr><td>a 4 byte payload next to an 8 byte pointer costs 4</td><td>that single pattern is the only source of padding in the whole sheet</td></tr>
+<tr><td>two index arrays can have the same <code>sizeof</code></td><td>the queue and the ring are both 32 + 16, and the count member is what differs in meaning</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Give <code>sizeof</code> and every member offset for <code>struct Node { int data; Node* next; };</code>, and say where the padding sits.</li>
+<li>Give <code>sizeof</code> for all eight structures of the sheet and the total with the padding figure.</li>
+<li>Say why the queue by array is 48 bytes and not 40.</li>
+<li>Say why the circular queue has the same <code>sizeof</code> as the plain queue by array.</li>
+<li>Give <code>sizeof</code>, every offset and the padding for <code>struct TreeNodeForm { int key; TreeNodeForm* left; TreeNodeForm* right; };</code>.</li>
+<li>Say which two of the eight structures carry padding and give the one pattern that explains both.</li>
+<li>Give the wasted percentage of the tree node and of the list node.</li>
+<li>Write the C declaration of a stack by array with capacity 8 and give its <code>sizeof</code>.</li>
+<li>Write the C declaration of a BST wrapper class and give its <code>sizeof</code>, and say what the second member buys.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t13" aria-labelledby="t13-h"><header class="topic__head"><span class="topic__n">13</span><h2 id="t13-h">Tree types and BST</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: in the handout, tagged End Term, lectures 18 to 19. Source: capture <code>lec19_21_trees_run_output.txt</code>, lessons <code>20_tree_traversals.cpp</code> and <code>21_bst_operations.cpp</code>, textbooks Drozdek and Weiss.</em></p>
+<p>A binary search tree is a sorted sequence stored as shape. For every node, every key in its left</p>
+<p>subtree is smaller and every key in its right subtree is larger. It exists because that one</p>
+<p>invariant makes search, insert, minimum, maximum and successor all cost the height of the tree,</p>
+<p>and it keeps the data in order without ever sorting an array. The catch is that the height is</p>
+<p>decided by the insert order, not by the count: the same 31 keys give height 31 or height 5</p>
+<p>depending on the order they arrive in.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Operation</th>
+<th scope="col">Rule</th>
+<th scope="col">Cost</th>
+</tr></thead><tbody>
+<tr><td>search</td><td>one comparison per node on the path</td><td>O(h)</td></tr>
+<tr><td>minimum</td><td>walk left until there is no left child</td><td>O(h)</td></tr>
+<tr><td>maximum</td><td>walk right until there is no right child</td><td>O(h)</td></tr>
+<tr><td>successor</td><td>leftmost node of the right subtree</td><td>O(h)</td></tr>
+<tr><td>delete, case 1</td><td>the node is a leaf, unlink it</td><td>O(h) to find it</td></tr>
+<tr><td>delete, case 2</td><td>one child, the child takes its place</td><td>O(h) to find it</td></tr>
+<tr><td>delete, case 3</td><td>two children, the successor's key is copied up, then the successor is removed as case 1 or 2</td><td>O(h)</td></tr>
+</tbody></table></div>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Insert order</th>
+<th scope="col">Height</th>
+<th scope="col">Shape</th>
+</tr></thead><tbody>
+<tr><td>1, 2, 3, ... 31</td><td>31</td><td>a chain, every node has only a right child</td></tr>
+<tr><td>16, 8, 24, ... median first</td><td>5</td><td>perfectly balanced, 5 levels</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/13-bst-property-and-delete.png" alt="BST: the property, search paths and the three delete cases" loading="lazy" width="1400" height="900"><figcaption>BST: the property, search paths and the three delete cases</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Measured value</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td>tree from insert order 50 30 70 20 40 60 80 35</td><td>8 nodes, height 4</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>in-order walk</td><td>20 30 35 40 50 60 70 80, sorted</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>search(50), search(35), search(80)</td><td>1, 4, 3 comparisons</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>8 present keys</td><td>21 comparisons, 2.62 average</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>8 absent keys</td><td>24 comparisons, 3.00 average</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>successor(50), successor(80), successor(65)</td><td>60, none, none</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>31 keys, sorted order against median order</td><td>height 31 against 5</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+<tr><td>comparisons for all 31 keys</td><td>496 against 129, ratio 3.84</td><td><code>lec19_21_trees_run_output.txt</code></td></tr>
+</tbody></table></div>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+struct Node *insert(struct Node *root, int key) {
+    if (!root) {                                  /* the empty tree case */
+        struct Node *n = (struct Node *)malloc(sizeof(struct Node));
+        n-&gt;key = key; n-&gt;left = n-&gt;right = NULL;
+        return n;
+    }
+    if (key &lt; root-&gt;key)      root-&gt;left  = insert(root-&gt;left,  key);
+    else if (key &gt; root-&gt;key) root-&gt;right = insert(root-&gt;right, key);
+    return root;                                  /* equal keys are ignored here */
+}
+
+void inorder(const struct Node *root) {
+    if (!root) return;
+    inorder(root-&gt;left);
+    printf("%d ", root-&gt;key);                     /* sorted order */
+    inorder(root-&gt;right);
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>height is not log n in general</td><td>sorted insert order gives height 31 for 31 keys, measured, so search is O(n)</td></tr>
+<tr><td>the successor is not the right child</td><td>it is the leftmost node of the right subtree, which is why 60 succeeds 50 and not 70</td></tr>
+<tr><td>case 3 is two steps</td><td>copy the successor's key up, then delete the successor from the right subtree</td></tr>
+<tr><td>equal keys need a stated policy</td><td>silently dropping them, or sending them left, changes the height and must be said out loud</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>State the binary search tree ordering invariant in one line.</li>
+<li>Insert 8, 3, 10, 1, 6, 14, 4, 7, 13 into an empty BST. Give the height in edges and the in-order sequence.</li>
+<li>For the capture's tree (insert order 50 30 70 20 40 60 80 35) give the comparisons for searching 50, 35 and an absent key 10.</li>
+<li>Give the total and average comparisons for the 8 present keys and for the 8 absent keys.</li>
+<li>Give successor(50), successor(80) and successor(65).</li>
+<li>The tree is rebuilt and the leaf 20 is deleted. Give the new in-order sequence, the size and the height.</li>
+<li>From the same tree, 40 is deleted and it has one child. Give the new in-order sequence and the new height.</li>
+<li>From the same tree, 50 is deleted and it has two children. Give the successor, the new in-order sequence and the height.</li>
+<li>Insert the same 31 keys in sorted order and then in median order. Give both heights and both total comparison counts for searching all 31 keys.</li>
+<li>A BST holds 15 nodes. Give the minimum height, the maximum height, and the average number of comparisons for a successful search in the balanced case, with the level arithmetic.</li>
+</ol>
+<hr>
+</section><section class="topic" id="t14" aria-labelledby="t14-h"><header class="topic__head"><span class="topic__n">14</span><h2 id="t14-h">Different Operations</h2></header>
+<h3>The plain explanation</h3>
+<p><em>Scope: never as a single row, implied by the handout session outcomes. Source: every capture listed above, lesson <code>22_algorithm_analysis.cpp</code>.</em></p>
+<p>Different operations is the comparison table: the same data, five shapes, and a different bill for</p>
+<p>each operation. A structure is not good or bad on its own, it is good or bad at one operation. An</p>
+<p>array gives O(1) access by position and pays O(n) to insert at the front. A linked list is the</p>
+<p>exact reverse. A stack offers only its top, a queue only its two ends, and a BST orders its data</p>
+<p>by shape. The measured columns are what turn that table from an opinion into a decision.</p>
+<h3>The mechanism</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The mechanism</caption>
+<thead><tr>
+<th scope="col">Operation</th>
+<th scope="col">Array</th>
+<th scope="col">Linked list</th>
+<th scope="col">Stack by array</th>
+<th scope="col">Circular queue</th>
+<th scope="col">BST</th>
+</tr></thead><tbody>
+<tr><td>access by position</td><td>O(1), 1 read</td><td>O(n), n hops</td><td>not offered</td><td>not offered</td><td>O(h), h comparisons</td></tr>
+<tr><td>search a value</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(h)</td></tr>
+<tr><td>insert at the front</td><td>O(n), shift all</td><td>O(1), 2 writes</td><td>push at top O(1)</td><td>not offered</td><td>O(h)</td></tr>
+<tr><td>insert at the rear</td><td>O(1), or O(n) on a grow</td><td>O(n) without a tail pointer</td><td>not offered</td><td>O(1), 3 writes</td><td>O(h)</td></tr>
+<tr><td>delete at the front</td><td>O(n), shift back</td><td>O(1), 1 write plus 1 free</td><td>pop O(1)</td><td>O(1), 3 writes</td><td>O(h)</td></tr>
+<tr><td>find the minimum</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(h), walk left</td></tr>
+</tbody></table></div>
+<figure><img src="diagrams/14-operations-cost-matrix.png" alt="The operation cost matrix" loading="lazy" width="1400" height="900"><figcaption>The operation cost matrix</figcaption></figure>
+<h3>The proof</h3>
+<div class="tbl-wrap">
+<table>
+<caption>The proof</caption>
+<thead><tr>
+<th scope="col">Operation</th>
+<th scope="col">Array</th>
+<th scope="col">Linked</th>
+<th scope="col">Ratio</th>
+<th scope="col">Capture file</th>
+</tr></thead><tbody>
+<tr><td>walk one element</td><td>0.19 ns sequential</td><td>2.45 ns</td><td>12.64×</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>walk one element, array out of order</td><td>2.46 ns</td><td>2.45 ns</td><td>12.69× against sequential</td><td><code>lec05_run_output.txt</code></td></tr>
+<tr><td>push, 1 million elements</td><td>0.639 ns</td><td>16.027 ns</td><td>25.08×</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>pop, 1 million elements</td><td>0.323 ns</td><td>8.330 ns</td><td>25.79×</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>one queue operation</td><td>circular 0.531 ns</td><td>14.023 ns</td><td>26.42×</td><td><code>lec11_15_run_output.txt</code></td></tr>
+<tr><td>memory per element</td><td>4 bytes</td><td>32 bytes charged</td><td>8×</td><td><code>lec05_run_output.txt</code></td></tr>
+</tbody></table></div>
+<p>The capture also prints the two stack operations averaged over 2 million operations: push 0.688 ns</p>
+<p>and pop 0.378 ns, which average to 0.533 ns.</p>
+<h3>The C formulation</h3>
+<pre class="code" data-lang="c"><code>#include &lt;stddef.h&gt;
+#include &lt;stdlib.h&gt;
+
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+/* one operation, two structures: insert at the front */
+void array_push_front(int *a, size_t *n, int v) {   /* O(n): everything shifts right */
+    for (size_t i = *n; i &gt; 0; i--) a[i] = a[i - 1];
+    a[0] = v;
+    (*n)++;
+}
+
+struct Node *list_push_front(struct Node *head, int v) {   /* O(1): two pointer writes */
+    struct Node *p = (struct Node *)malloc(sizeof(struct Node));
+    if (!p) return head;
+    p-&gt;data = v;
+    p-&gt;next = head;
+    return p;
+}</code></pre>
+<h3>Exam traps</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Exam traps</caption>
+<thead><tr>
+<th scope="col">Trap</th>
+<th scope="col">What costs the marks</th>
+</tr></thead><tbody>
+<tr><td>give the O and the measured number</td><td>the table wants both columns, because the constant is where the 26× lives</td></tr>
+<tr><td>O(1) is not always faster</td><td>the linked push is O(1) and still 25.08× slower than the array push, measured</td></tr>
+<tr><td>insert in the middle is where the list wins</td><td>the array shifts data, the list rewrites two pointers, once you have walked there</td></tr>
+<tr><td>the array wins on cache</td><td>0.19 ns sequential against 2.45 ns scattered on the same array, so the shape beats the instruction count</td></tr>
+</tbody></table></div>
+<h3>Numericals</h3>
+<ol>
+<li>Fill the operation cost matrix for the array against the linked list over access by position, insert at the front, insert at the rear, delete at the front and search a value, with the O cost of each.</li>
+<li>Give the measured nanoseconds per element for a sequential array walk, a scattered array walk and a linked walk, with the two ratios the capture prints.</li>
+<li>Give the measured push cost per element for the array stack and the linked stack at 1 million elements, and the ratio.</li>
+<li>Give the measured pop cost per element for the same two structures, and the ratio.</li>
+<li>Give the measured cost of one queue operation for the circular array queue and the linked queue, and the ratio.</li>
+<li>Give the memory per element for an array and for a linked list as the capture measures it, and the ratio.</li>
+<li>Give the two per operation stack times at 2 million operations and their average.</li>
+<li>Say which structure to choose for inserting in the middle of a large collection and why, and state the cost of the step you pay first.</li>
+<li>Say which structure wins on cache behaviour, with the two measured numbers that show it.</li>
+</ol>
+<hr>
+</section><section id="keys" aria-labelledby="keys-h"><h2 id="keys-h">Answer keys</h2>
+<p>Keys are here, separate from the questions above. Each key is numbered 1 to 1 with its own topic's</p>
+<p>questions. Derived arithmetic is marked as derived; everything else is quoted from a capture.</p>
+<h3>Topic 1 · Array</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 1 · Array</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td><code>&amp;a[3]</code> = 0x7ffe7c3131b0 + 3 × 4 = 0x7ffe7c3131bc, and the value there is 40</td></tr>
+<tr><td>2</td><td>byte offset 16, address 0x7ffe7c3131c0</td></tr>
+<tr><td>3</td><td>8 × 4 = 32 bytes, <code>&amp;a[5]</code> = 0x1014, <code>&amp;a[7]</code> = 0x101c</td></tr>
+<tr><td>4</td><td><code>&amp;a[1023]</code> = 0x2000 + 1023 × 4 = 0x2ffc, one multiply and one add against 1024 loads</td></tr>
+<tr><td>5</td><td>0.19 ns sequential, 2.46 ns scattered, ratios 12.69× and 12.64× as printed; the 0.19 is the O(1) case, one load per element with the prefetcher helping</td></tr>
+<tr><td>6</td><td>char 1, short 2, int 4, long 8, float 4, double 8, void* 8</td></tr>
+<tr><td>7</td><td><code>sizeof</code> 12, <code>a</code> at 0, <code>b</code> at 4, <code>c</code> at 8, with padding at offsets 1 to 3 and 9 to 11</td></tr>
+<tr><td>8</td><td>offsets 4 to 7, 4 bytes that no member owns, because <code>next</code> is an 8 byte pointer and must start on an 8 byte boundary</td></tr>
+</tbody></table></div>
+<h3>Topic 2 · Pointers</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 2 · Pointers</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>8 bytes, because an address is 64 bits wide on this machine</td></tr>
+<tr><td>2</td><td><code>(char*)p + 1</code> moves 1 byte, <code>(int*)p + 1</code> moves 4, <code>(Node*)p + 1</code> moves 16</td></tr>
+<tr><td>3</td><td><code>data</code> at offset 0 for 4 bytes, padding at offsets 4 to 7 for 4 bytes, <code>next</code> at offset 8 for 8 bytes</td></tr>
+<tr><td>4</td><td>stride 32 bytes; 5 nodes charge 160 bytes, 1000 nodes charge 32000 bytes (derived arithmetic)</td></tr>
+<tr><td>5</td><td>yes, 0x...1a8 is divisible by 8, which is what an 8 byte alignment requires</td></tr>
+<tr><td>6</td><td>4800 requested, 7200 usable, 9600 charged (300 × 32), 1200 in an array (300 × 4), ratio 8× (derived arithmetic)</td></tr>
+<tr><td>7</td><td>stride 0x30 = 48 bytes per frame, and the stack grows down, since the innermost frame has the lowest address</td></tr>
+<tr><td>8</td><td>both do n loads, but only the sequential one is contiguous, so the hardware prefetcher can run ahead; the scattered walk pays a cache miss per element</td></tr>
+</tbody></table></div>
+<h3>Topic 3 · Stack by Array</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 3 · Stack by Array</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>pop gives 30, pop gives 20, top gives 10, and the stack still holds 1 element</td></tr>
+<tr><td>2</td><td>2 refused, contents 1 2 3 4 5, drain prints 5 4 3 2 1</td></tr>
+<tr><td>3</td><td>20 bytes of array, 4 bytes of padding, 16 bytes of bookkeeping; <code>data</code> 0, <code>top</code> 24, <code>refusals</code> 32</td></tr>
+<tr><td>4</td><td>because <code>top</code> is a <code>size_t</code> and needs an 8 byte boundary, so 4 bytes are skipped after the 20 byte array</td></tr>
+<tr><td>5</td><td>the canary slot; the capture measures <code>bench.data + 6 × sizeof(int)</code> equal to the canary address, with the canary holding 0xc0ffee</td></tr>
+<tr><td>6</td><td>0 blocks and 0 bytes; push 0.688 ns, pop 0.378 ns</td></tr>
+<tr><td>7</td><td>484.7 ns against 0.1 ns, ratio 4267.2× as printed</td></tr>
+<tr><td>8</td><td>20 / 40 = 50 percent payload (derived arithmetic)</td></tr>
+</tbody></table></div>
+<h3>Topic 4 · Queue</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 4 · Queue</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>10 leaves first, then 20</td></tr>
+<tr><td>2</td><td><code>front</code> 3, <code>rear</code> 5, <code>size</code> 2, and 3 free slots below <code>front</code></td></tr>
+<tr><td>3</td><td>REFUSED, because <code>rear</code> equals capacity while <code>size</code> is 2, so <code>full()</code> says yes with 3 slots unreachable</td></tr>
+<tr><td>4</td><td><code>empty()</code> says yes and <code>full()</code> says yes at the same time, and without an index reset it can never enqueue again</td></tr>
+<tr><td>5</td><td>count 2, the next enqueue writes slot 4, the new <code>rear</code> is 0 after the wrap, count 3, and it is not full</td></tr>
+<tr><td>6</td><td>2 wrap-arounds; a naive queue would have refused after 5 enqueues</td></tr>
+<tr><td>7</td><td>(2 − 3 + 5) mod 5 = 4, and the bare unsigned difference is 18446744073709551615</td></tr>
+<tr><td>8</td><td>circular 0.531 ns, linked 14.023 ns, ratio 26.42× as printed</td></tr>
+<tr><td>9</td><td>the count design stores all 5, the sentinel design stores 4 of 5</td></tr>
+</tbody></table></div>
+<h3>Topic 5 · Linked List</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 5 · Linked List</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>the traversal prints 10 20 30, and <code>sizeof(Node)</code> is 16 bytes</td></tr>
+<tr><td>2</td><td><code>data</code> at 0 for 4 bytes, padding at 4 to 7 for 4 bytes, <code>next</code> at 8 for 8 bytes</td></tr>
+<tr><td>3</td><td>walk to 20, then two writes: <code>new-&gt;next = cur-&gt;next</code> and <code>cur-&gt;next = new</code>; the reach is O(n) and the insert is O(1)</td></tr>
+<tr><td>4</td><td>walk to the node before the last, then one pointer write to 0 and one <code>free</code>; it is O(n) because a singly linked list cannot step backwards</td></tr>
+<tr><td>5</td><td>4800 requested, 7200 usable, 9600 charged at the 32 byte stride, 1200 in an array, ratio 8× (derived arithmetic)</td></tr>
+<tr><td>6</td><td>3 comparisons for 30, 5 for 35, because an absent key scans the whole list before giving up</td></tr>
+<tr><td>7</td><td>best 1, worst 5, average 2.5 (n / 2)</td></tr>
+<tr><td>8</td><td>there is no index arithmetic, so there is no way to jump to the middle in O(1); reaching it costs O(n) hops</td></tr>
+</tbody></table></div>
+<h3>Topic 6 · Merge Sort</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 6 · Merge Sort</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>7 comparisons, result 1 2 4 5 8 9 10 11, and the bounds for two runs of 4 are min 4 and max 7</td></tr>
+<tr><td>2</td><td>7 merges, 24 element copies, 16 comparisons, depth 4</td></tr>
+<tr><td>3</td><td>0.8757, as the capture prints</td></tr>
+<tr><td>4</td><td>measured depth 17 against log₂ 65536 + 1 = 17</td></tr>
+<tr><td>5</td><td>4096 bytes requested, 4104 bytes usable</td></tr>
+<tr><td>6</td><td>0 blocks and 0 bytes for a buffer, and 301 comparisons against the array's 301, differing by 0</td></tr>
+<tr><td>7</td><td>T(n) = 2T(n/2) + Θ(n) with T(1) = Θ(1), which solves to Θ(n log n)</td></tr>
+<tr><td>8</td><td>8 × 3 − 8 + 1 = 17 (derived arithmetic), against the measured 16, because a merge stops comparing when one run empties</td></tr>
+</tbody></table></div>
+<h3>Topic 7 · Quick Sort</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 7 · Quick Sort</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>pivot 3 lands at index 3, comparisons 7, swaps 3, and the array is 0 1 2 3 6 4 7 5</td></tr>
+<tr><td>2</td><td>comparisons 28, depth 8, swaps 0</td></tr>
+<tr><td>3</td><td>523776 comparisons and depth 1024, which are n(n − 1)/2 and n</td></tr>
+<tr><td>4</td><td>lomuto-last 523776 comparisons and depth 1024; hoare-first 12286 comparisons and depth 11</td></tr>
+<tr><td>5</td><td>a factor of 43, as the capture states it</td></tr>
+<tr><td>6</td><td>fastest hoare-median3 with 139260 comparisons in 0.131 ms, slowest lomuto-last with 33550336 comparisons in 13.760 ms, factor 105.0</td></tr>
+<tr><td>7</td><td>lomuto-last 603641 swaps, hoare-first 246935 swaps</td></tr>
+<tr><td>8</td><td>no: the partition swaps elements across the whole range, so equal keys change order</td></tr>
+<tr><td>9</td><td>index 3, the middle sample; on sorted or reverse sorted input the three samples are the smallest, the middle and the largest, so their median is the true middle element</td></tr>
+</tbody></table></div>
+<h3>Topic 8 · Algorithm fundamentals</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 8 · Algorithm fundamentals</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>input, output, definiteness, finiteness, effectiveness</td></tr>
+<tr><td>2</td><td>finiteness</td></tr>
+<tr><td>3</td><td>limit 8192 KiB, stride 32 bytes, predicted ceiling 262144 calls, reached 261579 calls, which is 8174 KiB</td></tr>
+<tr><td>4</td><td>the algorithm is the finite step sequence; the program is one implementation of it in a language</td></tr>
+<tr><td>5</td><td>a fast wrong answer is worthless, so correctness is checked first; here every sort was compared element by element against an independent reference sort</td></tr>
+<tr><td>6</td><td>bubble, selection, insertion and the reference at n = 8, all producing checksum 14498326412155018299, which proves a wrong sort could not have passed</td></tr>
+<tr><td>7</td><td>worst case O(n), because an unsorted array gives no way to stop early; best case O(1), the first element</td></tr>
+<tr><td>8</td><td>correctness, time, space</td></tr>
+</tbody></table></div>
+<h3>Topic 9 · Asymptotic notation</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 9 · Asymptotic notation</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>Θ(g(n)) = { f(n) : there exist positive constants c₁, c₂ and n₀ such that 0 ≤ c₁·g(n) ≤ f(n) ≤ c₂·g(n) for all n ≥ n₀ }</td></tr>
+<tr><td>2</td><td>last failure at n = 6, so n₀ = 7; f(7) = 189 and c·g(7) = 196, so it holds, and the tail is verified for 19994 values of n</td></tr>
+<tr><td>3</td><td>last failure at n = 1, so n₀ = 2; f(2) = 29 and c·g(2) = 32, verified for 19999 values</td></tr>
+<tr><td>4</td><td>c = 3/4, certified from n = 1 with smallest margin 12; the lower bound dies at c = 9/10, which fails from n = 10 onward</td></tr>
+<tr><td>5</td><td>c₁ = 3/4 from n = 1, c₂ = 1 from n = 7, n₀ = max(1,7) = 7, and 0 violations on each side over 19994 values</td></tr>
+<tr><td>6</td><td>c = 4 and n₀ = 6: at n = 5, 102 against 100 fails; at n = 6, 140 against 144 holds (derived arithmetic)</td></tr>
+<tr><td>7</td><td>35.7, 305.07, 3005.007, 30005.0007; the ratio grows without bound, so no constant bounds it and f is O(n²), not O(n)</td></tr>
+<tr><td>8</td><td>n₀ = 49 for k = 8, 641 for k = 64, 14337 for k = 1024</td></tr>
+<tr><td>9</td><td>n³ multiplies by 1000 per decade, 2ⁿ by 2⁹⁰00; the ratio at n = 10000 is 1.995e+2998, about 2998 orders of magnitude</td></tr>
+</tbody></table></div>
+<h3>Topic 10 · Finding Complexity</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 10 · Finding Complexity</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>n(n + 1)/2 operations, Θ(n²); 55 at n = 10 and 5050 at n = 100</td></tr>
+<tr><td>2</td><td>1048576 for the nested loops, 1024 for the single loop</td></tr>
+<tr><td>3</td><td>523776 each, against 1048576 for the square, so each triangle is half of it</td></tr>
+<tr><td>4</td><td>10, which is ⌈log₂ 1024⌉</td></tr>
+<tr><td>5</td><td>1048576 plus 10 = 1048586, the dominant term is n², so Θ(n²)</td></tr>
+<tr><td>6</td><td>1 comparison for key 0, 1024 for key 1023, and 1024 for an absent key, which scans the whole array</td></tr>
+<tr><td>7</td><td>512.500000 for the successful case (524800 / 1024) and 542.588235 for the mixed case (590336 / 1088)</td></tr>
+<tr><td>8</td><td>n → 10n multiplies n by 10, n² by 100, n³ by 1000, and 2ⁿ by 2⁹⁰</td></tr>
+<tr><td>9</td><td>log₁₀(2¹⁰⁰⁰⁰) = 3010.299957, so 3011 decimal digits; the value needs 10001 bits and overflows both 64 bit integers and the largest finite double of 1.79769e+308</td></tr>
+</tbody></table></div>
+<h3>Topic 11 · Trees fundamentals</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 11 · Trees fundamentals</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>root: the one node with no parent. leaf: a node with no children. height: edges on the longest path from the root to a leaf. degree: the number of children of a node</td></tr>
+<tr><td>2</td><td>depth 0 holds 4, depth 1 holds 2 and 6, depth 2 holds 1, 3, 5, 7; the widest level holds 4 nodes</td></tr>
+<tr><td>3</td><td>at most 2^d nodes at depth d, and at most 2^(h+1) − 1 nodes in a tree of height h</td></tr>
+<tr><td>4</td><td>maximum 2^10 − 1 = 1023, minimum 2^9 = 512 (derived arithmetic)</td></tr>
+<tr><td>5</td><td>left child slot 10, right child slot 11, parent slot 5 / 2 = 2</td></tr>
+<tr><td>6</td><td>8 slots declared, 7 holding a key, 1 idle slot, 4 idle bytes</td></tr>
+<tr><td>7</td><td>128 slots declared, 121 idle, 484 idle bytes, and 5.47 percent of slots hold a key</td></tr>
+<tr><td>8</td><td>7 allocations, 168 bytes requested, 224 bytes of heap charged at the 32 byte stride</td></tr>
+<tr><td>9</td><td>named tree depth 3, chain depth 7, 64 bytes per frame, so 7 × 64 = 448 bytes peak for the chain (derived arithmetic)</td></tr>
+</tbody></table></div>
+<h3>Topic 12 · Formulation in C</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 12 · Formulation in C</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td><code>sizeof</code> 16, <code>data</code> at 0, <code>next</code> at 8, padding at offsets 4 to 7</td></tr>
+<tr><td>2</td><td>array 32, list node 16, stack by array 40, stack by linked list 16, queue by array 48, circular queue 48, tree node 24, BST wrapper 16; total 240 with 8 bytes of padding, 3.3 percent</td></tr>
+<tr><td>3</td><td>because it holds 32 bytes of array plus two 8 byte <code>size_t</code> indices, and no padding is needed after a 32 byte array</td></tr>
+<tr><td>4</td><td>both are a 32 byte array plus 16 bytes of indices; only the meaning of the third member differs</td></tr>
+<tr><td>5</td><td><code>sizeof</code> 24, <code>key</code> at 0, padding at 4 to 7, <code>left</code> at 8, <code>right</code> at 16</td></tr>
+<tr><td>6</td><td>the list node and the tree node; both put a 4 byte payload next to an 8 byte pointer, which forces 4 bytes of padding</td></tr>
+<tr><td>7</td><td>tree node 16.7 percent, list node 25.0 percent</td></tr>
+<tr><td>8</td><td><code>struct ArrayStackForm { int data[8]; size_t top; };</code>, <code>sizeof</code> 40</td></tr>
+<tr><td>9</td><td><code>class BstForm { TreeNodeForm* root_; size_t count_; };</code>, <code>sizeof</code> 16; the count member makes <code>size()</code> O(1) instead of a full walk</td></tr>
+</tbody></table></div>
+<h3>Topic 13 · Tree types and BST</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 13 · Tree types and BST</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>for every node, every key in its left subtree is smaller than its key, and every key in its right subtree is larger</td></tr>
+<tr><td>2</td><td>height 3 edges (4 levels), in-order 1 3 4 6 7 8 10 13 14</td></tr>
+<tr><td>3</td><td>search(50) 1 comparison, search(35) 4 comparisons, search(10) 3 comparisons and not found</td></tr>
+<tr><td>4</td><td>present keys 21 comparisons over 8 keys, 2.62 average; absent keys 24 comparisons over 8 keys, 3.00 average</td></tr>
+<tr><td>5</td><td>successor(50) = 60, successor(80) = none, successor(65) = none, since 65 is not in the tree</td></tr>
+<tr><td>6</td><td>in-order 30 35 40 50 60 70 80, size 7, height 4</td></tr>
+<tr><td>7</td><td>in-order 20 30 35 50 60 70 80, height 3, because the child 35 moves up into the 40 slot</td></tr>
+<tr><td>8</td><td>successor 60, in-order 20 30 35 40 60 70 80, height 4</td></tr>
+<tr><td>9</td><td>sorted order height 31 with 496 comparisons; median order height 5 with 129 comparisons, a ratio of 3.84</td></tr>
+<tr><td>10</td><td>minimum height 3 edges for a perfect tree of 15 nodes, maximum 14 edges for a chain, and the balanced successful search averages 49 / 15 = 3.267 comparisons (derived arithmetic)</td></tr>
+</tbody></table></div>
+<h3>Topic 14 · Different Operations</h3>
+<div class="tbl-wrap">
+<table>
+<caption>Topic 14 · Different Operations</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Answer</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>access O(1) against O(n); insert at the front O(n) against O(1); insert at the rear O(1) against O(n) without a tail pointer; delete at the front O(n) against O(1); search O(n) against O(n)</td></tr>
+<tr><td>2</td><td>0.19 ns sequential, 2.46 ns scattered, 2.45 ns linked; 12.69× for the scattered array against sequential and 12.64× for the list</td></tr>
+<tr><td>3</td><td>array 0.639 ns against linked 16.027 ns, ratio 25.08×</td></tr>
+<tr><td>4</td><td>array 0.323 ns against linked 8.330 ns, ratio 25.79×</td></tr>
+<tr><td>5</td><td>circular 0.531 ns against linked 14.023 ns, ratio 26.42×</td></tr>
+<tr><td>6</td><td>4 bytes per element in an array against 32 bytes charged per node, ratio 8×</td></tr>
+<tr><td>7</td><td>push 0.688 ns and pop 0.378 ns, average 0.533 ns (derived arithmetic)</td></tr>
+<tr><td>8</td><td>the linked list, because the insert itself is O(1) with two pointer writes; the step you pay first is the O(n) walk to the position</td></tr>
+<tr><td>9</td><td>the array, on 0.19 ns sequential against 2.45 ns for a linked walk</td></tr>
+</tbody></table></div></section>
+</main>
+<footer class="wrap">
+  <p>Built from TOPIC-WISE-EXPLAINED.md by build-topic-wise.py. Measured on
+  Linux 7.0.0-31-generic x86_64, g++ 15.2.0, Ubuntu 26.04. Addresses move between runs
+  because of ASLR; every size, offset, count, depth and ratio does not.</p>
+</footer>
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById("theme-toggle");
+
+  function label() { btn.textContent = root.getAttribute("data-theme") === "dark" ? "light" : "dark"; }
+  label();
+
+  btn.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("topic-wise-theme", next); } catch (e) {}
+    label();
+  });
+
+  /* mark the topic the reader is actually inside */
+  var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+  var sections = chips.map(function (c) { return document.querySelector(c.getAttribute("href")); });
+  var current = -1;
+
+  function mark() {
+    var y = window.scrollY + 140;
+    var idx = 0;
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i] && sections[i].offsetTop <= y) idx = i;
+    }
+    if (idx === current) return;
+    current = idx;
+    chips.forEach(function (c, i) {
+      c.setAttribute("aria-current", i === idx ? "true" : "false");
+      if (i === idx) {
+        var box = c.parentElement;
+        var left = c.offsetLeft - box.offsetLeft;
+        if (left < box.scrollLeft || left + c.offsetWidth > box.scrollLeft + box.clientWidth) {
+          box.scrollTo({ left: left - 12, behavior: "smooth" });
+        }
+      }
+    });
+  }
+
+  window.addEventListener("scroll", mark, { passive: true });
+  window.addEventListener("resize", mark);
+  mark();
+})();
+</script>
+</body>
+</html>

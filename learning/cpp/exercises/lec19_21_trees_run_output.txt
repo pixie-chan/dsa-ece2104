@@ -1,0 +1,345 @@
+# Real output of the ECE2104 lecture 19 to 21 tree lesson programs.
+# Programs: 19_tree_representation.cpp, 20_tree_traversals.cpp, 21_bst_operations.cpp.
+# Build: g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 on each, zero warnings on all three.
+# Machine: Linux 7.0.0-31-generic x86_64, g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0.
+# Captured by /tmp/run_trees.sh on 2026-09-18 22:49 IST.
+# Addresses change between runs (ASLR); every size, offset, count, depth and timing does not.
+# Allocation counters are taken at the source, in each program's own heapAlloc/heapFree.
+# No global operator new or delete is overridden anywhere in these programs.
+
+################################################################
+## 19_tree_representation.cpp
+################################################################
+# Build: g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 -o /tmp/lec19 19_tree_representation.cpp
+# Build result: 0 warnings, 0 errors.
+=== 1. the node in memory: sizeof, offsetof, every padding byte named ===
+  struct Node { int key; Node* left; Node* right; };
+  sizeof(int)=4 sizeof(char)=1 sizeof(Node*)=8
+  sizeof(Node)=24 alignof(Node)=8
+  member   offset  size  bytes occupied     why it sits there
+  key        0     4  0 .. 3          the key, the payload
+  padding    4     4  4 .. 7          not a member: left holds a pointer and a pointer needs an 8 byte boundary
+  left       8     8  8 .. 15         address of the left subtree, 0 for none
+  right     16     8  16 .. 23         address of the right subtree, 0 for none
+  totals: payload 4 + pointers 16 + padding 4 = 24 = sizeof(Node) = 24  confirmed
+
+  now the same node with a char payload added:
+  struct PayloadNode { int key; char payload; PayloadNode* left; PayloadNode* right; };
+  sizeof(PayloadNode)=24 alignof(PayloadNode)=8
+  member   offset  size
+  key        0     4
+  payload    4     1
+  padding    5     3   bytes 5 .. 7
+  left       8     8
+  right     16     8
+  sizeof went from 24 to 24, so the char cost nothing: bytes 4 .. 7 were already padding
+
+=== 2. array representation: the index arithmetic ===
+  a complete tree is stored by level in one array. Slot 1 holds the root and
+  slot 0 is left unused, which keeps the formulas division free:
+    left child of i  = 2i        right child of i = 2i + 1
+    parent of i      = i / 2     (integer division)
+  byte offset of slot i from the base of the array = i * sizeof(int) = i * 4 bytes
+
+  slot   offset  address            value   left = 2i        right = 2i+1     parent = i/2
+    1       4    0x5947e06f75a4      10         slot 2=20        slot 3=30             none
+    2       8    0x5947e06f75a8      20         slot 4=40        slot 5=50        slot 1=10
+    3      12    0x5947e06f75ac      30         slot 6=60        slot 7=70        slot 1=10
+    4      16    0x5947e06f75b0      40              none             none        slot 2=20
+    5      20    0x5947e06f75b4      50              none             none        slot 2=20
+    6      24    0x5947e06f75b8      60              none             none        slot 3=30
+    7      28    0x5947e06f75bc      70              none             none        slot 3=30
+  address = base + i * 4 held for 7 of 7 slots  confirmed
+  the 2i chain from the root and the i/2 walk back to it, both in index arithmetic:
+    slot 1 = 10, 2i applied 1 times reaches slot  2 (slot 2=20)   the i/2 walk back: 2 -> 1
+    slot 1 = 10, 2i applied 2 times reaches slot  4 (slot 4=40)   the i/2 walk back: 4 -> 2 -> 1
+    slot 1 = 10, 2i applied 3 times reaches slot  8 (none)   the i/2 walk back: 8 -> 4 -> 2 -> 1
+    slot 1 = 10, 2i applied 4 times reaches slot 16 (none)   the i/2 walk back: 16 -> 8 -> 4 -> 2 -> 1
+    slot 1 = 10, 2i applied 5 times reaches slot 32 (none)   the i/2 walk back: 32 -> 16 -> 8 -> 4 -> 2 -> 1
+  the 7 slots hold 280 in total against 280 from the insert list: confirmed
+  index arithmetic run backwards: the value 50 at slot 5 prints its
+  own offset ((address - base) / sizeof(int)) = 5, so a slot index is just a byte offset divided by 4
+  parent of the root is 1 / 2 = 0, and slot 0 is the one slot the tree never uses
+
+=== 3. the array pays by SHAPE, not by node count ===
+  the same 7 keys, now skewed into chains. A right leaning chain of 7 nodes has
+  depth 6, and the slot indices run away as 1 -> 2i+1 each time:
+  right chain slot walk : 1 3 7 15 31 63 127
+  left chain  slot walk : 1 2 4 8 16 32 64
+  the right chain needs slot 127 for its 7th node, the left chain needs slot 64
+  because 2i+1 runs away faster than 2i: the skew direction changes the bill
+
+  shape           slots declared  slots holding a key  idle slots  idle bytes  in-order of the keys
+  complete tree               8                    7           1           4   10 20 30 40 50 60 70
+  right chain               128                    7         121         484   1 2 3 4 5 6 7
+  left chain                 65                    7          58         232   1 2 3 4 5 6 7
+  the right chain stores 7 keys of 4 bytes and reserves 512 bytes to do it: 5.47 percent of its slots hold a key
+  the array is sized for the WORST shape you allow, so that price is paid for every
+  node of the tree, not only for the ones you happen to insert.
+  checksums, printed so -O2 cannot delete the counting loops: complete tree 280 (keys 10 .. 70), right chain 28 and left chain 28 (keys 1 .. 7)
+
+=== 4. node and pointer representation: the same 7 keys ===
+  complete tree of 7 nodes:
+    allocations = 7 calling malloc(24) each
+    bytes requested = 168
+    usable bytes returned (sum of malloc_usable_size) = 168
+    lowest block at 0x59481442b030, highest at 0x59481442b0f0
+    gaps between neighbouring blocks: min 32, max 32, uniform: yes
+    so the allocator charges 32 bytes of heap per node to hand out 24 usable
+    heap consumed by the 7 nodes = 224 bytes (7 x 32)
+  right leaning chain of 7 nodes:
+    allocations = 7 calling malloc(24) each
+    bytes requested = 168
+    usable bytes returned (sum of malloc_usable_size) = 168
+    lowest block at 0x59481442b110, highest at 0x59481442b1d0
+    gaps between neighbouring blocks: min 32, max 32, uniform: yes
+    so the allocator charges 32 bytes of heap per node to hand out 24 usable
+    heap consumed by the 7 nodes = 224 bytes (7 x 32)
+
+  the pointer representation charges by NODE, not by shape: 7 allocations for the
+  chain, the same count and the same total heap (yes) as the complete tree. The shape is free, the nodes are not.
+
+=== 5. the two representations side by side, measured ===
+  ============================================================================================
+  representation                  shape            units  bytes held  idle units  bytes idle
+  --------------------------------------------------------------------------------------------
+  array by level, slot 0 unused   complete             8          32           1           4
+  array by level, slot 0 unused   right chain        128         512         121         484
+  array by level, slot 0 unused   left chain          65         260          58         232
+  node + pointer (7 malloc calls) complete             7         168           0           0
+  node + pointer (7 malloc calls) right chain          7         168           0           0
+  ============================================================================================
+  units = slots for the array rows and malloc calls for the pointer rows.
+  bytes held = sizeof of the container, which is what the program declares.
+  the pointer rows hold 168 bytes of requested node payload and the
+  allocator charges 224 bytes of heap per pool, so 56 bytes are header and alignment;
+  the array rows hold no bookkeeping at all: the slot index IS the link.
+  array wins on a complete or near complete shape, the pointer form wins on a shape
+  that would waste slots, and it always wins on inserting and deleting in the middle.
+
+  allocations 14, frees 14  every node returned
+
+=== 6. the one line to remember ===
+  a tree is a shape: choose the representation that makes that shape cheap.
+  array by level: 2i and 2i+1 index a complete tree in O(1) with zero pointers,
+  and it reserves room for the WORST shape you allow, which a chain shows is huge.
+  node + pointer: 24 bytes per node on this machine, 4 of which are padding,
+  pays per node instead of per shape, and moves a subtree by moving one pointer.
+## exit code: 0
+
+################################################################
+## 20_tree_traversals.cpp
+################################################################
+# Build: g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 -o /tmp/lec20 20_tree_traversals.cpp
+# Build result: 0 warnings, 0 errors.
+=== 1. the tree as a picture, then as the thing memory actually holds ===
+  the named 7 node tree:
+             4            depth 0, the root
+           /   \
+          2     6         depth 1
+         / \   / \
+        1   3 5   7       depth 2, all four are leaves
+  keys 1 2 3 4 5 6 7 placed so that an in-order walk returns them sorted:
+  this is a binary search tree by construction, which is why in-order is the
+  order you use when you want the keys back in order.
+
+  sizeof(Node)=24 bytes, nodes allocated=7, bytes from the heap=168
+  the root holds 4, its children hold 2 and 6
+
+=== 2. in-order: left subtree, node, right subtree ===
+  visit rule: descend left, print the node, descend right. Recursive one liner.
+  in-order                 got: 1 2 3 4 5 6 7            expected: 1 2 3 4 5 6 7            match
+
+=== 3. pre-order: node, left subtree, right subtree ===
+  the node is printed BEFORE its subtrees, so the root is always first:
+  pre-order                got: 4 2 1 3 6 5 7            expected: 4 2 1 3 6 5 7            match
+
+=== 4. post-order: left subtree, right subtree, node ===
+  the node is printed AFTER its subtrees, so the root is always last:
+  post-order               got: 1 3 2 5 7 6 4            expected: 1 3 2 5 7 6 4            match
+
+=== 5. level order: breadth first, queue based ===
+  a queue, not the call stack: pop a node, print it, push its children at the
+  back. FIFO is what makes the walk run across each level before going deeper.
+  level order              got: 4 2 6 1 3 5 7            expected: 4 2 6 1 3 5 7            match
+
+  the same walk drawn level by level, with the count on each level:
+  depth 0 (1 node): 4
+  depth 1 (2 nodes): 2 6
+  depth 2 (4 nodes): 1 3 5 7
+  the levels hold 1, 2 and 4 nodes in that order, so the widest level is 4 nodes:
+  a level of a binary tree holds at most 2^depth nodes, which is the whole
+  reason a balanced tree has height near log2(n) and the search stays fast.
+
+=== 6. iterative in-order with an explicit stack ===
+  push the left spine, pop, print, then move to the popped node's right child.
+  This is exactly what the recursive version does, with the frames spelled out.
+  in-order iterative       got: 1 2 3 4 5 6 7            expected: 1 2 3 4 5 6 7            match
+  the two in-order walks agree: yes
+  the explicit stack held at most 3 nodes, which is the height of
+  this tree (3): both formulations pay the tree height in memory, n either way.
+
+=== 7. the four sequences against the shape, in one table ===
+  order             sequence                what it is for
+  in-order          1 2 3 4 5 6 7           sorted keys, the BST check
+  pre-order         4 2 1 3 6 5 7           copy or serialise a tree
+  post-order        1 3 2 5 7 6 4           free a tree, evaluate an expression
+  level order       4 2 6 1 3 5 7           shortest paths, level by level printing
+  all four sequences hold 7, 7, 7 and 7 keys, one per node of the 7 node tree: confirmed
+  every order visits every node of a 7 node tree, so all four are O(n);
+  the difference is WHEN each node is visited, and that is what makes them useful.
+
+=== 8. the skew case: a chain, where recursion depth equals n ===
+  keys 1 .. 7 inserted along the right child only, so the tree IS a list:
+  1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 downwards, height 7 and no branching at all
+  chain in-order           got: 1 2 3 4 5 6 7            expected: 1 2 3 4 5 6 7            match
+  chain pre-order          got: 1 2 3 4 5 6 7            expected: 1 2 3 4 5 6 7            match
+  chain post-order         got: 7 6 5 4 3 2 1            expected: 7 6 5 4 3 2 1            match
+  chain level order        got: 1 2 3 4 5 6 7            expected: 1 2 3 4 5 6 7            match
+  note that in-order and pre-order print the same sequence on a right leaning
+  chain: with no left child, there is nothing between the node and its subtree.
+
+  recursion depth, counted inside the walk:
+    chain  of 7 nodes: depth = 7, so depth equals n: yes
+    named tree of 7 nodes : depth = 3, against the height of a balanced 7 node tree
+  same node count, 7 frames against 3: that is a factor of 2.33 in stack use
+  and the depth checksum is the same sequence both times: yes
+
+  the frames themselves, the address of a live local at each level:
+    first frame at 0x7fffd89fa084, deepest at 0x7fffd89f9f04
+    7 frames recorded, so 6 gaps between them
+    the stack grows down on x86-64, so the deepest frame sits 384 bytes below the first
+    that is 64.0 bytes per suspended call
+    charging every live frame, the peak is 7 x 64.0 = 448.0 bytes of stack for 7 nodes
+    measured max depth from the probe = 7, equal to n = 7: yes
+
+=== 9. verification summary and teardown ===
+  sequences checked in code: 9, mismatches: 0  all sequences matched the expected text
+  all eight named sequences agreed: yes
+  nodes allocated 14, nodes freed 14  every node returned
+
+=== 10. the one line to remember ===
+  a traversal is one recursion with the print in three different places:
+  before the children (pre), between them (in), after them (post), and a queue
+  instead of the call stack gives level order. All four are O(n) in time, and
+  the recursion depth is the height of the tree, which is log n only if the
+  tree is balanced and n when it has degenerated into a chain.
+## exit code: 0
+
+################################################################
+## 21_bst_operations.cpp
+################################################################
+# Build: g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 -o /tmp/lec21 21_bst_operations.cpp
+# Build result: 0 warnings, 0 errors.
+=== 1. the tree and the property ===
+  insert order: 50 30 70 20 40 60 80 35
+  for every node: left subtree smaller, right subtree larger. Nothing is sorted
+  during insertion, the ORDER of the keys is carried by the shape alone.
+
+  nodes inserted: 8, height: 4
+  in-order walk: 20 30 35 40 50 60 70 80
+  the in-order walk of a BST is the keys in sorted order: confirmed
+  the shape read level by level from the real pointers:
+    depth 0: 50
+    depth 1: 30 70
+    depth 2: 20 40 60 80
+    depth 3: 35
+
+=== 2. search: the comparison count for a hit and for a miss ===
+  search(50) -> found     comparisons = 1   one comparison per node on the path
+  search(35) -> found     comparisons = 4   one comparison per node on the path
+  search(80) -> found     comparisons = 3   one comparison per node on the path
+  search(20) -> found     comparisons = 3   one comparison per node on the path
+  search(10) -> not found comparisons = 3   reached a null pointer, so the key is not in the tree
+  search(55) -> not found comparisons = 3   reached a null pointer, so the key is not in the tree
+  search(90) -> not found comparisons = 3   reached a null pointer, so the key is not in the tree
+  the 8 present keys cost 21 comparisons in total, 2.62 on average
+  the 8 absent keys cost 24 comparisons in total, 3.00 on average
+  a search costs at most the height of the tree, and this tree has height 4
+
+=== 3. minimum, maximum, successor, and height ===
+  minimum: 20 found by walking left until there is no left child
+  maximum: 80 found by walking right until there is no right child
+  successor(20) = 30
+  successor(35) = 40
+  successor(40) = 50
+  successor(50) = 60
+  successor(70) = 80
+  successor(80) = none  (the key is the maximum, nothing follows it)
+  successor(65) = none  (the key is absent from the tree)
+  height of this tree: 4 nodes on the longest path
+  the path that makes it 4: 50 -> 30 -> 40 -> 35
+  an empty tree has height 0 and an empty in-order walk, which is the base case of every recursion here
+
+=== 4. delete case 1: a leaf ===
+  tree rebuilt from the same insert order, in-order before: 20 30 35 40 50 60 70 80
+  before matches the standard sequence: confirmed
+  target key 20 is present: yes, its children: 0
+  delete case 1: a leaf, unlink it and the rest of the tree is untouched
+  remove(20) returned true
+  in-order after : 30 35 40 50 60 70 80
+  expected       : 30 35 40 50 60 70 80
+  verdict        : match
+  size 7 (was 8), height 4 (was 4), search(20) now returns not found in 2 comparisons
+
+=== 5. delete case 2: a node with one child ===
+  tree rebuilt from the same insert order, in-order before: 20 30 35 40 50 60 70 80
+  before matches the standard sequence: confirmed
+  target key 40 is present: yes, its children: 1
+  delete case 2: one child, the child takes the place of the removed node
+  the single child is 35 and it moves up into the 40 slot
+  remove(40) returned true
+  in-order after : 20 30 35 50 60 70 80
+  expected       : 20 30 35 50 60 70 80
+  verdict        : match
+  size 7 (was 8), height 3 (was 4), search(40) now returns not found in 3 comparisons
+
+=== 6. delete case 3: a node with two children ===
+  tree rebuilt from the same insert order, in-order before: 20 30 35 40 50 60 70 80
+  before matches the standard sequence: confirmed
+  target key 50 is present: yes, its children: 2
+  delete case 3: two children, the in-order successor takes the key, then case 1 or 2 removes it
+  the in-order successor of 50 is 60, the leftmost node of its right subtree
+  remove(50) returned true
+  in-order after : 20 30 35 40 60 70 80
+  expected       : 20 30 35 40 60 70 80
+  verdict        : match
+  size 7 (was 8), height 4 (was 4), search(50) now returns not found in 3 comparisons
+
+=== 7. case 3 in detail: why the successor works ===
+  in-order before : 20 30 35 40 50 60 70 80
+  removing 50, the root, which has two children (30 and 70)
+  successor(50) = 60: the smallest key larger than 50
+  the successor key is copied into the 50 slot and the successor node is then
+  deleted from the right subtree, where it has no left child, so it is case 1
+  or case 2 again. Copying keeps the property: everything left of the new key is
+  smaller and everything right of it is larger, which the in-order walk shows.
+  remove(50) returned true
+  in-order after  : 20 30 35 40 60 70 80
+  still sorted: yes, size 7, height 4 (was 4)
+
+=== 8. the degenerate case: a sorted insert order ===
+  the same 31 keys, two insertion orders:
+  insert order                  height        what the shape is
+  1, 2, 3, ... 31 (sorted)      31            a chain: every node has only a right child
+  16, 8, 24, ... (median)       5             perfectly balanced, 5 levels
+  in-order of both is still the sorted list: confirmed, so the SAME data behaves completely differently
+  a perfect tree of 31 nodes has 5 levels and the median order hits it exactly; the
+  sorted order reaches the other end with 31 levels
+
+  search(31) in the sorted tree  : 31 comparisons, found: yes
+  search(31) in the balanced tree: 5 comparisons, found: yes
+  comparisons for all 31 keys: sorted 496 (16.00 each), balanced 129 (4.16 each)
+  ratio: the degenerate tree does 3.84x the comparisons for identical data, O(n) against O(log n)
+  min 1, max 31 in the sorted tree, reached by walking left and
+  walking right for 30 steps at most instead of a full scan
+  checksum: (comparisons, size) sorted = (496, 31), balanced = (129, 31)
+
+=== 9. the one line to remember ===
+  a BST is a sorted sequence stored as shape, which makes search, insert and
+  successor all cost the height of the tree. That is log n ONLY if the tree is
+  balanced; inserting a sorted list gives a chain with height n and a linear search.
+  Delete is three cases, and the two child case is solved by the in-order successor,
+  whose key keeps the sequence sorted, after which the removal is a leaf removal.
+  nodes allocated 118, nodes freed 118  every node returned
+## exit code: 0

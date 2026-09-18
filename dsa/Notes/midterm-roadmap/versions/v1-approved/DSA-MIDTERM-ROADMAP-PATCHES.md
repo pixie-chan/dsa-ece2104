@@ -3,8 +3,8 @@
 Agent-ready fix list. Every item has the exact location, the measured evidence, the literal edit, and a way to verify. Nothing here has been applied; this document changes nothing.
 
 - **Target file:** `~/Documents/MUJ-SEM-3/DSA/Notes/midterm-roadmap/DSA-MIDTERM-ROADMAP.html`
-- **Pinned revision:** `sha256 c13596a0952abdae`, 2632 lines, 237504 bytes, mtime 2026-09-18 23:00:39 IST
-- **Status at this revision:** every patch in this catalogue, P0 to P14, is either applied or superseded. The page then grew from 1317 to 2632 lines with the projected MTE scope, and the new findings from that expansion are catalogued as Batch 2 in `DSA-MIDTERM-ROADMAP-APPLY.md`. The health battery passes 15 of 15 rows.
+- **Pinned revision:** `sha256 7fc0de2dea029f63`, 1317 lines, 90145 bytes, mtime 2026-09-18 16:54:03 IST
+- **Status at this revision:** P0, P0b, P2, P4 and P12 are fixed. P1 is degraded rather than broken: the navigator runs, but its trail numbering can diverge from the page's own counter for the first navigator action. P3, P5 to P11 and the P13 judgment items are still open. A full health table for this revision is in round 12 of the review log.
 - **Companion section:** `DSA-MIDTERM-ROADMAP.md` (one content fix below)
 - **Chronological evidence log:** `DSA-MIDTERM-ROADMAP-REVIEW.md` (rounds 1 to 9, with the measurement method for every number)
 
@@ -27,13 +27,12 @@ awk 'BEGIN{n=0} /<script>/{n++; f=sprintf("%s/s%d.js", ENVIRON["HOME"]"/.cache/r
 Behaviour probes:
 
 ```
-node ~/.cache/roadmap-qa/health.mjs
-node ~/.cache/roadmap-qa/sweep.mjs
-node ~/.cache/roadmap-qa/wheel.mjs
-node ~/.cache/roadmap-qa/verify4.mjs
+node ~/.cache/roadmap-qa/verify12.mjs
+node ~/.cache/roadmap-qa/verify11.mjs
+node ~/.cache/roadmap-qa/verify10.mjs
 ```
 
-`health.mjs` prints a PASS/OPEN table for the whole page in one run. `sweep.mjs` walks ten viewport widths from 320 to 1920 and reports overflow, bar height, rail position and slab columns. `wheel.mjs` measures page gain over the pinned bar against over the content. `verify4.mjs` covers the print handlers.
+`verify12.mjs` is the smoke test: it must report `rmLog: "function"`, zero page errors, and a tick click that changes both `data-state` and the meter text.
 
 Print check without a browser dialog. Normalise whitespace before grepping, because `pdftotext` wraps long lines and a wrapped phrase reads as missing:
 
@@ -62,7 +61,6 @@ Expected at this revision: `1 allocator bookkeeping` and `12 SHOW ANSWER`. The f
 | P11 | Cleanup | Dead `.mapnode`, eight unused tokens, unused `#ready-count`, head script outside `<head>` |
 | P12 | FIXED | The markdown twin now says "twelve" |
 | P13 | Judgment | Five deliberate choices worth a second look, not defects |
-| P14 | High | The mobile rail override is dead, so the spine pins over 60 percent of a phone screen |
 
 ---
 
@@ -350,42 +348,9 @@ Line 785 says "The probe measured 144 bytes across four nested frames". Line 786
 
 ---
 
-## P14, High: the mobile rail override is dead, so the spine pins over the content
-
-**Where:** line 95, inside the first `@media (max-width:1040px)` block, against the base rule at lines 154 to 155.
-
-```css
-@media (max-width:1040px){
-  ...
-  .rail{position:static}
-```
-
-and later in the same stylesheet:
-
-```css
-.rail{position:sticky; top:var(--s-4); border-left:1px solid var(--line-2); padding-left:var(--s-4);
-  max-height:calc(100dvh - var(--s-6)); overflow-y:auto; overscroll-behavior:contain; padding-right:var(--s-2)}
-```
-
-Both selectors have the same specificity, so the later rule wins and the media query never applies. Measured at 375x812: computed `position` is `sticky`, the rail is 487px tall, and at scrollY 3000 the element at viewport (`180, 60`), (`180, 200`) and (`180, 400`) is the rail itself, with the first content only at y=600. In other words 487 of 812px, about 60 percent of a phone screen, is covered by the spine for the whole document.
-
-This landed when the rail gained its sticky clamp: the base rule moved after the responsive override.
-
-**Edit.** Re-assert the mobile behaviour at the end of the rail section, after line 155:
-
-```css
-@media (max-width:1040px){ .rail{position:static; max-height:none; overflow:visible} }
-```
-
-or move the existing override block below the base `.rail` rule. Either way the desktop clamp and the internal scroll must stay.
-
-**Verify:** at 375px width, `getComputedStyle(document.querySelector(".rail")).position` must be `static`, and at scrollY 3000 the element at `(180, 200)` must be page content, not the rail.
-
----
-
 ## P13, Judgment calls, not defects
 
-- **The chip strip taxes vertical wheel, permanently.** Measured at 1460px with the bar pinned: six wheel events over the bar move the page 400px, while the same six over the content move it 1200px. The trace shows why it never settles: the handler walks the strip to its 161px maximum, then the scroll-spy's `reveal()` scrolls it back to 99 to keep the active chip visible, which re-arms the handler. So the strip oscillates 161, 160, 99 and four of every six events are consumed. The chips are also reachable by tab and by prev/next, so deleting the `wheel` listener is the simple fix, and it costs nothing but a trackpad swipe.
+- **The chip strip steals about one gesture of vertical wheel.** Measured with the bar pinned at the top: the first wheel event over the strip scrolls the strip 0 to 161 (its maximum) and the page stays put, then the next events chain to the page normally. So it costs roughly one wheel notch at 1460px, and about four at 375px where the overflow is 769px. Annoying, not a freeze, and unlike P5 the page is never stuck. The chips are also reachable by tab and by prev/next, so dropping the handler is still defensible.
 - **The new slab state row hardcodes the block ranges a third time.** The second new script carries `SLABS = [{id:"a", lo:1, hi:4}, ...]` at line 1283, while the same ranges already exist as `data-lectures="1-4"` on the slab elements and as `data-lectures` on the sections. Deriving the table from the slab attribute would leave one source, and the hook now receives the tick state as arguments.
 - **`aria-live="polite"` on `#jump-now`** announces the section counter while the reader scrolls, and it is the third live region alongside `#meter-text` and the trail. `aria-current` on the chips already carries the state.
 - **`.slab__link` covers the whole slab**, so the block text can no longer be selected or copied. Acceptable for a jump card, worth knowing.

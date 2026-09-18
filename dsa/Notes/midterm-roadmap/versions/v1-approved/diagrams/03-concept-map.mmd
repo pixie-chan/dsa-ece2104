@@ -1,0 +1,38 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"IBM Plex Mono, monospace","fontSize":"15px","primaryColor":"#f7f4ef","primaryTextColor":"#1c1917","primaryBorderColor":"#1b4d7a","lineColor":"#8a8375","secondaryColor":"#e8e3d9","tertiaryColor":"#ffffff"}}}%%
+flowchart TD
+  classDef root fill:#e7eef7,stroke:#1b4d7a,color:#12324f
+  classDef lay fill:#f7f4ef,stroke:#8a8375,color:#1c1917
+  classDef adt fill:#eaf0e6,stroke:#4a6b3c,color:#2b3f22
+  classDef q fill:#f6e9e2,stroke:#8c4a2f,color:#4a2415
+  M["MEMORY
+  a lane of numbered bytes
+  addr of element i = base + i x sizeof(T)"]:::root
+  A["CONTIGUOUS LAYOUT
+  array: stride = sizeof(T), O(1) index, capacity fixed at compile time"]:::lay
+  S["SCATTERED LAYOUT
+  node = data + pointer, one hop per element, grows until the allocator refuses"]:::lay
+  L["list types
+  singly, doubly, circular
+  insert or delete in O(1) when the predecessor is held"]:::lay
+  C{"how many ends can you touch?"}:::q
+  ST["STACK ADT
+  one end only, LIFO
+  push and pop are both O(1)"]:::adt
+  Q["QUEUE ADT
+  two ends, FIFO
+  enqueue at the rear, dequeue at the front, circular queue wraps"]:::adt
+  R["RECURSION
+  the call stack IS a stack of frames
+  48 bytes per frame, measured on this machine"]:::adt
+  EX["factorial, fibonacci, Towers of Hanoi
+  recursion depth = the memory you spend"]:::adt
+  M --> A
+  M --> S
+  S --> L
+  A --> C
+  S --> C
+  C -->|"one end, LIFO"| ST
+  C -->|"two ends, FIFO"| Q
+  ST --> R
+  Q --> R
+  R --> EX

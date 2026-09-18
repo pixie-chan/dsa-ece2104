@@ -1,0 +1,13 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  D["DELETE one key from a binary search tree<br/>first search for the node that holds it, then repair the links"]
+  D --> C1["CASE 1<br/>the node is a leaf"]
+  D --> C2["CASE 2<br/>the node has exactly one child"]
+  D --> C3["CASE 3<br/>the node has two children"]
+  C1 --> C1a["ACTION<br/>detach the node and set the parent link that pointed at it to empty"]
+  C2 --> C2a["ACTION<br/>splice the only child into the parent link, so the subtree is lifted by one"]
+  C3 --> C3a["ACTION<br/>find the in-order successor, the leftmost node of the right subtree"]
+  C3a --> C3b["copy the successor key into the node being deleted"]
+  C3b --> C3c["then delete the successor from the right subtree, which is case 1 or case 2"]
+  C1a ~~~ WHY
+  WHY["WHY THE SUCCESSOR<br/>it is the next key in sorted order, so moving its key up keeps every left key smaller and every right key larger"]

@@ -1,0 +1,10 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph LR
+  ROOT["SORTING<br/>put the records in order by their key"]
+  ROOT --> ELEM["ELEMENTARY<br/>one simple move, repeated until the list is ordered"]
+  ROOT --> DC["DIVIDE AND CONQUER<br/>split the list, sort the parts, then combine"]
+  ELEM --> B["BUBBLE<br/>sweep the list, swap neighbours that are out of order, so the largest drifts to the end"]
+  ELEM --> S["SELECTION<br/>find the smallest of what is left and set it into the next place"]
+  ELEM --> I["INSERTION<br/>hold a sorted front part and slide each new record into its place"]
+  DC --> M["MERGE<br/>split in half, sort each half the same way, then merge the two sorted runs in one pass"]
+  DC --> Q["QUICK<br/>choose a pivot, partition the rest around it, then sort each side the same way"]

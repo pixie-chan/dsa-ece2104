@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Cover card: DSA mid-term roadmap, ECE2104 lectures 1 to 16">
+  <rect width="1200" height="630" fill="#fafaf9"/>
+  <!-- spine ticks, the signature of the page -->
+  <g fill="#c4bfb4">
+    <rect x="80" y="120" width="14" height="2"/><rect x="80" y="160" width="14" height="2"/>
+    <rect x="80" y="200" width="14" height="2"/><rect x="80" y="240" width="14" height="2"/>
+    <rect x="80" y="280" width="14" height="2"/><rect x="80" y="320" width="14" height="2"/>
+    <rect x="80" y="360" width="14" height="2"/><rect x="80" y="400" width="14" height="2"/>
+    <rect x="80" y="440" width="14" height="2"/><rect x="80" y="480" width="14" height="2"/>
+  </g>
+  <g fill="#3d6b3f">
+    <circle cx="150" cy="121" r="6"/><circle cx="150" cy="161" r="6"/><circle cx="150" cy="201" r="6"/>
+    <circle cx="150" cy="241" r="6"/><circle cx="150" cy="281" r="6"/>
+  </g>
+  <g fill="#e6e3dd">
+    <circle cx="150" cy="321" r="6"/><circle cx="150" cy="361" r="6"/><circle cx="150" cy="401" r="6"/>
+    <circle cx="150" cy="441" r="6"/><circle cx="150" cy="481" r="6"/>
+  </g>
+  <text x="200" y="150" font-family="Georgia, serif" font-size="64" fill="#1c1917">DSA Mid-Term Roadmap</text>
+  <text x="200" y="205" font-family="Georgia, serif" font-size="34" fill="#4a453f">ECE2104, lectures 1 to 16</text>
+  <text x="200" y="270" font-family="monospace" font-size="22" fill="#635d54">sixteen lectures, one dependency chain</text>
+  <text x="200" y="304" font-family="monospace" font-size="22" fill="#635d54">seven sessions, twelve numericals</text>
+  <text x="200" y="338" font-family="monospace" font-size="22" fill="#635d54">mid-term 30 marks, closed book</text>
+  <rect x="200" y="380" width="880" height="150" fill="#ffffff" stroke="#c4bfb4" stroke-width="2"/>
+  <text x="224" y="418" font-family="monospace" font-size="20" fill="#7a3355">GAP: stacks, queues and the circular wrap have no material yet</text>
+  <text x="224" y="452" font-family="monospace" font-size="20" fill="#3d6b3f">DONE: memory representation and linked lists, guides plus verifiers</text>
+  <text x="224" y="486" font-family="monospace" font-size="20" fill="#7a5310">NEXT: twelve numericals, then the frame trace for recursion</text>
+  <text x="224" y="518" font-family="monospace" font-size="18" fill="#635d54">every size, stride and frame count measured on this machine</text>
+</svg>

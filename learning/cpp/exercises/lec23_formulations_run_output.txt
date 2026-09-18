@@ -1,0 +1,152 @@
+# Real output of 23_structure_formulations.cpp, the ECE2104 structure formulation sheet.
+# Every sizeof and offsetof in it is measured on the machine below, not typed in.
+# Build: g++ -Wall -Wextra -Wpedantic -std=c++17 -O2, zero warnings.
+# Machine: Linux 7.0.0-31-generic x86_64, g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0.
+# Captured by /tmp/run_trees.sh on 2026-09-18 22:49 IST.
+
+################################################################
+## 23_structure_formulations.cpp
+################################################################
+# Build: g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 -o /tmp/lec23 23_structure_formulations.cpp
+# Build result: 0 warnings, 0 errors.
+=== 1. the primitives every structure below is built from ===
+  sizeof(char)   = 1 bytes, alignof = 1
+  sizeof(int)    = 4 bytes, alignof = 4
+  sizeof(size_t) = 8 bytes, alignof = 8
+  sizeof(void*)  = 8 bytes, alignof = 8
+  the rule that produces every offset and every padding row below:
+    a member of size s and alignment a starts at the first offset that is a multiple of a,
+    and the struct is padded up to a multiple of its own largest alignment.
+  an index does not create a hierarchy: a[3] is the same as *(a + 3), so an array of
+  8 ints is 32 bytes with offsets 0, 4, 8, ... 28 and no bookkeeping at all.
+
+--- 2. array: the flat block ---
+  declaration : struct ArrayForm { int a[8]; };
+  sizeof      : 32 bytes
+  alignof     : 4 bytes
+  member          offset  size  note
+  a                    0    32  the payload, 8 ints, contiguous, no gaps anywhere
+  payload                   32  sum of the member sizes
+  padding total              0  none, every byte belongs to a member
+  check                         payload 32 + padding 0 + tail 0 = 32 = sizeof 32  confirmed
+  note        : element i sits at base + i * sizeof(int); that multiply is why indexing is O(1)
+
+--- 3. linked list node: the self referential struct ---
+  declaration : struct ListNodeForm { int data; ListNodeForm* next; };
+  sizeof      : 16 bytes
+  alignof     : 8 bytes
+  member          offset  size  note
+  data                 0     4  the payload
+  padding              4     4  bytes 4 .. 7, no member owns them, they exist so the next member meets its alignment
+  next                 8     8  address of the next node, 0 marks the end
+  payload                   12  sum of the member sizes
+  padding total              4  bytes no member can use
+  check                         payload 12 + padding 4 + tail 0 = 16 = sizeof 16  confirmed
+  note        : 4 bytes of padding, the price of putting a 4 byte payload next to an 8 byte pointer
+
+--- 4. stack by array ---
+  declaration : struct ArrayStackForm { int data[8]; size_t top; };
+  sizeof      : 40 bytes
+  alignof     : 8 bytes
+  member          offset  size  note
+  data                 0    32  the slot array, fixed capacity
+  top                 32     8  index of the next free slot: push writes data[top] then top++
+  payload                   40  sum of the member sizes
+  padding total              0  none, every byte belongs to a member
+  check                         payload 40 + padding 0 + tail 0 = 40 = sizeof 40  confirmed
+  note        : the whole stack is the array plus one index; push and pop are O(1) and allocate nothing
+
+--- 5. stack by linked list ---
+  declaration : struct LinkedStackForm { ListNodeForm* top; size_t count; };
+  sizeof      : 16 bytes
+  alignof     : 8 bytes
+  member          offset  size  note
+  top                  0     8  head of the chain: push links a new node in front
+  count                8     8  optional size counter, the chain works without it
+  payload                   16  sum of the member sizes
+  padding total              0  none, every byte belongs to a member
+  check                         payload 16 + padding 0 + tail 0 = 16 = sizeof 16  confirmed
+  note        : grows without a capacity limit but pays one node allocation and one pointer per push
+
+--- 6. queue by array (plain, not circular) ---
+  declaration : struct ArrayQueueForm { int data[8]; size_t front; size_t back; };
+  sizeof      : 48 bytes
+  alignof     : 8 bytes
+  member          offset  size  note
+  data                 0    32  the slot array
+  front               32     8  index of the element at the head, the next to dequeue
+  back                40     8  index of the next free slot at the tail, where an enqueue writes
+  payload                   48  sum of the member sizes
+  padding total              0  none, every byte belongs to a member
+  check                         payload 48 + padding 0 + tail 0 = 48 = sizeof 48  confirmed
+  note        : both indices only move forward, so the used region slides right and the slots behind front are lost until a reset
+
+--- 7. circular queue, with the count member ---
+  declaration : struct CircularQueueForm { int data[8]; size_t front; size_t count; };
+  sizeof      : 48 bytes
+  alignof     : 8 bytes
+  member          offset  size  note
+  data                 0    32  the ring buffer
+  front               32     8  index of the head element
+  count               40     8  number of elements held, which is what disambiguates full from empty
+  payload                   48  sum of the member sizes
+  padding total              0  none, every byte belongs to a member
+  check                         payload 48 + padding 0 + tail 0 = 48 = sizeof 48  confirmed
+  note        : enqueue writes at (front + count) % 8 and count++, dequeue reads front and front = (front + 1) % 8
+
+--- 8. tree node: two pointers, one payload ---
+  declaration : struct TreeNodeForm { int key; TreeNodeForm* left; TreeNodeForm* right; };
+  sizeof      : 24 bytes
+  alignof     : 8 bytes
+  member          offset  size  note
+  key                  0     4  the payload the tree is ordered by
+  padding              4     4  bytes 4 .. 7, no member owns them, they exist so the next member meets its alignment
+  left                 8     8  address of the left subtree, 0 for none
+  right               16     8  address of the right subtree, 0 for none
+  payload                   20  sum of the member sizes
+  padding total              4  bytes no member can use
+  check                         payload 20 + padding 4 + tail 0 = 24 = sizeof 24  confirmed
+  note        : the second pointer is what separates a tree from a list; it costs 8 bytes and buys the branching
+
+--- 9. binary search tree, as a class wrapper ---
+  declaration : class BstForm { public: insert/search/remove; private: TreeNodeForm* root_; size_t count_; };
+  sizeof      : 16 bytes
+  alignof     : 8 bytes
+  member          offset  size  note
+  root_                0     8  the root pointer, 0 when the tree is empty
+  count_               8     8  node count, so size() is O(1) instead of a full walk
+  payload                   16  sum of the member sizes
+  padding total              0  none, every byte belongs to a member
+  check                         payload 16 + padding 0 + tail 0 = 16 = sizeof 16  confirmed
+  note        : the offsets are read from BstFormMirror, the same members in the same order, because the class keeps them private
+  mirror check: sizeof(BstForm) = 16, sizeof(BstFormMirror) = 16  identical layout confirmed
+  the wrapper used for real: empty = true, size = 0, after two insertKey calls size = 2, after clear size = 0, empty = true
+
+=== 10. the sheet in one table ===
+  structure                         sizeof   alignof   members   padding  wasted %
+  --------------------------------------------------------------------------------
+  1 array (int a[8])                    32         4         1         0       0.0
+  2 linked list node                    16         8         2         4      25.0
+  3 stack by array                      40         8         2         0       0.0
+  4 stack by linked list                16         8         2         0       0.0
+  5 queue by array                      48         8         3         0       0.0
+  6 circular queue (with count)         48         8         3         0       0.0
+  7 tree node                           24         8         3         4      16.7
+  8 BST wrapper class                   16         8         2         0       0.0
+  --------------------------------------------------------------------------------
+  eight structures together            240                             8       3.3
+
+=== 11. what the sheet is telling you ===
+  only two of the eight structures carry padding: the nodes with a 4 byte payload next
+  to an 8 byte pointer. Put the pointer first and the payload after it and the tail
+  padding disappears, at the cost of reading the fields out of declaration order.
+  the array based structures are exactly their payload plus one 8 byte index each:
+  the stack is 32 + 8, the queue and the ring are 32 + 16. No pointers, no per element
+  cost at run time, but a fixed capacity chosen before the first insert.
+  the linked structures cost one 16 byte node (list) or one 24 byte node (tree)
+  per element allocation, and the structure object itself is one pointer plus,
+  optionally, one 8 byte counter.
+  and the two index arrays (queue, circular queue) have the SAME sizeof: the count
+  member in the circular version is the third index, and it is what makes full and
+  empty distinguishable, so it is not optional there.
+## exit code: 0

@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<script>
+  /* decide the sheet before the first paint, or a dark reader sees a light flash */
+  (function () {
+    try {
+      var saved = localStorage.getItem("dsa-roadmap-theme");
+      if (!saved && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) saved = "dark";
+      if (saved) document.documentElement.setAttribute("data-theme", saved);
+    } catch (e) {}
+  })();
+</script>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Mid-Term Roadmap, ECE2104 lectures 1 to 16</title>
+<meta name="description" content="Mid-term roadmap for ECE2104 Data Structures and Algorithms: the sixteen lectures before the mid-semester examination, their session outcomes, the dependency chain, a seven session study sequence, twelve numerical problems with a separate answer key, and the gaps that are still open.">
+<meta name="theme-color" content="#fafaf9">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DSA Mid-Term Roadmap, ECE2104">
+<meta property="og:description" content="Lectures 1 to 16 of ECE2104: what the exam covers, the concept chain, a seven session plan, twelve numericals with a separate key, and the gaps still open.">
+<meta property="og:url" content="https://github.com/pixie-chan/dsa-ece2104">
+<meta property="og:image" content="og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23fafaf9'/%3E%3Cg fill='%231b4d7a'%3E%3Crect x='3' y='2' width='2' height='2'/%3E%3Crect x='3' y='5' width='2' height='2'/%3E%3Crect x='3' y='8' width='2' height='2'/%3E%3Crect x='6' y='8' width='7' height='2'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- NOSTATE: static single file dossier with no server and no async data after load. It does fetch three Google font families on first paint (Instrument Serif, Instrument Sans, IBM Plex Mono) and falls back to Georgia and the system sans offline, so there is no runtime fetch and therefore no loading or error state. The only empty cases are the
+     readiness meter before anything is ticked (it prints "nothing ticked yet") and the answer reveals before a reveal
+     (they print "hidden, work them on paper first"). Loading and error states do not exist on this page by design. -->
+<!--
+  CONCEPT: the mid-term is one fourteen step dependency chain, not sixteen topics, and the plan walks it in seven sessions.
+  METAPHOR: a marking sheet pinned to a studio wall: wide paper, a lecture spine down the left edge, blocks laid out along a ruled line.
+  SIGNATURE: THE BLOCK TIMELINE plus a scroll meter. Five blocks and the exam drawn as weighted slabs whose widths follow
+             how many lectures they own, with the class test as a dashed interruption, all in CSS so it reflows instead of
+             shrinking; the spine meter tracks which lectures you have actually cleared (IntersectionObserver drives it).
+  LOAD: the five slabs and the sixteen spine ticks draw in staggered left to right, then the readiness meter settles at zero with the explicit line "nothing ticked yet".
+  MICRO: hover on every slab, tick and button; active press; focus-visible rings; the reveal button disables itself once every answer is open; a session trail records every tick.
+  EASING: cubic-bezier(0.22, 1, 0.36, 1) throughout, durations 120/200/420 ms, full prefers-reduced-motion block.
+  NOSTATE: static single file dossier, no fetches. The empty cases are the readiness meter before anything is ticked ("nothing ticked yet") and the answer reveals before a reveal ("hidden").
+-->
+<style>
+:root {
+  color-scheme:light;
+  --bg:#fafaf9; --surface:#ffffff; --surface-2:#f2f0ec; --surface-3:#e6e3dd;
+  --line:#e2dfd9; --line-2:#c4bfb4; --rule:#d8d3c8;
+  --text:#1c1917; --text-2:#4a453f; --text-3:#635d54;
+  --accent:#1b4d7a; --risk:#7a3355; --ok:#3d6b3f; --warn:#7a5310;
+  --font-display:"Instrument Serif", Georgia, serif;
+  --font-body:"Instrument Sans", system-ui, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --text-xs:0.75rem; --text-sm:0.875rem; --text-base:1rem; --text-md:1.125rem;
+  --text-lg:1.375rem; --text-xl:1.75rem; --text-2xl:2.5rem; --text-3xl:clamp(2.75rem, 4.4vw, 4rem);
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+  --r-1:2px; --r-2:4px; --hair:1px;
+  --shadow-1:0 1px 0 var(--line);
+  --shadow-2:0 2px 0 var(--line-2), 0 12px 28px -20px rgba(28,25,23,.45);
+  --dur-1:120ms; --dur-2:200ms; --dur-3:420ms;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --w-reg:400; --w-med:500; --w-semi:600;
+}
+[data-theme="dark"] {
+  color-scheme:dark;
+  --bg:#14120f; --surface:#1d1a16; --surface-2:#262218; --surface-3:#322c22;
+  --line:#38322a; --line-2:#4f4739; --rule:#443c31;
+  --text:#f5f2ec; --text-2:#cdc6b8; --text-3:#a49b8b;
+  --accent:#7fb0d8; --risk:#d18fb0; --ok:#8fbe91; --warn:#d9b070;
+  --shadow-2:0 2px 0 var(--line-2), 0 12px 28px -20px rgba(0,0,0,.75);
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:var(--text-base); line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-wrap:break-word}
+h1,h2,h3{font-family:var(--font-display); font-weight:400; line-height:1.1; letter-spacing:-.015em; text-wrap:balance}
+h1{font-size:var(--text-3xl)}
+h2{font-size:var(--text-2xl)}
+h3{font-size:var(--text-lg); margin:var(--s-5) 0 var(--s-2)}
+p{margin:0 0 var(--s-3); max-width:76ch}
+a{color:var(--accent); text-underline-offset:2px}
+strong{font-weight:600}
+code{font-family:var(--font-mono); font-size:1em; font-variant-numeric:tabular-nums;
+  background:color-mix(in oklab, var(--accent) 7%, var(--surface)); padding:2px 4px; border-radius:var(--r-1)}
+.skip{position:absolute; left:-9999px; top:0; display:block; min-height:44px; padding:12px 16px; background:var(--surface); border:1px solid var(--line-2)}
+.skip:focus{left:var(--s-4); top:var(--s-4); z-index:9; background:var(--surface); padding:12px 16px;
+  border:1px solid var(--line-2); min-height:44px}
+.eyebrow{font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.12em; text-transform:uppercase; color:var(--text-3)}
+.paper{max-width:1460px; margin:0 auto; padding:var(--s-7) var(--s-6) var(--s-9);
+  display:grid; grid-template-columns:322px minmax(0,1fr); gap:var(--s-8); align-items:start}
+.main{grid-column:2; display:block; min-width:0}
+@media (max-width:1040px){
+  .paper{grid-template-columns:minmax(0,1fr); gap:var(--s-6); padding:var(--s-5) var(--s-4) var(--s-8)}
+  .main{grid-column:1}
+  .rail{position:static}
+  .rail__ticks{display:flex; gap:var(--s-2); overflow-x:auto; padding-bottom:var(--s-2)}
+  .tick{min-width:196px; flex:none; border:1px solid var(--line)}
+}
+@keyframes slabIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+@keyframes tickIn{from{opacity:0; transform:translateX(-6px)} to{opacity:1; transform:none}}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important; scroll-behavior:auto !important}
+}
+
+/* ===== hero ===== */
+.hero{grid-column:1/-1; border-bottom:2px solid var(--text); padding-bottom:var(--s-6); margin-bottom:var(--s-7)}
+.hero__top{display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:var(--s-7); align-items:end}
+.hero h1{max-width:24ch}
+.hero__lede{margin-top:0; font-size:var(--text-md); color:var(--text-2); max-width:46ch}
+.hero .kicker{font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.1em; text-transform:uppercase; color:var(--risk)}
+@media (max-width:1040px){ .hero__top{grid-template-columns:minmax(0,1fr)} }
+.metrics{display:grid; grid-template-columns:1.35fr 1fr 1.15fr 1fr; gap:var(--s-4); margin-top:var(--s-6)}
+.metric{border:1px solid var(--line-2); background:var(--surface); padding:var(--s-4); box-shadow:var(--shadow-1)}
+.metric b{display:block; font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.07em; text-transform:uppercase; color:var(--text-3)}
+.metric span{display:block; font-family:var(--font-display); font-size:var(--text-xl); line-height:1.2; margin-top:6px}
+.metric small{display:block; color:var(--text-3); font-size:var(--text-sm); margin-top:4px}
+@media (max-width:1040px){ .metrics{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+@media (max-width:620px){ .metrics{grid-template-columns:minmax(0,1fr)} }
+
+/* ===== block timeline (signature) ===== */
+.blocks{margin-top:var(--s-7)}
+.blocks__rail{position:relative; padding-top:96px; display:grid; gap:2px; align-items:stretch;
+  grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,1fr) minmax(0,5fr) minmax(0,1fr) 232px; grid-template-rows:auto auto}
+.blocks__rail::before{content:""; position:absolute; top:64px; left:0; right:0; height:2px; background:var(--text); z-index:0}
+.blocks__axis + .slab{border-left-width:1px}
+.blocks__axis{display:contents}
+.blocks__axis span{grid-row:1; font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.06em;
+  text-transform:uppercase; color:var(--text-3); padding-left:2px; align-self:end}
+.slab{grid-row:2; min-width:0}
+.slab::before{content:""; position:absolute; top:-30px; left:12px; width:2px; height:30px; background:var(--line-2)}
+.slab{position:relative; background:var(--surface); border:1px solid var(--line-2); padding:var(--s-4);
+  display:flex; flex-direction:column; gap:var(--s-2); min-height:132px; animation:slabIn var(--dur-3) var(--ease) both}
+.slab:hover{background:color-mix(in oklab, var(--accent) 7%, var(--surface)); border-color:var(--accent)}
+.slab__n{font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.06em; text-transform:uppercase; color:var(--text-3)}
+.slab__t{font-family:var(--font-display); font-size:var(--text-lg); line-height:1.15}
+.slab__l{font-size:var(--text-sm); color:var(--text-2)}
+.slab__foot{margin-top:auto; font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3)}
+.slab--test{border-style:dashed; border-color:var(--warn); background:color-mix(in oklab, var(--warn) 6%, var(--surface))}
+.slab--exam{border-color:var(--risk); background:color-mix(in oklab, var(--risk) 7%, var(--surface))}
+.slab--exam .slab__t{color:var(--risk)}
+.blocks__note{margin-top:var(--s-3); font-size:var(--text-sm); color:var(--text-3)}
+@media (max-width:1040px){
+  .blocks__rail{grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-rows:auto; padding-top:0}
+  .blocks__axis{display:none}
+  .blocks__rail::before{display:none}
+  .slab{grid-row:auto}
+  .slab::before{display:none}
+}
+@media (max-width:620px){ .blocks__rail{grid-template-columns:minmax(0,1fr)} }
+@media print{ .blocks__rail{grid-template-columns:repeat(6, 1fr)} .slab{min-height:auto} }
+
+/* ===== rail (lecture spine) ===== */
+.rail{position:sticky; top:var(--s-4); border-left:1px solid var(--line-2); padding-left:var(--s-4);
+  max-height:calc(100dvh - var(--s-6)); overflow-y:auto; overscroll-behavior:contain; padding-right:var(--s-2)}
+.rail h2{font-family:var(--font-body); font-size:var(--text-md); font-weight:600; margin-bottom:var(--s-3)}
+.tick{display:grid; grid-template-columns:26px minmax(0,1fr) 14px; gap:var(--s-2); align-items:center; width:100%;
+  min-height:44px; padding:2px var(--s-2); border:0; background:none; color:var(--text-2); font:inherit;
+  font-size:var(--text-sm); text-align:left; cursor:pointer; border-radius:var(--r-2);
+  animation:tickIn var(--dur-3) var(--ease) both}
+.tick:hover{background:color-mix(in oklab, var(--accent) 8%, var(--surface)); color:var(--text)}
+.tick:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.tick__n{font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3); text-align:right}
+.tick__dot{width:10px; height:10px; border-radius:50%; background:var(--surface-3); border:1px solid var(--line-2); justify-self:end}
+.tick[data-state="done"] .tick__dot{background:var(--ok); border-color:var(--ok)}
+.tick[data-state="done"]{color:var(--text)}
+.tick[data-current="true"]{background:color-mix(in oklab, var(--accent) 10%, var(--surface)); color:var(--text)}
+.meter{margin-top:var(--s-5); border-top:1px solid var(--line); padding-top:var(--s-4)}
+.meter__bar{height:14px; border:1px solid var(--line-2); background:var(--surface)}
+.meter__fill{height:100%; width:0; background:var(--accent); transition:width var(--dur-3) var(--ease)}
+.meter__text{margin-top:var(--s-2); font-family:var(--font-mono); font-size:var(--text-sm)}
+.split{display:grid; grid-template-columns:1.15fr .85fr; gap:var(--s-2); margin-top:var(--s-3)}
+.split div{border:1px solid var(--line); background:var(--surface); padding:var(--s-3)}
+.split b{display:block; font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.06em; text-transform:uppercase; color:var(--text-3)}
+.split span{font-family:var(--font-mono); font-size:var(--text-sm)}
+.rail__btns{display:flex; flex-wrap:wrap; gap:var(--s-2); margin-top:var(--s-4)}
+.trail{margin-top:var(--s-4); border-top:1px solid var(--line); padding-top:var(--s-3); list-style:none;
+  font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3); max-height:130px; overflow-y:auto}
+.trail li{padding:1px 0}
+.btn{font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.04em; min-height:44px; padding:12px var(--s-4);
+  border:1px solid var(--line-2); background:var(--surface); color:var(--text); border-radius:var(--r-2); cursor:pointer;
+  transition:background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease)}
+.btn:hover{background:color-mix(in oklab, var(--accent) 10%, var(--surface)); border-color:var(--accent)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.btn:disabled{opacity:.5; cursor:not-allowed; background:var(--surface-2)}
+.btn--primary{background:var(--accent); color:var(--surface); border-color:var(--accent)}
+.btn--primary:hover{filter:brightness(1.08)}
+
+/* ===== sections ===== */
+section{padding:var(--s-7) 0; border-top:1px solid var(--line)}
+section:first-of-type{border-top:0; padding-top:var(--s-6)}
+.sec__head{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--s-5); align-items:baseline; margin-bottom:var(--s-5)}
+.sec__stamp{font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3); text-align:right; white-space:nowrap}
+@media (max-width:760px){ .sec__head{grid-template-columns:minmax(0,1fr)} .sec__stamp{text-align:left; white-space:normal} }
+.cols{display:grid; gap:var(--s-6)}
+.cols--wide-left{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}
+.cols--narrow-left{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}
+@media (max-width:900px){ .cols--wide-left,.cols--narrow-left{grid-template-columns:minmax(0,1fr)} }
+.panel{border:1px solid var(--line); background:var(--surface); padding:var(--s-5); box-shadow:var(--shadow-1)}
+.panel--accent{border-left:4px solid var(--accent)}
+.panel--risk{border-left:4px solid var(--risk)}
+.panel--ok{border-left:4px solid var(--ok)}
+.panel__title{font-family:var(--font-mono); font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); margin-bottom:var(--s-3)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:var(--text-xs);
+  letter-spacing:.05em; text-transform:uppercase; padding:4px 8px; border:1px solid var(--line-2); background:var(--surface-2); white-space:nowrap}
+.pill--ok{color:var(--ok); border-color:color-mix(in oklab, var(--ok) 45%, var(--line-2))}
+.pill--part{color:var(--warn); border-color:color-mix(in oklab, var(--warn) 45%, var(--line-2))}
+.pill--gap{color:var(--risk); border-color:color-mix(in oklab, var(--risk) 45%, var(--line-2))}
+.pill__dot{width:8px; height:8px; border-radius:50%; background:currentColor}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse; width:100%; font-size:var(--text-sm)}
+caption{caption-side:top; text-align:left; font-family:var(--font-mono); font-size:var(--text-xs); text-transform:uppercase;
+  letter-spacing:.08em; color:var(--text-3); padding-bottom:var(--s-3)}
+th,td{text-align:left; vertical-align:top; padding:var(--s-3); border-bottom:1px solid var(--line)}
+thead th{font-family:var(--font-mono); font-size:var(--text-xs); text-transform:uppercase; letter-spacing:.06em; color:var(--text-3);
+  border-bottom:1px solid var(--line-2)}
+tbody tr:hover{background:color-mix(in oklab, var(--accent) 5%, var(--surface))}
+td.n,th.n{text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums}
+.fig{margin:var(--s-5) 0 0; border:1px solid var(--line); background:var(--surface); overflow-x:auto}
+.fig img{display:block; width:auto; max-width:none; height:auto}
+.fig figcaption{font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3); padding:var(--s-3) var(--s-4);
+  border-top:1px solid var(--line); background:var(--surface-2)}
+.chain{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:var(--s-7); margin-top:var(--s-5)}
+@media (max-width:900px){ .chain{grid-template-columns:minmax(0,1fr)} }
+.chain__col{border-left:1px solid var(--line-2); padding-left:var(--s-5)}
+.chain__col > h3{margin-top:0}
+.step{position:relative; padding:var(--s-3) 0; border-bottom:1px dashed var(--line)}
+.step:last-child{border-bottom:0}
+.step::before{content:""; position:absolute; left:calc(-1 * var(--s-5) - 5px); top:20px; width:9px; height:9px; border-radius:50%;
+  background:var(--surface); border:1px solid var(--line-2)}
+.step[data-state="ok"]::before{background:var(--ok); border-color:var(--ok)}
+.step[data-state="part"]::before{background:var(--warn); border-color:var(--warn)}
+.step[data-state="gap"]::before{background:var(--risk); border-color:var(--risk)}
+.step__n{font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3)}
+.step__t{font-weight:500}
+.step__d{color:var(--text-2); font-size:var(--text-sm)}
+.ladder{display:grid; gap:var(--s-3); margin-top:var(--s-5)}
+.rung{position:relative; display:grid; grid-template-columns:56px minmax(0,1.15fr) minmax(0,1.25fr) 104px; gap:var(--s-4);
+  align-items:start; border:1px solid var(--line); background:var(--surface); padding:var(--s-4); box-shadow:var(--shadow-1)}
+.rung::after{content:""; position:absolute; left:31px; top:60px; bottom:calc(-1 * var(--s-3) - 1px); width:1px; background:var(--line-2)}
+.rung:last-child::after{display:none}
+.rung__n{width:44px; height:44px; display:grid; place-items:center; border-radius:50%; border:1px solid var(--line-2);
+  background:var(--bg); font-family:var(--font-mono); font-size:var(--text-sm); position:relative; z-index:1}
+.rung__work{font-weight:500}
+.rung__proof{border-left:1px solid var(--line); padding-left:var(--s-4); color:var(--text-2); font-size:var(--text-sm)}
+.rung__time{font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3); text-align:right}
+.rung--check{background:color-mix(in oklab, var(--risk) 6%, var(--surface)); border-color:var(--line-2)}
+.rung--check .rung__n{border-color:var(--risk); color:var(--risk)}
+@media (max-width:820px){
+  .rung{grid-template-columns:56px minmax(0,1fr); gap:var(--s-3)}
+  .rung__proof{grid-column:2; border-left:0; padding-left:0}
+  .rung__time{grid-column:2; text-align:left}
+  .rung::after{display:none}
+}
+.nums{list-style:none; display:grid; gap:var(--s-4); margin-top:var(--s-5); counter-reset:q}
+@media (min-width:1180px){ .nums{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)} .nums > li:nth-child(even){margin-top:var(--s-5)} }
+.nums > li{counter-increment:q; position:relative; border:1px solid var(--line); background:var(--surface);
+  padding:var(--s-4) var(--s-4) var(--s-3) var(--s-6); box-shadow:var(--shadow-1)}
+.nums > li::before{content:"Q" counter(q); position:absolute; left:var(--s-3); top:var(--s-4); font-family:var(--font-mono);
+  font-size:var(--text-xs); color:var(--accent)}
+details.ans{margin-top:var(--s-2)}
+details.ans summary{cursor:pointer; display:flex; align-items:center; min-height:44px; font-family:var(--font-mono);
+  font-size:var(--text-xs); letter-spacing:.06em; text-transform:uppercase; color:var(--accent)}
+details.ans summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+details.ans p{color:var(--text-2); margin:0}
+.revs{display:flex; flex-wrap:wrap; gap:var(--s-2); align-items:center; margin-top:var(--s-5)}
+.rev__state{font-family:var(--font-mono); font-size:var(--text-sm); color:var(--text-3)}
+ul.plain{list-style:none; display:grid; gap:var(--s-3); max-width:82ch}
+ul.plain li{border-left:2px solid var(--line-2); padding-left:var(--s-4)}
+.key{border:1px solid var(--line-2); background:var(--surface-2); padding:var(--s-6); margin-top:var(--s-7)}
+.foot{border-top:2px solid var(--text); margin-top:var(--s-7); padding-top:var(--s-5); color:var(--text-3); font-size:var(--text-sm)}
+.foot code{font-size:var(--text-xs)}
+@media print{
+  .slab,.pill,.meter__fill,.mapnode{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+  .rail,.skip,.rail__btns,.trail,.revs{display:none !important}
+  .paper{display:block; max-width:none; padding:0}
+  .hero__top,.cols,.chain{grid-template-columns:minmax(0,1fr)}
+  body{background:#ffffff; color:#000000; font-size:12pt}
+  details.ans{display:block; break-inside:avoid}
+  details.ans > summary{display:none}
+  details.ans::details-content{display:block; content-visibility:visible; contain:none}
+  details.ans > *{display:block !important}
+  section{break-inside:auto}
+}
+/* ===== patch A: the six timeline slabs are jump links ===== */
+.slab__link{position:absolute; inset:0; z-index:1; display:block; color:inherit; text-decoration:none}
+.slab__link:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.slab:focus-within{border-color:var(--accent); background:color-mix(in oklab, var(--accent) 7%, var(--surface))}
+.vh{position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden;
+  clip:rect(0 0 0 0); clip-path:inset(50%); border:0; white-space:nowrap}
+.slab__foot{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between;
+  gap:var(--s-1) var(--s-2); min-width:0}
+.slab__go{flex:none; font-family:var(--font-mono); font-size:var(--text-xs); color:var(--accent);
+  transition:transform var(--dur-2) var(--ease)}
+.slab:hover .slab__go,.slab:focus-within .slab__go{transform:translateX(3px)}
+.slab[data-current="true"]{box-shadow:inset 0 3px 0 var(--accent)}
+.slab[data-current="true"] .slab__n{color:var(--accent)}
+.slab[data-cleared="true"] .slab__n{color:var(--ok)}
+.slab[data-cleared="true"] .slab__go::after{content:" \2713"; color:var(--ok)}
+#s1,#s2,#s3,#s4,#s5,#s6,#s7,#s8,#s9,#s10,#key{scroll-margin-top:var(--s-4)}
+.is-jump{animation:jumpHit 1500ms var(--ease) both}
+@keyframes jumpHit{from{background:color-mix(in oklab, var(--accent) 10%, var(--bg))}
+  to{background:color-mix(in oklab, var(--accent) 0%, var(--bg))}}
+@media print{ .slab__link,.slab__go,.vh{display:none} }
+
+/* ===== section navigator (added: the eleven sections, one click away) ===== */
+.jump{position:sticky; top:0; z-index:3; display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);
+  padding:var(--s-2) 0 var(--s-1); background:var(--surface); border-bottom:var(--hair) solid var(--line-2)}
+.jump__step{display:flex; flex:0 0 auto; gap:var(--s-1)}
+.jump__move{min-width:44px; padding:var(--s-2) var(--s-3)}
+.jump__strip{flex:1 1 0; min-width:0; display:flex; align-items:center; gap:var(--s-1); overflow-x:auto;
+  scrollbar-width:thin; scrollbar-color:var(--line-2) transparent}
+.jump__chip{flex:0 0 auto; display:inline-flex; align-items:center; min-height:44px; padding:var(--s-2) var(--s-3);
+  border:var(--hair) solid var(--line); border-radius:var(--r-2); font-family:var(--font-mono);
+  font-size:var(--text-xs); letter-spacing:.04em; color:var(--text-2); text-decoration:none; white-space:nowrap;
+  transition:background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease)}
+.jump__chip:hover{background:color-mix(in oklab, var(--accent) 8%, var(--surface)); border-color:var(--line-2); color:var(--text)}
+.jump__chip:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.jump__chip[aria-current="true"]{background:color-mix(in oklab, var(--accent) 10%, var(--surface));
+  border-color:var(--accent); color:var(--text)}
+.jump__now{margin:0; font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3);
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+section[id]{scroll-margin-top:calc(var(--s-8) + var(--s-2))}
+@media (max-width:1040px){ .jump__now{display:none} }
+@media print{ .jump{display:none !important} }
+/* ===== block timeline: slab state (finishing pass) ===== */
+.slab__state{display:block; margin-top:var(--s-2); border-top:1px solid var(--line); padding-top:var(--s-2)}
+.slab__state .pill{white-space:normal; max-width:100%; margin-right:var(--s-2)}
+.slab__state .pill__dot{flex:none}
+.slab__tag{font-family:var(--font-mono); font-size:var(--text-xs); letter-spacing:.05em;
+  text-transform:uppercase; margin-right:var(--s-2)}
+.slab__tag--ok{color:var(--ok)}
+.slab__tag--part{color:var(--warn)}
+.slab__count{font-family:var(--font-mono); font-size:var(--text-xs); color:var(--text-3);
+  font-variant-numeric:tabular-nums}
+.slab__bar{display:block; height:2px; margin-top:var(--s-2); background:var(--line-2)}
+.slab__fill{display:block; height:100%; width:0; background:var(--accent);
+  transition:width var(--dur-2) var(--ease)}
+.slab--exam .slab__count{color:var(--text-2)}
+</style>
+</head>
+<body>
+<a class="skip" href="#s1">Skip to the roadmap</a>
+<div class="paper">
+
+  <header class="hero">
+    <div class="hero__top">
+      <div>
+        <p class="kicker">ECE2104 &middot; Data Structures and Algorithms &middot; mid-term dossier</p>
+        <h1>Sixteen lectures, one chain, seven sessions</h1>
+      </div>
+      <div>
+        <p class="hero__lede">Memory, then nodes and pointers, then lists, then stacks and queues, then the call stack
+        itself. Below: what the handout sets, what is built and verified here, what is still missing, and the twelve numericals
+        that turn reading into marks.</p>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <b>Coverage</b>
+        <span>Lectures 1 to 16</span>
+        <small>everything before the handout's MID SEMESTER EXAMINATION row</small>
+      </div>
+      <div class="metric">
+        <b>Marks at stake</b>
+        <span>30 closed book</span>
+        <small>plus 30 from CWS quizzes and assignments</small>
+      </div>
+      <div class="metric">
+        <b>Outcomes</b>
+        <span>CO1, CO2</span>
+        <small>CO1 lectures 1 to 10, CO2 lectures 11 to 16</small>
+      </div>
+      <div class="metric">
+        <b>Material ready</b>
+        <span id="ready-count">2 of 5 blocks</span>
+        <small>blocks A and B shipped and verified (foundation, memory, lists), blocks C to E still open</small>
+      </div>
+    </div>
+
+    <div class="blocks">
+      <p class="eyebrow">The shape of the mid-term</p>
+      <div class="blocks__rail" role="list" aria-label="Five teaching blocks and the exam">
+        <div class="blocks__axis" aria-hidden="true"><span>1 to 4</span><span>5 to 9</span><span>10</span><span>11 to 15</span><span>16</span><span>exam</span></div>
+        <div class="slab" role="listitem" style="animation-delay:0ms" data-target="#s2" data-lectures="1-4" data-name="Block A, Foundation" data-dest="section 02, the sixteen lectures">
+          <a class="slab__link" href="#s2"><span class="vh">Block A, Foundation, lectures 1 to 4: jump to section 02, the sixteen lectures</span></a>
+          <span class="slab__n">Block A &middot; 4 lectures</span>
+          <span class="slab__t">Foundation</span>
+          <span class="slab__l">C++ / Python syntax, variables, types, operators, control flow, functions</span>
+          <span class="slab__state" aria-hidden="true"><span class="pill pill--ok"><span class="pill__dot"></span>built</span><span class="slab__count" id="rm-count-a">0 of 4 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-a"></span></span></span>
+          <span class="slab__foot">lectures 1 to 4<span class="slab__go" aria-hidden="true">&rarr;</span></span>
+        </div>
+        <div class="slab" role="listitem" style="animation-delay:60ms" data-target="#s3" data-lectures="5-9" data-name="Block B, Memory and lists" data-dest="section 03, the chain">
+          <a class="slab__link" href="#s3"><span class="vh">Block B, Memory and lists, lectures 5 to 9: jump to section 03, the chain</span></a>
+          <span class="slab__n">Block B &middot; 5 lectures</span>
+          <span class="slab__t">Memory and lists</span>
+          <span class="slab__l">Memory representation, node, linked list operations, search, numerical problems</span>
+          <span class="slab__state" aria-hidden="true"><span class="pill pill--ok"><span class="pill__dot"></span>built, verified</span><span class="slab__count" id="rm-count-b">0 of 5 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-b"></span></span></span>
+          <span class="slab__foot">lectures 5 to 9<span class="slab__go" aria-hidden="true">&rarr;</span></span>
+        </div>
+        <div class="slab slab--test" role="listitem" style="animation-delay:120ms" data-target="#s6" data-lectures="10" data-name="Block C, class test 1" data-dest="section 06, the numericals">
+          <a class="slab__link" href="#s6"><span class="vh">Block C, class test 1, lecture 10: jump to section 06, the numericals</span></a>
+          <span class="slab__n">Block C &middot; 1 lecture</span>
+          <span class="slab__t">Class test 1</span>
+          <span class="slab__l">Covers the CO1 block, counts toward CWS</span>
+          <span class="slab__state" aria-hidden="true"><span class="slab__tag slab__tag--ok">self-tests</span><span class="slab__count" id="rm-count-c">0 of 1 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-c"></span></span></span>
+          <span class="slab__foot">lecture 10<span class="slab__go" aria-hidden="true">&rarr;</span></span>
+        </div>
+        <div class="slab" role="listitem" style="animation-delay:180ms" data-target="#s5" data-lectures="11-15" data-name="Block D, Stacks and queues" data-dest="section 05, the plan">
+          <a class="slab__link" href="#s5"><span class="vh">Block D, Stacks and queues, lectures 11 to 15: jump to section 05, the plan</span></a>
+          <span class="slab__n">Block D &middot; 5 lectures</span>
+          <span class="slab__t">Stacks and queues</span>
+          <span class="slab__l">Both representations, applications, circular queue wrap-around</span>
+          <span class="slab__state" aria-hidden="true"><span class="pill pill--part"><span class="pill__dot"></span>stacks partial</span><span class="pill pill--gap"><span class="pill__dot"></span>queues missing</span><span class="slab__count" id="rm-count-d">0 of 5 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-d"></span></span></span>
+          <span class="slab__foot">lectures 11 to 15<span class="slab__go" aria-hidden="true">&rarr;</span></span>
+        </div>
+        <div class="slab" role="listitem" style="animation-delay:240ms" data-target="#s7" data-lectures="16" data-name="Block E, Recursion" data-dest="section 07, the evidence">
+          <a class="slab__link" href="#s7"><span class="vh">Block E, Recursion, lecture 16: jump to section 07, the evidence</span></a>
+          <span class="slab__n">Block E &middot; 1 lecture</span>
+          <span class="slab__t">Recursion</span>
+          <span class="slab__l">Recursive algorithms on linear structures, traced in frames</span>
+          <span class="slab__state" aria-hidden="true"><span class="slab__tag slab__tag--part">lab code</span><span class="slab__count" id="rm-count-e">0 of 1 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-e"></span></span></span>
+          <span class="slab__foot">lecture 16<span class="slab__go" aria-hidden="true">&rarr;</span></span>
+        </div>
+        <div class="slab slab--exam" role="listitem" style="animation-delay:300ms" data-target="#key" data-lectures="1-16" data-name="Exam" data-dest="the answer key">
+          <a class="slab__link" href="#key"><span class="vh">Exam, every lecture: jump to the answer key</span></a>
+          <span class="slab__n">Exam</span>
+          <span class="slab__t">Mid-semester exam</span>
+          <span class="slab__l">Closed book, everything above</span>
+          <span class="slab__state" aria-hidden="true"><span class="pill pill--part"><span class="pill__dot"></span>practice partial</span><span class="slab__count" id="rm-count-exam">0 of 16 ticked</span><span class="slab__bar"><span class="slab__fill" id="rm-fill-exam"></span></span></span>
+          <span class="slab__foot">30 marks<span class="slab__go" aria-hidden="true">&rarr;</span></span>
+        </div>
+      </div>
+      <p class="blocks__note">The widths are the lecture counts, drawn to scale: four lectures of foundation, five of memory and
+      lists, the single class-test lecture, five of stacks and queues, the single recursion lecture, then the exam. The dashed slab
+      is the class test, the only interruption inside the teaching weeks. The label on each slab is the state of
+      the material behind that block, and the strip and count under it are the lectures ticked off on the spine, so
+      the timeline and the meter always say the same thing.</p>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="Lecture spine and readiness">
+    <h2>Lecture spine</h2>
+    <div class="rail__ticks">
+      <button class="tick" type="button" id="tick-1" data-lecture="1" data-state="todo" data-current="false" style="animation-delay:0ms"><span class="tick__n">01</span><span>briefing</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-2" data-lecture="2" data-state="todo" data-current="false" style="animation-delay:20ms"><span class="tick__n">02</span><span>C++ / Python ramp</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-3" data-lecture="3" data-state="todo" data-current="false" style="animation-delay:40ms"><span class="tick__n">03</span><span>variables, types, IO</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-4" data-lecture="4" data-state="todo" data-current="false" style="animation-delay:60ms"><span class="tick__n">04</span><span>control flow, functions</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-5" data-lecture="5" data-state="todo" data-current="false" style="animation-delay:80ms"><span class="tick__n">05</span><span>DS and memory</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-6" data-lecture="6" data-state="todo" data-current="false" style="animation-delay:100ms"><span class="tick__n">06</span><span>list concept, node</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-7" data-lecture="7" data-state="todo" data-current="false" style="animation-delay:120ms"><span class="tick__n">07</span><span>list operations</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-8" data-lecture="8" data-state="todo" data-current="false" style="animation-delay:140ms"><span class="tick__n">08</span><span>search, numericals</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-9" data-lecture="9" data-state="todo" data-current="false" style="animation-delay:160ms"><span class="tick__n">09</span><span>tutorial</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-10" data-lecture="10" data-state="todo" data-current="false" style="animation-delay:180ms"><span class="tick__n">10</span><span>class test 1</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-11" data-lecture="11" data-state="todo" data-current="false" style="animation-delay:200ms"><span class="tick__n">11</span><span>stack, array</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-12" data-lecture="12" data-state="todo" data-current="false" style="animation-delay:220ms"><span class="tick__n">12</span><span>stack linked, apps</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-13" data-lecture="13" data-state="todo" data-current="false" style="animation-delay:240ms"><span class="tick__n">13</span><span>queue, array</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-14" data-lecture="14" data-state="todo" data-current="false" style="animation-delay:260ms"><span class="tick__n">14</span><span>queue linked, circular</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-15" data-lecture="15" data-state="todo" data-current="false" style="animation-delay:280ms"><span class="tick__n">15</span><span>queue applications</span><span class="tick__dot" aria-hidden="true"></span></button>
+      <button class="tick" type="button" id="tick-16" data-lecture="16" data-state="todo" data-current="false" style="animation-delay:300ms"><span class="tick__n">16</span><span>recursion</span><span class="tick__dot" aria-hidden="true"></span></button>
+    </div>
+    <div class="meter">
+      <p class="eyebrow">Readiness</p>
+      <div class="meter__bar" id="meter-bar" role="progressbar" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0" aria-label="Lectures ticked off, out of sixteen"><div class="meter__fill" id="meter-fill"></div></div>
+      <p class="meter__text" id="meter-text" aria-live="polite">nothing ticked yet</p>
+      <div class="split">
+        <div><b>CO1 &middot; 1 to 10</b><span id="co1-count">0 / 10</span></div>
+        <div><b>CO2 &middot; 11 to 16</b><span id="co2-count">0 / 6</span></div>
+      </div>
+    </div>
+    <div class="rail__btns">
+      <button class="btn" type="button" id="tick-all">tick all done</button>
+      <button class="btn" type="button" id="tick-reset">reset</button>
+      <button class="btn" type="button" id="theme-btn" aria-pressed="false"><span id="theme-label">dark sheet</span></button>
+    </div>
+    <p class="eyebrow" style="margin-top:24px">Session trail</p>
+    <ol class="trail" id="trail"></ol>
+  </nav>
+
+  <main class="main">
+
+    <nav class="jump" aria-label="Section navigator">
+      <div class="jump__step">
+        <button class="btn jump__move" type="button" id="jump-prev" aria-label="previous section">prev</button>
+        <button class="btn jump__move" type="button" id="jump-next" aria-label="next section">next</button>
+      </div>
+      <div class="jump__strip" id="jump-strip">
+        <a class="jump__chip" href="#s1" aria-current="true">exam facts</a>
+        <a class="jump__chip" href="#s2">lectures</a>
+        <a class="jump__chip" href="#s3">chain</a>
+        <a class="jump__chip" href="#s4">outcomes</a>
+        <a class="jump__chip" href="#s5">plan</a>
+        <a class="jump__chip" href="#s6">numericals</a>
+        <a class="jump__chip" href="#s7">evidence</a>
+        <a class="jump__chip" href="#s8">inventory</a>
+        <a class="jump__chip" href="#s9">honesty</a>
+        <a class="jump__chip" href="#s10">sources</a>
+        <a class="jump__chip" href="#key">answer key</a>
+      </div>
+      <p class="jump__now" id="jump-now" aria-live="polite">01 / 11</p>
+    </nav>
+
+    <section id="s1" tabindex="-1" aria-labelledby="h1-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">01 &middot; exam facts</p>
+          <h2 id="h1-title">What the mid-term is worth, and what it covers</h2>
+        </div>
+        <p class="sec__stamp">source: handout section E, and the E row of the plan</p>
+      </div>
+      <div class="cols cols--wide-left">
+        <div class="tbl-wrap">
+          <table>
+            <caption>Assessment plan, handout section E</caption>
+            <thead><tr><th scope="col">Assessment</th><th scope="col">Detail</th><th class="n" scope="col">Marks</th></tr></thead>
+            <tbody>
+              <tr><td>Mid-Term Examination</td><td>closed book, lectures 1 to 16</td><td class="n">30</td></tr>
+              <tr><td>Class Work Sessional</td><td>quiz, MOOC, assignment</td><td class="n">30</td></tr>
+              <tr><td>End Term Examination</td><td>closed book, whole syllabus</td><td class="n">40</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel panel--accent">
+          <p class="panel__title">Coverage facts</p>
+          <div class="tbl-wrap">
+            <table>
+              <tbody>
+                <tr><td class="n">1 to 16</td><td>lectures inside the mid-term</td></tr>
+                <tr><td class="n">CO1, CO2</td><td>outcomes examined before the exam row</td></tr>
+                <tr><td class="n">lecture 10</td><td>class test 1, CO1 topics, counts to CWS</td></tr>
+                <tr><td class="n">5 verbs</td><td>understand, define, represent, perform, implement</td></tr>
+                <tr><td class="n">30 + 30</td><td>marks already decided before the end-term</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="s2" data-lectures="1 16" aria-labelledby="h2-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">02 &middot; the sixteen lectures</p>
+          <h2 id="h2-title">As the handout lists them, with the material state</h2>
+        </div>
+        <p class="sec__stamp">source: handout section G, pages 4 to 6<br>re-checked on 300 dpi page images</p>
+      </div>
+      <p>Topic and session outcome wording is the handout's own. The material column is not the handout's: it says whether a
+      verified artifact exists on this machine for that lecture.</p>
+      <div class="tbl-wrap">
+        <table>
+          <caption>Lecture plan, with the state of the material</caption>
+          <thead><tr><th class="n" scope="col">L</th><th scope="col">Topic</th><th scope="col">Session outcome</th><th class="n" scope="col">CO</th><th scope="col">Material</th></tr></thead>
+          <tbody>
+            <tr><td class="n">1</td><td>Introduction and Course Hand-out briefing</td><td>Understand basics of subject and assessment</td><td class="n">1</td><td><span class="pill">no artifact needed</span></td></tr>
+            <tr><td class="n">2</td><td>Introduction to C++/Python, Features, Program Structure</td><td>Understand basic language syntax and operations</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>lesson 01</span></td></tr>
+            <tr><td class="n">3</td><td>Basic Terms: Variables, Data Types, Operators, Input/Output</td><td>Understand basic language syntax and operations</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>lessons 02, 03</span></td></tr>
+            <tr><td class="n">4</td><td>Control Statements and Functions (Overview)</td><td>Understand basic language syntax and operations</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>lessons 03, 04</span></td></tr>
+            <tr><td class="n">5</td><td>Introduction to Data Structures and Memory Representation</td><td>Define basic data structures and explain their memory allocation</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>guide plus verifier</span></td></tr>
+            <tr><td class="n">6</td><td>Linked List: Concept, Types, Node Representation</td><td>Represent linked lists in memory</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>notes, lesson 06</span></td></tr>
+            <tr><td class="n">7</td><td>Linked List Operations: Creation and Insertion, Deletion and Traversal</td><td>Represent linked lists in memory</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>lesson 07</span></td></tr>
+            <tr><td class="n">8</td><td>Searching in Linked List, Applications, Numerical Problems and Practice</td><td>Perform traversal and search operations</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>lesson 08, numericals</span></td></tr>
+            <tr><td class="n">9</td><td>Tutorial</td><td>Perform traversal and search operations</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>notes section 7</span></td></tr>
+            <tr><td class="n">10</td><td>Class Test</td><td>Assess understanding and application of covered topics</td><td class="n">1</td><td><span class="pill pill--ok"><span class="pill__dot"></span>two shipped self-tests</span></td></tr>
+            <tr><td class="n">11</td><td>Stack: Concept and array representation</td><td>Implement stacks and queues in memory</td><td class="n">2</td><td><span class="pill pill--part"><span class="pill__dot"></span>one explainer page</span></td></tr>
+            <tr><td class="n">12</td><td>Stack using Linked List, Stack Application</td><td>Implement stacks and queues in memory</td><td class="n">2</td><td><span class="pill pill--gap"><span class="pill__dot"></span>gap</span></td></tr>
+            <tr><td class="n">13</td><td>Queue: Concepts and Array Representation</td><td>Implement stacks and queues in memory</td><td class="n">2</td><td><span class="pill pill--gap"><span class="pill__dot"></span>gap</span></td></tr>
+            <tr><td class="n">14</td><td>Queue using Linked List and Circular Queue</td><td>Implement stacks and queues in memory</td><td class="n">2</td><td><span class="pill pill--gap"><span class="pill__dot"></span>gap</span></td></tr>
+            <tr><td class="n">15</td><td>Queue Applications</td><td>Implement stacks and queues in memory</td><td class="n">2</td><td><span class="pill pill--gap"><span class="pill__dot"></span>gap</span></td></tr>
+            <tr><td class="n">16</td><td>Recursion and Recursive Algorithms</td><td>Apply recursion and linear DS to solve problems</td><td class="n">2</td><td><span class="pill pill--part"><span class="pill__dot"></span>lab code plus probe</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s3" data-lectures="5 9" aria-labelledby="h3-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">03 &middot; the chain</p>
+          <h2 id="h3-title">The dependency chain, drawn as it actually runs</h2>
+        </div>
+        <p class="sec__stamp">dot colour = material state<br>green built, amber partial, plum missing</p>
+      </div>
+      <div class="chain">
+        <div class="chain__col">
+          <h3>CO1 &middot; lectures 1 to 10</h3>
+          <div class="step" data-state="ok"><span class="step__n">01 to 04</span><p class="step__t">C++ or Python foundation</p><p class="step__d">variables, types, operators, control flow, functions: the syntax you will write everything else in</p></div>
+          <div class="step" data-state="ok"><span class="step__n">05</span><p class="step__t">Memory representation</p><p class="step__d"><code>addr(&amp;a[i]) = base + i &times; sizeof(T)</code>, contiguous against scattered, stack against heap</p></div>
+          <div class="step" data-state="ok"><span class="step__n">06</span><p class="step__t">Node and list types</p><p class="step__d">16 byte singly node, padding explained, singly, doubly and circular</p></div>
+          <div class="step" data-state="ok"><span class="step__n">07</span><p class="step__t">Insert and delete</p><p class="step__d">O(1) at a held position, O(n) to reach it, the pointer writes counted</p></div>
+          <div class="step" data-state="ok"><span class="step__n">08</span><p class="step__t">Traversal and search, numericals</p><p class="step__d">hops against one computed access, and the twelve problems below</p></div>
+          <div class="step" data-state="ok"><span class="step__n">09, 10</span><p class="step__t">Tutorial and class test 1</p><p class="step__d">the checkpoint the handout puts at lecture 10</p></div>
+        </div>
+        <div class="chain__col">
+          <h3>CO2 &middot; lectures 11 to 16</h3>
+          <div class="step" data-state="part"><span class="step__n">11</span><p class="step__t">Stack over an array</p><p class="step__d">LIFO at one end, capacity fixed, overflow the moment you pass it</p></div>
+          <div class="step" data-state="gap"><span class="step__n">12</span><p class="step__t">Stack over a linked list</p><p class="step__d">same operations, no capacity limit, one 32 byte node per element</p></div>
+          <div class="step" data-state="gap"><span class="step__n">13</span><p class="step__t">Queue over an array</p><p class="step__d">FIFO, front and rear indices, the reason a naive array wastes space</p></div>
+          <div class="step" data-state="gap"><span class="step__n">14</span><p class="step__t">Queue as a list, and circular</p><p class="step__d">wrap-around with <code>(rear + 1) mod capacity</code>, count from front and rear</p></div>
+          <div class="step" data-state="gap"><span class="step__n">15</span><p class="step__t">Queue applications</p><p class="step__d">scheduling and buffers, the reason FIFO order matters</p></div>
+          <div class="step" data-state="part"><span class="step__n">16</span><p class="step__t">Recursion</p><p class="step__d">the call stack is a stack: 48 bytes per frame measured here, Hanoi calls and moves both <code>2ⁿ - 1</code></p></div>
+        </div>
+      </div>
+      <figure class="fig">
+        <img src="diagrams/03-concept-map.svg" alt="Concept map: memory splits into contiguous and scattered layouts, both answer how many ends you can touch, which yields the stack and the queue ADTs, and both lead to recursion" width="755" height="1299">
+        <figcaption>Layout first, then how many ends you can touch, then the ADT that falls out of it. Scroll sideways if the map is wider than the column.</figcaption>
+      </figure>
+    </section>
+
+    <section id="s4" aria-labelledby="h4-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">04 &middot; outcomes</p>
+          <h2 id="h4-title">What to be able to do, per course outcome</h2>
+        </div>
+        <p class="sec__stamp">source: handout outcome statements, shortened</p>
+      </div>
+      <div class="cols cols--narrow-left">
+        <div class="panel">
+          <p class="panel__title">CO statements</p>
+          <div class="tbl-wrap">
+            <table>
+              <tbody>
+                <tr><td class="n">CO1</td><td>Explain concepts of object-oriented programming using C++ or Python</td></tr>
+                <tr><td class="n">CO2</td><td>Explain the basic operations on arrays, lists, stacks and queue data structures with programming examples</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel panel--accent">
+          <p class="panel__title">Proof you own it, per skill</p>
+          <div class="tbl-wrap">
+            <table>
+              <tbody>
+                <tr><td>Address arithmetic</td><td>compute <code>&amp;a[7]</code> from a given base by hand, in one line</td></tr>
+                <tr><td>Node representation</td><td>draw the 16 byte node with the padding marked, name both offsets</td></tr>
+                <tr><td>Insert and delete</td><td>write the pointer writes for insert at position and delete last, without notes</td></tr>
+                <tr><td>Traversal and search</td><td>count the hops for a given list and compare with the array's single computed access</td></tr>
+                <tr><td>Memory accounting</td><td>state 4 bytes per element against 32 bytes per node, and say why</td></tr>
+                <tr><td>Stack both ways</td><td>push and pop over an array and over a linked list, and say which is cheaper when</td></tr>
+                <tr><td>Queue wrap-around</td><td>given capacity, front and rear, compute the element count and the next slot</td></tr>
+                <tr><td>Recursion</td><td>trace factorial, fibonacci and Hanoi, and state depth, calls and frame bytes</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="s5" data-lectures="11 16" aria-labelledby="h5-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">05 &middot; the plan</p>
+          <h2 id="h5-title">Seven sessions, each with a proof</h2>
+        </div>
+        <p class="sec__stamp">roughly 90 minutes each<br>do not move on without the proof</p>
+      </div>
+      <p>The proof is the exam answer. If you cannot produce it, the session is not finished, however much you have read.</p>
+      <div class="ladder">
+        <div class="rung">
+          <span class="rung__n">1</span>
+          <p class="rung__work">Lecture 5: read the memory notes, then work guide sheets 01 to 04</p>
+          <p class="rung__proof"><strong>Proof:</strong> the verifier prints <code>81/81 checks pass</code></p>
+          <p class="rung__time">90 min</p>
+        </div>
+        <div class="rung">
+          <span class="rung__n">2</span>
+          <p class="rung__work">Lecture 6: list concept, types, node representation, lesson 06</p>
+          <p class="rung__proof"><strong>Proof:</strong> draw the 16 byte node and all three list types from memory</p>
+          <p class="rung__time">90 min</p>
+        </div>
+        <div class="rung">
+          <span class="rung__n">3</span>
+          <p class="rung__work">Lecture 7: insert and delete, lesson 07 then the exercise file</p>
+          <p class="rung__proof"><strong>Proof:</strong> write insert-at-position on paper, then diff it against the code</p>
+          <p class="rung__time">90 min</p>
+        </div>
+        <div class="rung">
+          <span class="rung__n">4</span>
+          <p class="rung__work">Lecture 8: search and applications, lesson 08</p>
+          <p class="rung__proof"><strong>Proof:</strong> solve the twelve numericals below with nothing open</p>
+          <p class="rung__time">90 min</p>
+        </div>
+        <div class="rung">
+          <span class="rung__n">5</span>
+          <p class="rung__work">Lectures 11 and 12: stack over an array, then over a linked list</p>
+          <p class="rung__proof"><strong>Proof:</strong> both builds print the same operation log for the same input</p>
+          <p class="rung__time">110 min</p>
+        </div>
+        <div class="rung">
+          <span class="rung__n">6</span>
+          <p class="rung__work">Lectures 13 and 14: queue over an array, as a list, then circular</p>
+          <p class="rung__proof"><strong>Proof:</strong> survive two full wrap-arounds and write the count formula</p>
+          <p class="rung__time">110 min</p>
+        </div>
+        <div class="rung">
+          <span class="rung__n">7</span>
+          <p class="rung__work">Lecture 16: recursion, lab experiments, then the frame probe</p>
+          <p class="rung__proof"><strong>Proof:</strong> your traced Hanoi counts match the probe's 7 calls, 3 frames deep</p>
+          <p class="rung__time">90 min</p>
+        </div>
+        <div class="rung rung--check">
+          <span class="rung__n">OK</span>
+          <p class="rung__work">Mock paper: forty questions, closed book</p>
+          <p class="rung__proof"><strong>Proof:</strong> a score, then re-read only the questions you missed</p>
+          <p class="rung__time">60 min</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="s6" data-lectures="5 9" aria-labelledby="h6-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">06 &middot; numericals</p>
+          <h2 id="h6-title">Twelve problems, the part lecture 8 names explicitly</h2>
+        </div>
+        <p class="sec__stamp">constants measured here<br>4, 1, 8, 16, 32, 24, 48 bytes</p>
+      </div>
+      <p>Constants used in every answer: <code>sizeof(int) = 4</code>, <code>sizeof(char) = 1</code>, <code>sizeof(pointer) = 8</code>,
+      <code>sizeof(Node) = 16</code> for <code>{int data; Node* next;}</code>, allocator stride <code>32</code> bytes per node with
+      <code>24</code> usable, one stack frame <code>48</code> bytes. Work them on paper; the answers stay hidden, and the whole key
+      also sits in its own section at the end so you can self-test cold.</p>
+      <ol class="nums" id="nums">
+        <li>An array <code>int a[5]</code> starts at <code>0x7ffe7c3131b0</code>. Give the address of <code>a[3]</code> and how many memory accesses it takes.
+          <details class="ans"><summary>show answer</summary><p><code>0x7ffe7c3131b0 + 3 &times; 4 = 0x7ffe7c3131bc</code>, one multiply and one add, so a single access.</p></details></li>
+        <li>A linked list holds the same five integers. Give the address expression for node 3 and how many accesses it takes.
+          <details class="ans"><summary>show answer</summary><p>There is no expression: node 3's address is stored inside node 2, so it costs four walks from the head.</p></details></li>
+        <li><code>int a[5]</code> occupies how many bytes? The equivalent list occupies how many bytes charged? Give the ratio.
+          <details class="ans"><summary>show answer</summary><p>Array 20 bytes, list 5 &times; 32 = 160 bytes charged. Eight times more: padding plus allocator bookkeeping.</p></details></li>
+        <li>Write the formula for <code>&amp;a[i]</code> and use it with <code>base = 0x1000</code>, <code>i = 7</code>, <code>sizeof(int) = 4</code>.
+          <details class="ans"><summary>show answer</summary><p><code>&amp;a[i] = base + i &times; sizeof(T)</code> gives <code>0x1000 + 28 = 0x101C</code>.</p></details></li>
+        <li><code>struct Node { int data; Node* next; };</code> is 16 bytes, not 12. Where do the extra four bytes sit, and why must they?
+          <details class="ans"><summary>show answer</summary><p>Four padding bytes between <code>data</code> and <code>next</code>, so the 8 byte pointer starts on an 8 byte boundary.</p></details></li>
+        <li>A singly linked list has five nodes. How many pointer writes does inserting at position 3 need, if you already hold the predecessor?
+          <details class="ans"><summary>show answer</summary><p>Two: the new node's <code>next</code> to the successor, and the predecessor's <code>next</code> to the new node.</p></details></li>
+        <li>Same list: how many pointer writes does deleting the last node need, and what must you hold to do it in O(1)?
+          <details class="ans"><summary>show answer</summary><p>Two writes, but you must hold the second to last node, otherwise finding it is an O(n) walk.</p></details></li>
+        <li>How many hops does searching for the value in the last node take in a list of n nodes, against the same search in an array?
+          <details class="ans"><summary>show answer</summary><p>n hops against one computed access, but the array access needs the index, not the value.</p></details></li>
+        <li>A stack is built over an array of capacity 8 and the program pushes 9 values. What happens with <code>std::vector</code>, and with a raw array?
+          <details class="ans"><summary>show answer</summary><p>The vector reallocates into doubled capacity and copies; the raw array writes out of bounds, which is undefined behaviour.</p></details></li>
+        <li>A circular queue has capacity 5, <code>front = 3</code>, <code>rear = 1</code>. How many elements are stored, and which slot does the next enqueue use?
+          <details class="ans"><summary>show answer</summary><p><code>(rear - front + capacity) mod capacity = 3</code> elements, so the next enqueue lands at slot 2.</p></details></li>
+        <li><code>factorial(4)</code> is called. How many frames are alive at the deepest point, and how many bytes is that at 48 bytes per frame?
+          <details class="ans"><summary>show answer</summary><p>Measured: four recursive calls nested, five frames counting <code>main</code>, about 240 bytes.</p></details></li>
+        <li>Towers of Hanoi with three disks: how many moves, and how many recursive calls?
+          <details class="ans"><summary>show answer</summary><p>Measured: seven moves and seven calls, both <code>2³ - 1</code>, deepest nesting three frames.</p></details></li>
+      </ol>
+      <div class="revs">
+        <button class="btn btn--primary" type="button" id="rev-all">reveal every answer</button>
+        <button class="btn" type="button" id="rev-none">hide every answer</button>
+        <span class="rev__state" id="rev-state" aria-live="polite">hidden</span>
+      </div>
+    </section>
+
+    <section id="s7" data-lectures="16" aria-labelledby="h7-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">07 &middot; evidence</p>
+          <h2 id="h7-title">Recursion, measured rather than asserted</h2>
+        </div>
+        <p class="sec__stamp">from lec16_recursion_output.txt<br>zero warnings under -Wall -Wextra</p>
+      </div>
+      <div class="cols cols--wide-left">
+        <div class="tbl-wrap">
+          <table>
+            <caption>Frame probe, measured on this machine</caption>
+            <thead><tr><th scope="col">Call</th><th class="n" scope="col">Recursive calls</th><th class="n" scope="col">Deepest nesting</th><th class="n" scope="col">Moves</th></tr></thead>
+            <tbody>
+              <tr><td><code>factorial(1)</code> to <code>factorial(5)</code></td><td class="n">n</td><td class="n">n</td><td class="n">n/a</td></tr>
+              <tr><td><code>factorial(4)</code>, frames alive</td><td class="n">4</td><td class="n">4 plus main</td><td class="n">n/a</td></tr>
+              <tr><td>Hanoi, n = 1</td><td class="n">1</td><td class="n">1</td><td class="n">1</td></tr>
+              <tr><td>Hanoi, n = 2</td><td class="n">3</td><td class="n">2</td><td class="n">3</td></tr>
+              <tr><td>Hanoi, n = 3</td><td class="n">7</td><td class="n">3</td><td class="n">7</td></tr>
+              <tr><td>Hanoi, n = 4</td><td class="n">15</td><td class="n">4</td><td class="n">15</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel panel--ok">
+          <p class="panel__title">The two things this pins down</p>
+          <ul class="plain">
+            <li>Every Hanoi call performs exactly one move, so calls and moves are both <code>2ⁿ - 1</code>. There is no second count to memorise.</li>
+            <li>The probe measured 144 bytes across four nested frames: the same <code>48 bytes per frame</code> the lecture 5 capture reported. Two independent runs, one number.</li>
+        <li>Question 11 charges five frames, not four: the four recursive <code>factorial</code> frames plus <code>main</code>. Both numbers are the same measurement read two ways, 4 x 48 = 192 bytes of recursion inside 5 x 48 = 240 bytes of stack.</li>
+            <li>Recursion questions are frame questions: depth is memory, and the base case is what stops the stack growing.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="s8" aria-labelledby="h8-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">08 &middot; inventory</p>
+          <h2 id="h8-title">What exists, and what is still missing</h2>
+        </div>
+        <p class="sec__stamp">checked on disk, this session</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <caption>Material state</caption>
+          <thead><tr><th scope="col">Area</th><th scope="col">Materials</th><th scope="col">State</th></tr></thead>
+          <tbody>
+            <tr><td>Lecture 5, memory</td><td><code>Notes/intro-memory/</code>: interactive guide, notes, 5 rendered diagrams, verifier</td><td><span class="pill pill--ok"><span class="pill__dot"></span>complete, verified</span></td></tr>
+            <tr><td>Lectures 6 to 8, lists</td><td><code>Notes/linked-list/</code>: notes, 4 diagrams, lessons 06 to 08, verifier</td><td><span class="pill pill--ok"><span class="pill__dot"></span>complete, verified</span></td></tr>
+            <tr><td>Lectures 2 to 4, C++</td><td><code>~/learning/cpp/lessons/01</code> to <code>05</code>, C++ language plan</td><td><span class="pill pill--ok"><span class="pill__dot"></span>complete</span></td></tr>
+            <tr><td>Lectures 11 to 12, stacks</td><td>one explainer page, no course-mapped notes, no array against linked cost artifact</td><td><span class="pill pill--part"><span class="pill__dot"></span>weak</span></td></tr>
+            <tr><td>Lectures 13 to 15, queues</td><td>nothing, including the circular queue wrap-around</td><td><span class="pill pill--gap"><span class="pill__dot"></span>missing</span></td></tr>
+            <tr><td>Lecture 16, recursion</td><td>lab code plus the measured frame probe, no notes page or frame diagram yet</td><td><span class="pill pill--part"><span class="pill__dot"></span>improved</span></td></tr>
+            <tr><td>Exam practice</td><td>self-tests inside the two shipped guides, plus the twelve numericals here</td><td><span class="pill pill--part"><span class="pill__dot"></span>partial</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s9" aria-labelledby="h9-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">09 &middot; honesty</p>
+          <h2 id="h9-title">The five gaps, stated plainly</h2>
+        </div>
+        <p class="sec__stamp">what this dossier does not fix for you</p>
+      </div>
+      <div class="panel panel--risk">
+        <ul class="plain">
+          <li><strong>Stacks and queues have no course-mapped artifact.</strong> Five of the sixteen lectures sit there, and they are the most likely draw-and-compute questions.</li>
+          <li><strong>Circular queue wrap-around has no worked example.</strong> Capacity, front, rear, count, next slot: a classic two-mark trap.</li>
+          <li><strong>Recursion has code and numbers but no frames diagram,</strong> and every recursion question is really a frame question.</li>
+          <li><strong>Nothing ties the numericals into one timed paper yet.</strong> That is the only way to learn whether the arithmetic is automatic under pressure.</li>
+          <li><strong>This dossier is a plan, not practice.</strong> Sessions 5 and 6 of the sequence are what turn reading into marks, and neither has material yet.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="s10" aria-labelledby="h10-title">
+      <div class="sec__head">
+        <div>
+          <p class="eyebrow">10 &middot; sources</p>
+          <h2 id="h10-title">Where every claim here came from</h2>
+        </div>
+        <p class="sec__stamp">no claim without a file behind it</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <caption>Provenance</caption>
+          <thead><tr><th scope="col">Source</th><th scope="col">What was taken from it</th></tr></thead>
+          <tbody>
+            <tr><td>Handout section E</td><td>assessment plan: mid-term 30, CWS 30, end term 40</td></tr>
+            <tr><td>Handout section G, pages 4 to 6</td><td>lecture plan rows, verbatim topic and outcome wording, CO mapping, and the position of the MID SEMESTER EXAMINATION row after lecture 16</td></tr>
+            <tr><td>Handout sections F and H</td><td>syllabus summary and the five course outcome statements</td></tr>
+            <tr><td>300 dpi page images</td><td>the critical lecture plan rows re-read as images, because a dense table is where a text layer scrambles columns</td></tr>
+            <tr><td><code>lec05_run_output.txt</code></td><td>every size, offset and stride quoted here</td></tr>
+            <tr><td><code>lec16_recursion_output.txt</code></td><td>every call, frame and move count in section 7</td></tr>
+            <tr><td><code>DAS-LAB/Exp0</code> to <code>Exp4</code></td><td>which lab experiments already cover array operations, sorting, recursion and priority queues</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="key" id="key" aria-labelledby="hkey">
+      <p class="eyebrow">answer key, kept out of the problem list on purpose</p>
+      <h2 id="hkey">The twelve answers in one block, for a cold self-test</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th class="n" scope="col">Q</th><th scope="col">Answer, short form</th></tr></thead>
+          <tbody>
+            <tr><td class="n">1</td><td><code>0x7ffe7c3131bc</code>, one access, one multiply and one add</td></tr>
+            <tr><td class="n">2</td><td>not computable, the address is stored in the previous node, four walks</td></tr>
+            <tr><td class="n">3</td><td>20 bytes against 160 bytes charged, eight times</td></tr>
+            <tr><td class="n">4</td><td><code>0x101C</code></td></tr>
+            <tr><td class="n">5</td><td>four padding bytes before <code>next</code>, to keep 8 byte alignment</td></tr>
+            <tr><td class="n">6</td><td>two pointer writes</td></tr>
+            <tr><td class="n">7</td><td>two writes, but you must hold the second to last node</td></tr>
+            <tr><td class="n">8</td><td>n hops against one computed access, and the array needs the index</td></tr>
+            <tr><td class="n">9</td><td>vector reallocates and copies, raw array is undefined behaviour</td></tr>
+            <tr><td class="n">10</td><td>3 elements, next enqueue at slot 2</td></tr>
+            <tr><td class="n">11</td><td>4 recursive calls nested, 5 frames with main, about 240 bytes</td></tr>
+            <tr><td class="n">12</td><td>7 moves and 7 calls, both 2³ - 1, nesting 3 frames deep</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <p><strong>Provenance.</strong> Handout read at <code>~/Documents/MUJ-SEM-3/DSA/Handouts/Course Handout ECE2104VDT2104_26.pdf</code> with
+      <code>pdftotext -layout</code>, then the lecture plan rows re-checked on 300 dpi page images from <code>pdftoppm -r 300</code>.
+      Measured numbers come from <code>~/learning/cpp/exercises/lec05_run_output.txt</code> and <code>lec16_recursion_output.txt</code>.</p>
+      <p><strong>Rebuild.</strong> Diagrams: <code>sh render-diagrams.sh</code> in this folder. This page is the formatted twin of
+      <code>DSA-MIDTERM-ROADMAP.md</code>, which carries the same content as plain markdown.</p>
+      <p><strong>Honest limit.</strong> A plan built from the handout and from artifacts on this machine. It cannot know what your
+      instructor will actually set; sections 6 and 7 are the parts that survive any question paper.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+/* Roadmap interactions: lecture spine, readiness meter, session trail, answer reveals.
+   Nothing here fetches anything; every number on the page is either quoted from the
+   handout or measured on this machine. */
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var TRAIL = $("trail"), ACTIONS = 0;
+  /* patch A: the trail logger and a hook list, shared with later scripts */
+  window.__rmHooks = window.__rmHooks || [];
+  window.__rmLog = log;
+  function log(msg) {
+    ACTIONS++;
+    if (!TRAIL) return;
+    var li = document.createElement("li");
+    li.textContent = ACTIONS + ". " + msg;
+    TRAIL.appendChild(li);
+    while (TRAIL.children.length > 40) TRAIL.removeChild(TRAIL.firstElementChild);
+  }
+
+  /* theme */
+  var themeBtn = $("theme-btn"), themeLabel = $("theme-label");
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", getComputedStyle(document.body).backgroundColor);
+    var dark = t === "dark";
+    if (themeBtn) themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
+    if (themeLabel) themeLabel.textContent = dark ? "light sheet" : "dark sheet";
+    try { localStorage.setItem("dsa-roadmap-theme", t); } catch (e) {}
+  }
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem("dsa-roadmap-theme"); } catch (e) {}
+  applyTheme(savedTheme === "dark" ? "dark" : "light");
+  if (themeBtn) themeBtn.addEventListener("click", function () {
+    applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    log("theme: " + document.documentElement.getAttribute("data-theme") + " sheet");
+  });
+
+  /* lecture spine and readiness meter */
+  var ticks = document.querySelectorAll(".tick");
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem("dsa-roadmap-done") || "{}") || {}; } catch (e) { done = {}; }
+  /* hooks: anything that repaints alongside the meter registers here (slab state, pass C) */
+  window.__rmHooks = window.__rmHooks || [];
+  function render() {
+    var n = 0, co1 = 0, co2 = 0;
+    for (var i = 0; i < ticks.length; i++) {
+      var lec = ticks[i].getAttribute("data-lecture");
+      var isDone = !!done[lec];
+      ticks[i].setAttribute("data-state", isDone ? "done" : "todo");
+      ticks[i].setAttribute("aria-pressed", isDone ? "true" : "false");
+      var topic = ticks[i].querySelector(".tick__n");
+      var topicText = "";
+      var spans = ticks[i].querySelectorAll("span");
+      if (spans.length > 1) topicText = (spans[1].textContent || "").trim();
+      if (topic) topic.setAttribute("aria-hidden", "true");
+      ticks[i].setAttribute("aria-label", "lecture " + lec + ", " + topicText + (isDone ? ", ticked off" : ", not ticked off yet"));
+      if (isDone) { n++; if (parseInt(lec, 10) <= 10) co1++; else co2++; }
+    }
+    if ($("meter-fill")) $("meter-fill").style.width = Math.round((n / ticks.length) * 100) + "%";
+    if ($("meter-bar")) $("meter-bar").setAttribute("aria-valuenow", String(n));
+    if ($("meter-text")) $("meter-text").textContent = n === 0
+      ? "nothing ticked yet"
+      : n + " of " + ticks.length + " lectures ticked, " + Math.round((n / ticks.length) * 100) + " percent of the paper covered";
+    if ($("co1-count")) $("co1-count").textContent = co1 + " / 10";
+    if ($("co2-count")) $("co2-count").textContent = co2 + " / 6";
+    /* one guarded loop: a failed hook must not break the meter */
+    var hks = window.__rmHooks || [];
+    for (var h = 0; h < hks.length; h++) {
+      try { hks[h](log, done, n, ticks.length); } catch (e) {}
+    }
+  }
+  function save() { try { localStorage.setItem("dsa-roadmap-done", JSON.stringify(done)); } catch (e) {} }
+  for (var t = 0; t < ticks.length; t++) {
+    ticks[t].addEventListener("click", function () {
+      var lec = this.getAttribute("data-lecture");
+      if (done[lec]) { delete done[lec]; log("lecture " + lec + " un-ticked"); }
+      else { done[lec] = 1; log("lecture " + lec + " ticked off"); }
+      save(); render();
+    });
+  }
+  if ($("tick-all")) $("tick-all").addEventListener("click", function () {
+    for (var i = 0; i < ticks.length; i++) done[ticks[i].getAttribute("data-lecture")] = 1;
+    save(); render(); log("every lecture ticked, readiness 16 of 16");
+  });
+  if ($("tick-reset")) $("tick-reset").addEventListener("click", function () {
+    done = {}; save();
+    if (TRAIL) { TRAIL.innerHTML = ""; ACTIONS = 0; }
+    render();
+    log("readiness reset: all sixteen lectures unticked, trail cleared, meter back to nothing ticked yet");
+  });
+  render();
+
+  /* the spine follows the reader */
+  /* each section declares its own range: data-lectures="5 9" on the section element */
+  var RANGES = {};
+  (function () {
+    var marked = document.querySelectorAll("section[data-lectures]");
+    for (var m = 0; m < marked.length; m++) {
+      var parts = (marked[m].getAttribute("data-lectures") || "").split(/\s+/);
+      if (parts.length === 2) RANGES[marked[m].id] = [parseInt(parts[0], 10), parseInt(parts[1], 10)];
+    }
+  })();
+  var sections = document.querySelectorAll("section[id]");
+  if (window.IntersectionObserver) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var range = RANGES[e.target.id];
+        for (var i = 0; i < ticks.length; i++) {
+          var lec = parseInt(ticks[i].getAttribute("data-lecture"), 10);
+          ticks[i].setAttribute("data-current", (!!range && lec >= range[0] && lec <= range[1]) ? "true" : "false");
+        }
+      });
+    }, { rootMargin: "-25% 0px -65% 0px" });
+    for (var s = 0; s < sections.length; s++) io.observe(sections[s]);
+  }
+
+  /* answer reveals */
+  var boxes = document.querySelectorAll("details.ans");
+  function revState() {
+    var open = 0;
+    for (var i = 0; i < boxes.length; i++) if (boxes[i].open) open++;
+    if ($("rev-state")) $("rev-state").textContent = open === 0
+      ? "hidden, work them on paper first"
+      : open + " of " + boxes.length + " answers visible" + (open === boxes.length ? ", every answer is open" : "");
+    if ($("rev-all")) $("rev-all").disabled = open === boxes.length;
+  }
+  for (var b = 0; b < boxes.length; b++) boxes[b].addEventListener("toggle", revState);
+  if ($("rev-all")) $("rev-all").addEventListener("click", function () {
+    for (var i = 0; i < boxes.length; i++) boxes[i].open = true;
+    revState(); log("revealed every answer");
+  });
+  if ($("rev-none")) $("rev-none").addEventListener("click", function () {
+    for (var i = 0; i < boxes.length; i++) boxes[i].open = false;
+    revState(); log("hid every answer again");
+  });
+  revState();
+
+  /* Enter on a control counts as a commit, and is recorded like any other action */
+  /* printing from an interactive session: open every answer, then restore */
+  window.addEventListener("beforeprint", function () {
+    var all = document.querySelectorAll("details.ans"), restore = [];
+    for (var i = 0; i < all.length; i++) { restore.push(all[i].open); all[i].open = true; }
+    window.__rmRestoreOpen = restore;
+  });
+  window.addEventListener("afterprint", function () {
+    var all = document.querySelectorAll("details.ans"), r = window.__rmRestoreOpen || [];
+    for (var i = 0; i < all.length; i++) all[i].open = r[i] || false;
+  });
+
+
+})();
+/* ===== patch A: the six timeline slabs behave as jump links ===== */
+(function () {
+  "use strict";
+  var slabs = document.querySelectorAll(".slab[data-target]");
+  if (!slabs.length) return;
+  function log(msg) { if (typeof window.__rmLog === "function") window.__rmLog(msg); }
+
+  function lecList(spec) {
+    var out = [], parts = String(spec || "").split(","), i, j, r, a, b;
+    for (i = 0; i < parts.length; i++) {
+      r = parts[i].split("-");
+      if (!r[0]) continue;
+      a = parseInt(r[0], 10);
+      b = r[1] ? parseInt(r[1], 10) : a;
+      if (isNaN(a)) continue;
+      if (isNaN(b)) b = a;
+      for (j = a; j <= b; j++) out.push(j);
+    }
+    return out;
+  }
+  function lecWord(spec) {
+    var s = String(spec || "").trim();
+    if (s === "1-16") return "every lecture";
+    return "lectures " + s.replace("-", " to ");
+  }
+  /* a slab reads "cleared" when the lecture spine has every lecture it covers */
+  function sync(slab) {
+    var nums = lecList(slab.getAttribute("data-lectures")), ticked = 0, i, t;
+    for (i = 0; i < nums.length; i++) {
+      t = document.getElementById("tick-" + nums[i]);
+      if (t && t.getAttribute("data-state") === "done") ticked++;
+    }
+    var cleared = nums.length > 0 && ticked === nums.length;
+    slab.setAttribute("data-cleared", cleared ? "true" : "false");
+    slab.setAttribute("data-progress", ticked + " of " + nums.length);
+    var txt = slab.querySelector(".slab__link .vh");
+    if (txt) {
+      txt.textContent = (slab.getAttribute("data-name") || "block") + ", " +
+        lecWord(slab.getAttribute("data-lectures")) +
+        (cleared ? ", every lecture in this block is ticked off"
+                 : ", " + ticked + " of " + nums.length + " ticked off") +
+        ": jump to " + (slab.getAttribute("data-dest") || "the section below");
+    }
+  }
+  function syncAll() { for (var i = 0; i < slabs.length; i++) sync(slabs[i]); }
+
+  /* the slab whose section is on screen gets the accent edge */
+  function markCurrent(id) {
+    for (var i = 0; i < slabs.length; i++) {
+      var on = slabs[i].getAttribute("data-target") === "#" + id;
+      slabs[i].setAttribute("data-current", on ? "true" : "false");
+      var link = slabs[i].querySelector(".slab__link");
+      if (link) { if (on) link.setAttribute("aria-current", "true"); else link.removeAttribute("aria-current"); }
+    }
+  }
+
+  var FLASH = 1500;
+  function flash(el) {
+    if (!el) return;
+    el.classList.remove("is-jump");
+    void el.offsetWidth;
+    el.classList.add("is-jump");
+    window.setTimeout(function () { el.classList.remove("is-jump"); }, FLASH);
+  }
+
+  syncAll();
+
+  /* the whole slab is the link: click lands on the section, flashes it, logs it */
+  for (var s = 0; s < slabs.length; s++) {
+    (function (slab) {
+      var link = slab.querySelector(".slab__link");
+      if (!link) return;
+      link.addEventListener("click", function () {
+        var href = slab.getAttribute("data-target") || link.getAttribute("href") || "";
+        var dest = href.charAt(0) === "#" ? href.slice(1) : href;
+        flash(document.getElementById(dest));
+        log("slab jump: " + (slab.getAttribute("data-name") || dest) + " to " + href +
+            " (" + (slab.getAttribute("data-progress") || "0 of 0") + " lectures ticked)");
+      });
+    })(slabs[s]);
+  }
+
+  if (window.IntersectionObserver) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) markCurrent(e.target.id); });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    for (var k = 0; k < slabs.length; k++) {
+      var id = (slabs[k].getAttribute("data-target") || "").slice(1);
+      if (id) { var el = document.getElementById(id); if (el) io.observe(el); }
+    }
+  }
+
+  window.__rmHooks = window.__rmHooks || [];
+  window.__rmHooks.push(function () { syncAll(); });
+  /* two things the section navigator appended below needs from this closure */
+  window.__rmRender = typeof render === "function" ? render : null;
+})();
+
+/* ===== section navigator =====================================================
+   The sticky bar in <main>. Every chip is a real anchor, so jumping to a section
+   works without this code; the script only adds the active-section state, the
+   prev/next stepper, and a line in the session trail for each move. The page's
+   own log() is IIFE-local, so it is collected through window.__rmHooks -- which
+   render() calls -- and the handshake is completed by calling that render once. */
+(function () {
+  "use strict";
+  var bar = document.querySelector(".jump");
+  var strip = document.getElementById("jump-strip");
+  var now = document.getElementById("jump-now");
+  var chips = strip ? strip.querySelectorAll(".jump__chip") : [];
+  var secs = Array.prototype.slice.call(document.querySelectorAll("section[id]"));
+  var prevBtn = document.getElementById("jump-prev");
+  var nextBtn = document.getElementById("jump-next");
+  var trail = document.getElementById("trail");
+  var own = null;        /* the page's own trail logger, handed over by the hook */
+  var unattached = 0;    /* fallback counter, used only if that handover never lands */
+
+  if (!bar || !strip || !chips.length || !secs.length) return;
+
+  function say(msg) {
+    if (own) { own(msg); return; }
+    /* Defensive: a move must still leave a mark if the handover fails. */
+    if (!trail) return;
+    if (!unattached) unattached = trail.children.length;
+    unattached++;
+    var li = document.createElement("li");
+    li.textContent = unattached + ". " + msg;
+    trail.appendChild(li);
+  }
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+  function indexOfSection() {
+    var y = window.pageYOffset + (bar.offsetHeight || 56) + 8;
+    var i = 0;
+    for (var k = 0; k < secs.length; k++) {
+      if (secs[k].getBoundingClientRect().top + window.pageYOffset <= y) i = k;
+    }
+    return i;
+  }
+
+  function label(i) {
+    /* the chip label is the same phrase the section itself uses, kept short */
+    var t = chips[i] ? chips[i].textContent.replace(/\s+/g, " ").trim() : "";
+    return pad(i + 1) + " " + (t || "section");
+  }
+
+  function reveal(chip) {
+    /* keep the active chip inside the strip without moving the page */
+    var cr = chip.getBoundingClientRect(), sr = strip.getBoundingClientRect();
+    if (cr.left < sr.left) strip.scrollLeft -= (sr.left - cr.left) + 8;
+    else if (cr.right > sr.right) strip.scrollLeft += (cr.right - sr.right) + 8;
+  }
+
+  function setActive(i, follow) {
+    for (var k = 0; k < chips.length; k++) {
+      chips[k].setAttribute("aria-current", k === i ? "true" : "false");
+    }
+    if (now) now.textContent = pad(i + 1) + " / " + chips.length;
+    if (follow && chips[i]) reveal(chips[i]);
+  }
+
+  function go(i) {
+    var s = secs[i];
+    if (!s) return;
+    /* instant, like every other in-page anchor on this page; scroll-margin-top
+       on the sections keeps the sticky bar off the heading */
+    if (s.scrollIntoView) s.scrollIntoView({ behavior: "auto", block: "start" });
+    setActive(i, true);
+  }
+
+  function step(delta) {
+    var i = indexOfSection();
+    var j = Math.max(0, Math.min(secs.length - 1, i + delta));
+    if (j === i) {
+      say((delta < 0 ? "already at the first section, " : "already at the last section, ") + label(i));
+      setActive(i, true);
+      return;
+    }
+    say((delta < 0 ? "stepped back to " : "stepped on to ") + label(j));
+    go(j);
+  }
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    var raf = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); };
+    raf(function () { ticking = false; setActive(indexOfSection(), true); });
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
+
+  for (var c = 0; c < chips.length; c++) {
+    chips[c].addEventListener("click", function () {
+      var i = Array.prototype.indexOf.call(chips, this);
+      say("jumped to " + label(i < 0 ? indexOfSection() : i));
+      setActive(i < 0 ? indexOfSection() : i, true);
+    });
+  }
+  if (prevBtn) prevBtn.addEventListener("click", function () { step(-1); });
+  if (nextBtn) nextBtn.addEventListener("click", function () { step(1); });
+
+  /* a vertical wheel over the strip walks it sideways while it still has room,
+     so the chips past the right edge are reachable without a trackpad gesture */
+  strip.addEventListener("wheel", function (ev) {
+    if (Math.abs(ev.deltaY) <= Math.abs(ev.deltaX)) return;
+    var max = strip.scrollWidth - strip.clientWidth;
+    if (max <= 0) return;
+    if (ev.deltaY < 0 ? strip.scrollLeft <= 0 : strip.scrollLeft >= max - 1) return;
+    ev.preventDefault();
+    strip.scrollLeft += ev.deltaY;
+  }, { passive: false });
+
+  /* handshake: collect the page's logger, then let render() hand it over. The
+     try/catch keeps the navigator working even if render() itself throws. */
+  window.__rmHooks = window.__rmHooks || [];
+  window.__rmHooks.push(function (pageLog) { own = pageLog; });
+  if (window.__rmRender) { try { window.__rmRender(); } catch (e) {} }
+
+  setActive(indexOfSection(), false);
+})();
+</script>
+<script>
+/* Slab finishing pass: every block reports the state of the material behind it and the number
+   of its lectures ticked on the spine. The count repaints from the same tick state the
+   readiness meter reads, through the hook the script above calls at the end of render(),
+   so the timeline and the meter can never disagree. This IIFE fetches nothing, stores
+   nothing and changes no page state; it only writes text and one width. */
+(function () {
+  "use strict";
+  var SLABS = [
+    { id: "a", lo: 1, hi: 4 },
+    { id: "b", lo: 5, hi: 9 },
+    { id: "c", lo: 10, hi: 10 },
+    { id: "d", lo: 11, hi: 15 },
+    { id: "e", lo: 16, hi: 16 },
+    { id: "exam", lo: 1, hi: 16 }
+  ];
+  var ticks = document.querySelectorAll(".tick");
+  function ticked() {
+    var map = {}, i, lec;
+    for (i = 0; i < ticks.length; i++) {
+      lec = parseInt(ticks[i].getAttribute("data-lecture"), 10);
+      map[lec] = ticks[i].getAttribute("data-state") === "done";
+    }
+    return map;
+  }
+  function paint() {
+    var map = ticked();
+    for (var i = 0; i < SLABS.length; i++) {
+      var s = SLABS[i], n = 0, total = s.hi - s.lo + 1;
+      for (var lec = s.lo; lec <= s.hi; lec++) if (map[lec]) n++;
+      var count = document.getElementById("rm-count-" + s.id);
+      if (count) count.textContent = n + " of " + total + " ticked";
+      var fill = document.getElementById("rm-fill-" + s.id);
+      if (fill) fill.style.width = Math.round((n / total) * 100) + "%";
+    }
+  }
+  window.__rmHooks = window.__rmHooks || [];
+  window.__rmHooks.push(paint);
+  paint();
+})();
+</script>
+</body>
+</html>

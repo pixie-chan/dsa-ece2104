@@ -1,0 +1,34 @@
+/* tokens.css : extracted from DSA-MIDTERM-ROADMAP.html (the live file is the single source of
+   truth, this export must never drift from it).
+   The page renders the light theme by default; [data-theme="dark"] is the
+   user-toggleable override carried in the same file.
+   Regenerate with: python3 ~/scripts/export-tokens.py DSA-MIDTERM-ROADMAP.html
+*/
+:root {
+  color-scheme:light;
+  --bg:#fafaf9; --surface:#ffffff; --surface-2:#f2f0ec; --surface-3:#e6e3dd;
+  --line:#e2dfd9; --line-2:#c4bfb4; --rule:#d8d3c8;
+  --text:#1c1917; --text-2:#4a453f; --text-3:#635d54;
+  --accent:#1b4d7a; --risk:#7a3355; --ok:#3d6b3f; --warn:#7a5310;
+  --font-display:"Instrument Serif", Georgia, serif;
+  --font-body:"Instrument Sans", system-ui, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --text-xs:0.75rem; --text-sm:0.875rem; --text-base:1rem; --text-md:1.125rem;
+  --text-lg:1.375rem; --text-xl:1.75rem; --text-2xl:2.5rem; --text-3xl:clamp(2.75rem, 4.4vw, 4rem);
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+  --r-1:2px; --r-2:4px; --hair:1px;
+  --shadow-1:0 1px 0 var(--line);
+  --shadow-2:0 2px 0 var(--line-2), 0 12px 28px -20px rgba(28,25,23,.45);
+  --dur-1:120ms; --dur-2:200ms; --dur-3:420ms;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --w-reg:400; --w-med:500; --w-semi:600;
+}
+
+[data-theme="dark"] {
+  color-scheme:dark;
+  --bg:#14120f; --surface:#1d1a16; --surface-2:#262218; --surface-3:#322c22;
+  --line:#38322a; --line-2:#4f4739; --rule:#443c31;
+  --text:#f5f2ec; --text-2:#cdc6b8; --text-3:#a49b8b;
+  --accent:#7fb0d8; --risk:#d18fb0; --ok:#8fbe91; --warn:#d9b070;
+  --shadow-2:0 2px 0 var(--line-2), 0 12px 28px -20px rgba(0,0,0,.75);
+}

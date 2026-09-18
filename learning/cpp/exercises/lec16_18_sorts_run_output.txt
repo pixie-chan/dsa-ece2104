@@ -1,0 +1,607 @@
+================================================================================
+ECE2104 (DSA) lectures 16, 17, 18: sorting, run capture
+generated 2026-09-18 22:50:48 IST on laptop
+system: Ubuntu 26.04.1 LTS Linux 7.0.0-31-generic
+compiler: g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+================================================================================
+
+Build command, run from /home/zen/learning/cpp/lessons, one line per program:
+
+  g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 -o /tmp/s16 16_sorts_elementary.cpp
+  g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 -o /tmp/s17 17_merge_sort.cpp
+  g++ -Wall -Wextra -Wpedantic -std=c++17 -O2 -o /tmp/s18 18_quick_sort.cpp
+
+Warning count with that exact flag set, from the compiler's own stderr:
+  16_sorts_elementary.cpp: 0 warnings
+  17_merge_sort.cpp: 0 warnings
+  18_quick_sort.cpp: 0 warnings
+  total: 0 warnings
+
+ZERO WARNINGS on all three programs: -Wall -Wextra -Wpedantic -std=c++17 -O2 is clean.
+Each program was then executed and every number in its output is a measurement
+taken during that run, never an estimate. Every sort ends with the sorted output
+compared against an independent reference sort, so the confirmed lines below are
+checks that a wrong sort would have failed.
+
+################################################################################
+# program 1 of 3: 16_sorts_elementary.cpp
+# binary: /tmp/s16
+# exit code: 0
+################################################################################
+=== 1. the input, n = 8, built from one fixed LCG seed ===
+  seed = 20260918 (the same seed is used by lessons 17 and 18)
+  sorted  mode, 0..n-1:   0   1   2   3   4   5   6   7
+  reverse mode:   7   6   5   4   3   2   1   0
+  random  mode, the permutation:   0   5   1   2   6   4   7   3
+  all-equal mode:   7   7   7   7   7   7   7   7
+  dupes   mode:   0   1   2   0   1   2   0   1
+  random mode is a permutation: every element distinct, so a closed form
+  can be compared exactly, with no ties to explain away
+
+=== 2. bubble sort on the same 8 element random input ===
+  before:   0   5   1   2   6   4   7   3
+  after :   0   1   2   3   4   5   6   7
+  comparisons = 25, exchanges = 8, passes = 5
+  sorted correctly = yes, checksum = 14498326412155018299
+
+=== 3. selection sort on THE SAME input ===
+  after :   0   1   2   3   4   5   6   7
+  comparisons = 28, exchanges = 6, passes = 7
+  sorted correctly = yes, checksum = 14498326412155018299
+
+=== 4. insertion sort on THE SAME input ===
+  after :   0   1   2   3   4   5   6   7
+  comparisons = 15, shifts = 8, value written back = 4
+
+=== 5. all three agree with the insertion reference, n = 8 ===
+  reference checksum = 14498326412155018299
+  bubble    output == reference by element: confirmed   checksum = 14498326412155018299
+  selection output == reference by element: confirmed   checksum = 14498326412155018299
+  insertion output == reference by element: confirmed   checksum = 14498326412155018299
+
+=== 6. best case: the input is already sorted ===
+  n =     8 sorted  
+    bubble    comparisons =         7  exchanges =         0  passes = 1   (early exit fired, so it costs one pass)
+    selection comparisons =        28  exchanges =         0   (the scan cannot tell sorted from reversed)
+    insertion comparisons =         7  shifts    =         0   (one comparison per element, no shift)
+  n =    64 sorted  
+    bubble    comparisons =        63  exchanges =         0  passes = 1   (early exit fired, so it costs one pass)
+    selection comparisons =      2016  exchanges =         0   (the scan cannot tell sorted from reversed)
+    insertion comparisons =        63  shifts    =         0   (one comparison per element, no shift)
+  n =  1024 sorted  
+    bubble    comparisons =      1023  exchanges =         0  passes = 1   (early exit fired, so it costs one pass)
+    selection comparisons =    523776  exchanges =         0   (the scan cannot tell sorted from reversed)
+    insertion comparisons =      1023  shifts    =         0   (one comparison per element, no shift)
+
+=== 7. worst case: the input is strictly decreasing ===
+  n =     8 reverse 
+    bubble    comparisons =        28  exchanges =        28  passes = 7
+    selection comparisons =        28  exchanges =         4
+    insertion comparisons =        28  shifts    =        28
+  n =    64 reverse 
+    bubble    comparisons =      2016  exchanges =      2016  passes = 63
+    selection comparisons =      2016  exchanges =        32
+    insertion comparisons =      2016  shifts    =      2016
+  n =  1024 reverse 
+    bubble    comparisons =    523776  exchanges =    523776  passes = 1023
+    selection comparisons =    523776  exchanges =       512
+    insertion comparisons =    523776  shifts    =    523776
+
+=== 8. the closed forms against the measured counts ===
+  n = 1024, n(n-1)/2 = 523776, n-1 = 1023
+  reverse input:
+    bubble    comparisons measured 523776 vs n(n-1)/2 523776 : match
+    bubble    exchanges   measured 523776 vs n(n-1)/2 523776 : match
+    selection comparisons measured 523776 vs n(n-1)/2 523776 : match
+    selection exchanges   measured 512 vs n/2 512 : match
+      the n-1 upper bound is NOT reached here: after the first exchange the tail
+      is no longer decreasing, so from then on the minimum keeps landing in the
+      slot it already occupies and half the passes exchange nothing. The bound
+      is n-1, the measurement is n/2, and only a count can tell you which
+    insertion comparisons measured 523776 vs n(n-1)/2 523776 : match
+    insertion writes      measured 523776 vs n(n-1)/2 523776 : match
+    insertion also writes the held value back 1023 times, which is n-1 = 1023 : match
+  sorted input:
+    bubble    comparisons measured 1023 vs n-1 1023 : match, exchanges measured 0 vs 0 : match
+    selection comparisons measured 523776 vs n(n-1)/2 523776 : match, exchanges measured 0 vs 0 : match
+    insertion comparisons measured 1023 vs n-1 1023 : match, writes measured 0 vs 0 : match
+  the reference was compared against both closed forms too, so the verdicts
+  above and the reference cannot drift apart:
+    reference insertion on reverse: comparisons 523776 vs n(n-1)/2 523776 : match, writes 523776 vs 523776 : match
+    reference output is non-decreasing: confirmed, checksum 6296161328335013763 vs insertion 6296161328335013763 : confirmed
+
+=== 9. average case, random input, against the n(n-1)/4 forms ===
+  n =     8 random   n(n-1)/4 = 14
+    bubble    comparisons =        25  ratio to n(n-1)/4 = 1.786
+    selection comparisons =        28  ratio to n(n-1)/4 = 2.000  exactly twice the average form, as the notes predict
+    insertion comparisons =        15  ratio to n(n-1)/4 = 1.071
+  n =    64 random   n(n-1)/4 = 1008
+    bubble    comparisons =      1995  ratio to n(n-1)/4 = 1.979
+    selection comparisons =      2016  ratio to n(n-1)/4 = 2.000  exactly twice the average form, as the notes predict
+    insertion comparisons =      1122  ratio to n(n-1)/4 = 1.113
+  n =  1024 random   n(n-1)/4 = 261888
+    bubble    comparisons =    521075  ratio to n(n-1)/4 = 1.990
+    selection comparisons =    523776  ratio to n(n-1)/4 = 2.000  exactly twice the average form, as the notes predict
+    insertion comparisons =    275640  ratio to n(n-1)/4 = 1.053
+  the ratios hover near 1.0 for bubble and insertion, which is the average
+  case of the notes, and selection is stuck at twice that: no data shape is
+  good for it
+
+=== 10. stability, measured on (key, original index) pairs ===
+  input pairs are key#originalIndex, three of the five keys are equal to 3
+  input      : 3#0 3#1 2#2 1#3 3#4
+  insertion  : 1#3 2#2 3#0 3#1 3#4
+    equal keys kept their input order: yes, STABLE   (comparisons 7)
+  bubble     : 1#3 2#2 3#0 3#1 3#4
+    equal keys kept their input order: yes, STABLE   (comparisons 10)
+  selection  : 1#3 2#2 3#1 3#0 3#4
+    equal keys kept their input order: no, NOT stable   (comparisons 10)
+  the three sorted keys came out as #1 0 4 under selection and as #0 1 4 under insertion
+  selection swaps the far-away minimum into position and drags key 3#0 past
+  3#1 on the way: that swap is why selection sort is not stable
+
+=== 11. count table at n = 8, 64, 1024 (measured) ===
+  algorithm   n      mode        comparisons    exchanges      writes
+  bubble          8  random             25             8             -   vs insertion reference: confirmed
+  selection       8  random             28             6             -   vs insertion reference: confirmed
+  insertion       8  random             15             -             8   vs insertion reference: confirmed
+  bubble          8  sorted              7             0             -   vs insertion reference: confirmed
+  selection       8  sorted             28             0             -   vs insertion reference: confirmed
+  insertion       8  sorted              7             -             0   vs insertion reference: confirmed
+  bubble          8  reverse            28            28             -   vs insertion reference: confirmed
+  selection       8  reverse            28             4             -   vs insertion reference: confirmed
+  insertion       8  reverse            28             -            28   vs insertion reference: confirmed
+  bubble          8  dupes              25             9             -   vs insertion reference: confirmed
+  selection       8  dupes              28             3             -   vs insertion reference: confirmed
+  insertion       8  dupes              16             -             9   vs insertion reference: confirmed
+  bubble          8  all-equal            7             0             -   vs insertion reference: confirmed
+  selection       8  all-equal           28             0             -   vs insertion reference: confirmed
+  insertion       8  all-equal            7             -             0   vs insertion reference: confirmed
+  bubble         64  random           1995          1063             -   vs insertion reference: confirmed
+  selection      64  random           2016            59             -   vs insertion reference: confirmed
+  insertion      64  random           1122             -          1063   vs insertion reference: confirmed
+  bubble         64  sorted             63             0             -   vs insertion reference: confirmed
+  selection      64  sorted           2016             0             -   vs insertion reference: confirmed
+  insertion      64  sorted             63             -             0   vs insertion reference: confirmed
+  bubble         64  reverse          2016          2016             -   vs insertion reference: confirmed
+  selection      64  reverse          2016            32             -   vs insertion reference: confirmed
+  insertion      64  reverse          2016             -          2016   vs insertion reference: confirmed
+  bubble         64  dupes            1911           798             -   vs insertion reference: confirmed
+  selection      64  dupes            2016            58             -   vs insertion reference: confirmed
+  insertion      64  dupes             861             -           798   vs insertion reference: confirmed
+  bubble         64  all-equal           63             0             -   vs insertion reference: confirmed
+  selection      64  all-equal         2016             0             -   vs insertion reference: confirmed
+  insertion      64  all-equal           63             -             0   vs insertion reference: confirmed
+  bubble       1024  random         521075        274626             -   vs insertion reference: confirmed
+  selection    1024  random         523776          1014             -   vs insertion reference: confirmed
+  insertion    1024  random         275640             -        274626   vs insertion reference: confirmed
+  bubble       1024  sorted           1023             0             -   vs insertion reference: confirmed
+  selection    1024  sorted         523776             0             -   vs insertion reference: confirmed
+  insertion    1024  sorted           1023             -             0   vs insertion reference: confirmed
+  bubble       1024  reverse        523776        523776             -   vs insertion reference: confirmed
+  selection    1024  reverse        523776           512             -   vs insertion reference: confirmed
+  insertion    1024  reverse        523776             -        523776   vs insertion reference: confirmed
+  bubble       1024  dupes          491391        197358             -   vs insertion reference: confirmed
+  selection    1024  dupes          523776          1018             -   vs insertion reference: confirmed
+  insertion    1024  dupes          198381             -        197358   vs insertion reference: confirmed
+  bubble       1024  all-equal         1023             0             -   vs insertion reference: confirmed
+  selection    1024  all-equal       523776             0             -   vs insertion reference: confirmed
+  insertion    1024  all-equal         1023             -             0   vs insertion reference: confirmed
+  every confirmed above is an element by element agreement with the reference
+  insertion sort on the same input, plus a non-decreasing order check, so a
+  wrong sort cannot hide behind a plausible count
+
+=== 12. cost at n = 8192: 33.6 million comparisons is where it hurts ===
+  random   input, n = 8192
+    bubble        40.713 ms  comparisons 33549346  checksum check: confirmed
+    selection     61.725 ms  comparisons 33550336  checksum check: confirmed
+    insertion      4.564 ms  comparisons 16769805  checksum check: confirmed
+    ratios: bubble/selection = 0.66, selection/insertion = 13.52, bubble/insertion = 8.92
+  reverse  input, n = 8192
+    bubble        12.047 ms  comparisons 33550336  checksum check: confirmed
+    selection     61.694 ms  comparisons 33550336  checksum check: confirmed
+    insertion      8.995 ms  comparisons 33550336  checksum check: confirmed
+    ratios: bubble/selection = 0.20, selection/insertion = 6.86, bubble/insertion = 1.34
+  these three sorts moved 131072 bytes through the heap in 4 allocations, all of them scratch copies, none of them needed
+  by the algorithm itself
+
+=== 13. the complexity table ===
+  algorithm   best        average      worst       space   stable   measured best case
+  bubble      O(n)        O(n^2)       O(n^2)      O(1)    yes      n-1 comparisons, 0 exchanges
+  selection   O(n^2)      O(n^2)       O(n^2)      O(1)    no       n(n-1)/2 comparisons either way
+  insertion   O(n)        O(n^2)       O(n^2)      O(1)    yes      n-1 comparisons, 0 writes
+  the best case of bubble and insertion is exactly n-1 because a sorted input
+  never triggers an exchange or a shift; selection has no good case at all
+
+=== 14. the one line to remember ===
+  bubble moves neighbours and stops early, selection always scans the whole tail,
+  insertion shifts only what the new element must pass. All three are O(n^2) in the
+  average case, only bubble and insertion get an O(n) best case, and only insertion
+  is the one you actually use for small or nearly sorted data.
+
+  reference check with the standalone confirmer:
+    bubble    vs reference at n = 64 : confirmed
+    selection vs reference at n = 64 : confirmed
+    insertion vs reference at n = 64 : confirmed
+
+################################################################################
+# program 2 of 3: 17_merge_sort.cpp
+# binary: /tmp/s17
+# exit code: 0
+################################################################################
+=== 1. the input, n = 8, the same LCG seed as lesson 16 ===
+  random permutation, seed 20260918:   0   5   1   2   6   4   7   3
+  merge sort never compares an element with anything outside its two runs, so the
+  input order changes only HOW MANY of the merges take from left versus right
+
+=== 2. one merge step, measured in isolation ===
+  before:   2   5   9  11   1   4   8  10
+  left run  [0,4) = 2 5 9 11, right run [4,8) = 1 4 8 10
+    merge [0,4) with [4,8)  comparisons this merge = 7  result:    1    2    4    5    8    9   10   11
+  after :   1   2   4   5   8   9  10  11
+  comparisons in this merge = 7, element copies = 8, merges = 1
+  a merge of two runs of p and q elements costs between min(p,q) and p+q-1
+  comparisons: here 7 against the bounds 4 and 7
+  order check: confirmed sorted, checksum = 2106240607158666991
+
+=== 3. top-down merge sort on the array, every merge at n = 8 ===
+  before:   0   5   1   2   6   4   7   3
+    merge [0,1) with [1,2)  comparisons this merge = 1  result:    0    5
+    merge [2,3) with [3,4)  comparisons this merge = 1  result:    1    2
+    merge [0,2) with [2,4)  comparisons this merge = 3  result:    0    1    2    5
+    merge [4,5) with [5,6)  comparisons this merge = 1  result:    4    6
+    merge [6,7) with [7,8)  comparisons this merge = 1  result:    3    7
+    merge [4,6) with [6,8)  comparisons this merge = 3  result:    3    4    6    7
+    merge [0,4) with [4,8)  comparisons this merge = 6  result:    0    1    2    3    4    5    6    7
+  after :   0   1   2   3   4   5   6   7
+  merges = 7 (n-1 = 7), element copies = 24 (n*log2(n) = 24), comparisons = 16, deepest recursion = 4
+  the level structure is visible above: 4 merges of size 2, 2 of size 4, 1 of size 8
+  sorted correctly = yes, checksum = 14498326412155018299
+
+=== 4. counts for n = 8, 64, 1024, 65536, array version ===
+  n        comparisons   merges   n-1       elem copies   n*log2(n)   depth   log2(n)+1
+       8            16        7        7            24          24       4           4
+         sorted output vs the independent reference sort: confirmed   checksum = 14498326412155018299
+      64           301       63       63           384         384       7           7
+         sorted output vs the independent reference sort: confirmed   checksum = 14948070509728313667
+    1024          8967     1023     1023         10240       10240      11          11
+         sorted output vs the independent reference sort: confirmed   checksum = 6296161328335013763
+   65536        965633    65535    65535       1048576     1048576      17          17
+         sorted output vs the independent reference sort: confirmed   checksum = 2590206648484365187
+
+=== 5. the n log2 n closed form against the measured comparisons ===
+  n =      8  measured =          16  n log2 n =          24  measured / (n log2 n) = 0.6667  measured / n = 2.000
+         the ratio sits below 1 because a merge stops comparing as soon as one run
+         runs out: the exact count is between n*log2(n)/2 and n*log2(n)-n+1, and only
+         a measurement can say where in that band this input lands
+         reference check: confirmed
+  n =     64  measured =         301  n log2 n =         384  measured / (n log2 n) = 0.7839  measured / n = 4.703
+         the ratio sits below 1 because a merge stops comparing as soon as one run
+         runs out: the exact count is between n*log2(n)/2 and n*log2(n)-n+1, and only
+         a measurement can say where in that band this input lands
+         reference check: confirmed
+  n =   1024  measured =        8967  n log2 n =       10240  measured / (n log2 n) = 0.8757  measured / n = 8.757
+         the ratio sits below 1 because a merge stops comparing as soon as one run
+         runs out: the exact count is between n*log2(n)/2 and n*log2(n)-n+1, and only
+         a measurement can say where in that band this input lands
+         reference check: confirmed
+  n =  65536  measured =      965633  n log2 n =     1048576  measured / (n log2 n) = 0.9209  measured / n = 14.734
+         the ratio sits below 1 because a merge stops comparing as soon as one run
+         runs out: the exact count is between n*log2(n)/2 and n*log2(n)-n+1, and only
+         a measurement can say where in that band this input lands
+         reference check: confirmed
+
+=== 6. the same algorithm on a singly linked list ===
+  n        comparisons   array vs list   merges   links rewritten   depth
+       8            16              16        7                16       4
+         list output identical to the array output: confirmed, sorted: confirmed, checksum = 14498326412155018299
+         comparison counts differ by 0 (list 16 vs array 16)
+         element copies in the list version = 0 by construction: merging a list
+         reassigns next pointers, it never copies a value into a new slot
+         list nodes moved 128 bytes through the heap with 16 bytes per node
+      64           301             301       63               301       7
+         list output identical to the array output: confirmed, sorted: confirmed, checksum = 14948070509728313667
+         comparison counts differ by 0 (list 301 vs array 301)
+         element copies in the list version = 0 by construction: merging a list
+         reassigns next pointers, it never copies a value into a new slot
+         list nodes moved 1024 bytes through the heap with 16 bytes per node
+    1024          8967            8967     1023              8967      11
+         list output identical to the array output: confirmed, sorted: confirmed, checksum = 6296161328335013763
+         comparison counts differ by 0 (list 8967 vs array 8967)
+         element copies in the list version = 0 by construction: merging a list
+         reassigns next pointers, it never copies a value into a new slot
+         list nodes moved 16384 bytes through the heap with 16 bytes per node
+   65536        965633          965633    65535            965633      17
+         list output identical to the array output: confirmed, sorted: confirmed, checksum = 2590206648484365187
+         comparison counts differ by 0 (list 965633 vs array 965633)
+         element copies in the list version = 0 by construction: merging a list
+         reassigns next pointers, it never copies a value into a new slot
+         list nodes moved 1048576 bytes through the heap with 16 bytes per node
+
+=== 7. recursion depth, measured, against log2(n) + 1 ===
+  n        array depth   list depth   log2(n)+1   array calls   list calls
+       8              4             4            4             15            15
+         array depth == log2(n)+1: confirmed, list depth == log2(n)+1: confirmed
+      64              7             7            7            127           127
+         array depth == log2(n)+1: confirmed, list depth == log2(n)+1: confirmed
+    1024             11            11           11           2047          2047
+         array depth == log2(n)+1: confirmed, list depth == log2(n)+1: confirmed
+   65536             17            17           17         131071        131071
+         array depth == log2(n)+1: confirmed, list depth == log2(n)+1: confirmed
+  the recursion depth is why merge sort is the safe sort for a linked list and a
+  risk for quick sort: the tree is balanced by construction, log2(n) frames, always
+
+=== 8. space: the auxiliary buffer, measured ===
+  n =      8  auxiliary array requested =        32 bytes (n * sizeof(int))  allocator usable size =        40 bytes
+         the sort itself asked the heap for 1 block of 32 bytes: one buffer, not one per level
+         element copies = 24 = n * log2(n) = 24, so the BYTES moved are n log2 n * sizeof(int) while the SPACE is n
+         reference check: confirmed
+  n =     64  auxiliary array requested =       256 bytes (n * sizeof(int))  allocator usable size =       264 bytes
+         the sort itself asked the heap for 1 block of 256 bytes: one buffer, not one per level
+         element copies = 384 = n * log2(n) = 384, so the BYTES moved are n log2 n * sizeof(int) while the SPACE is n
+         reference check: confirmed
+  n =   1024  auxiliary array requested =      4096 bytes (n * sizeof(int))  allocator usable size =      4104 bytes
+         the sort itself asked the heap for 1 block of 4096 bytes: one buffer, not one per level
+         element copies = 10240 = n * log2(n) = 10240, so the BYTES moved are n log2 n * sizeof(int) while the SPACE is n
+         reference check: confirmed
+  n =  65536  auxiliary array requested =    262144 bytes (n * sizeof(int))  allocator usable size =    262152 bytes
+         the sort itself asked the heap for 1 block of 262144 bytes: one buffer, not one per level
+         element copies = 1048576 = n * log2(n) = 1048576, so the BYTES moved are n log2 n * sizeof(int) while the SPACE is n
+         reference check: confirmed
+  list version, n = 64: the nodes themselves are 1024 bytes
+         the sort allocated 0 blocks and 0 bytes for an auxiliary buffer: the relinking needs none
+         extra space = the 7 live stack frames only, O(log n)
+         array version extra space at the same n = 256 bytes contiguous; the list version pays 1024 bytes instead for its nodes
+         reference check: confirmed, checksum = 14948070509728313667
+
+=== 9. timing, and both versions against the reference by element ===
+  array version, n = 65536: 4.442 ms, comparisons 965633, element copies 1048576
+    vs independent reference: confirmed, checksum = 2590206648484365187
+  list version,  n = 65536: 7.265 ms, comparisons 965633, element copies 0 (links rewritten 965633)
+    output identical to the array version by element: confirmed, checksum = 2590206648484365187
+  the array version is faster per comparison because a merge scans two arrays in
+  order; the list version allocates per node and chases pointers. Both are O(n log n)
+  and the comparison counts are identical, ratio 1 : confirmed
+
+=== 10. the complexity table ===
+  algorithm              best        average     worst       space        stable
+  merge sort (array)     O(n log n)  O(n log n)  O(n log n)  O(n)         yes
+  merge sort (list)      O(n log n)  O(n log n)  O(n log n)  O(log n)     yes
+  insertion sort (16)    O(n)        O(n^2)      O(n^2)      O(1)         yes
+  merge sort is the first sort here whose worst case equals its best case, and it is
+  stable because the merge takes from the LEFT run on a tie (<=, never <)
+  it pays for that with a second copy of the data, or with a second pointer per node
+
+=== 11. the one line to remember ===
+  split in half, sort each half, merge the two sorted halves in one linear pass. The
+  recursion tree is log2(n) deep no matter what the input looks like, so the cost is
+  ~n log2 n comparisons in every case, and the price is an n element buffer. On a
+  linked list the buffer disappears because merging relinks nodes instead of copying.
+
+################################################################################
+# program 3 of 3: 18_quick_sort.cpp
+# binary: /tmp/s18
+# exit code: 0
+################################################################################
+=== 1. the four inputs, n = 8, the same LCG seed as lesson 16 ===
+  random  :    0    5    1    2    6    4    7    3
+  sorted  :    0    1    2    3    4    5    6    7
+  reverse :    7    6    5    4    3    2    1    0
+  all-equal:    7    7    7    7    7    7    7    7
+  these four shapes are the whole lesson: the first is the case quick sort is
+  designed for, the next two are what a lazy pivot choice cannot survive, and the
+  fourth is the case that separates Lomuto from Hoare
+
+=== 2. Lomuto partition alone, traced at n = 8 ===
+  before:    0    5    1    2    6    4    7    3
+    lomuto  [0,8) pivot =    3 at index 7 -> pivot lands at 3, left size 3, right size 4, comparisons 7, swaps 3
+  after :    0    1    2    3    6    4    7    5
+  the pivot value now sits at index 3, everything left of it is <= it and everything right of it is > it
+  partition invariant checked element by element: confirmed, comparisons 7, swaps 3
+  a partition of n elements costs n-1 comparisons and at most n-1 swaps: one pass
+
+=== 3. Hoare partition on THE SAME input, traced ===
+  before:    0    5    1    2    6    4    7    3
+    hoare   [0,8) pivot =    0 at index 0 -> pointers meet at 0, left size 1, right size 7, comparisons 9, swaps 0
+  after :    0    5    1    2    6    4    7    3
+  Hoare does not park the pivot: the two pointers sweep toward each other and the
+  split is where they cross, so the last index of the left part is 0
+  on this input the pivot value 0 is the SMALLEST element, so no element can be moved
+  past it and the split is 1 against 7: a good scheme still degenerates when
+  the pivot it happens to pick is the extreme value of the range
+  comparisons 9 against Lomuto's 7 on the same 8 elements (the pointer crossing test costs a comparison too)
+  Hoare split halves checked element by element: confirmed
+  the measured advantage of Hoare is the swap count on large random input, and section 6
+  counts it for all four variants on the same n = 1024 array
+
+=== 4. median-of-three, the pivot it picks at n = 8 ===
+  random   a[0] =   0, a[3] =   2, a[7] =   3 -> median is at index 3 (value 2), comparisons spent choosing = 2
+  sorted   a[0] =   0, a[3] =   3, a[7] =   7 -> median is at index 3 (value 3), comparisons spent choosing = 2
+  reverse  a[0] =   7, a[3] =   4, a[7] =   0 -> median is at index 3 (value 4), comparisons spent choosing = 2
+  on a sorted or reverse sorted input the three sampled values are the smallest,
+  the middle and the largest, so the median of them is the true middle element:
+  that is exactly the pivot that splits the range in half
+
+=== 5. comparisons and swaps, 4 inputs x 4 variants, n = 64 ===
+  input      variant            comparisons     swaps   depth   verdict
+  random   lomuto-last               377        201      11   confirmed   checksum 14948070509728313667
+  random   lomuto-median3            395        169       9   confirmed   checksum 14948070509728313667
+  random   hoare-first               550         99      11   confirmed   checksum 14948070509728313667
+  random   hoare-median3             685        131      10   confirmed   checksum 14948070509728313667
+  sorted   lomuto-last              2016          0      64   confirmed   checksum 14948070509728313667
+  sorted   lomuto-median3            329         64       7   confirmed   checksum 14948070509728313667
+  sorted   hoare-first              2142          0      64   confirmed   checksum 14948070509728313667
+  sorted   hoare-median3             647         84       8   confirmed   checksum 14948070509728313667
+  reverse  lomuto-last              2016         32      64   confirmed   checksum 14948070509728313667
+  reverse  lomuto-median3            449        240      10   confirmed   checksum 14948070509728313667
+  reverse  hoare-first              2174         32      64   confirmed   checksum 14948070509728313667
+  reverse  hoare-median3             646        114       8   confirmed   checksum 14948070509728313667
+  all-equal lomuto-last              2016          0      64   confirmed   checksum 7085551786942142275
+  all-equal lomuto-median3           2142         63      64   confirmed   checksum 7085551786942142275
+  all-equal hoare-first               510        192       7   confirmed   checksum 7085551786942142275
+  all-equal hoare-median3             636        223       7   confirmed   checksum 7085551786942142275
+
+=== 6. the same table at n = 1024 ===
+  input      variant            comparisons     swaps   depth   verdict
+  random   lomuto-last             11972       4988      23   confirmed   checksum 6296161328335013763
+  random   lomuto-median3          10866       5246      16   confirmed   checksum 6296161328335013763
+  random   hoare-first             15713       2458      23   confirmed   checksum 6296161328335013763
+  random   hoare-median3           16747       3104      21   confirmed   checksum 6296161328335013763
+  sorted   lomuto-last            523776          0    1024   confirmed   checksum 6296161328335013763
+  sorted   lomuto-median3           9229       1024      11   confirmed   checksum 6296161328335013763
+  sorted   hoare-first            525822          0    1024   confirmed   checksum 6296161328335013763
+  sorted   hoare-median3           14503       1364      12   confirmed   checksum 6296161328335013763
+  reverse  lomuto-last            523776        512    1024   confirmed   checksum 6296161328335013763
+  reverse  lomuto-median3          16281       9264      22   confirmed   checksum 6296161328335013763
+  reverse  hoare-first            526334        512    1024   confirmed   checksum 6296161328335013763
+  reverse  hoare-median3           14502       1874      12   confirmed   checksum 6296161328335013763
+  all-equal lomuto-last            523776          0    1024   confirmed   checksum 11629888700783275907
+  all-equal lomuto-median3         525822       1023    1024   confirmed   checksum 11629888700783275907
+  all-equal hoare-first             12286       5120      11   confirmed   checksum 11629888700783275907
+  all-equal hoare-median3           14332       5631      11   confirmed   checksum 11629888700783275907
+  n(n-1)/2 at 1024 = 523776 and n*log2(n) = 10240: read the table against those two
+  the swaps column on the random input is the reason Hoare exists: lomuto-last      4988, lomuto-median3   5246, hoare-first      2458, hoare-median3    3104
+  measured on this machine: hoare-first swaps about half as often as lomuto-last and never
+  swaps an element with itself, which is where its lower constant comes from
+
+=== 7. the O(n^2) case, concretely: sorted input with the last element as pivot ===
+  n = 8, already sorted, pivot = a[hi-1]:
+    lomuto  [0,8) pivot =    7 at index 7 -> pivot lands at 7, left size 7, right size 0, comparisons 7, swaps 0
+    lomuto  [0,7) pivot =    6 at index 6 -> pivot lands at 6, left size 6, right size 0, comparisons 6, swaps 0
+    lomuto  [0,6) pivot =    5 at index 5 -> pivot lands at 5, left size 5, right size 0, comparisons 5, swaps 0
+    lomuto  [0,5) pivot =    4 at index 4 -> pivot lands at 4, left size 4, right size 0, comparisons 4, swaps 0
+    lomuto  [0,4) pivot =    3 at index 3 -> pivot lands at 3, left size 3, right size 0, comparisons 3, swaps 0
+    lomuto  [0,3) pivot =    2 at index 2 -> pivot lands at 2, left size 2, right size 0, comparisons 2, swaps 0
+    lomuto  [0,2) pivot =    1 at index 1 -> pivot lands at 1, left size 1, right size 0, comparisons 1, swaps 0
+    comparisons measured = 28 vs n(n-1)/2 = 28 : match
+    recursion depth measured = 8 vs n = 8 : match, calls = 15 (depth counts every call entered, and the call that
+    sees a single element is still a call, which is why the chain reports n and not n-1)
+    swaps measured = 0 (nothing ever needs to move: the input was
+    already sorted, so every comparison is wasted and no element is misplaced)
+    sorted anyway: confirmed, checksum 14498326412155018299
+  n = 64, already sorted, pivot = a[hi-1]:
+    comparisons measured = 2016 vs n(n-1)/2 = 2016 : match
+    recursion depth measured = 64 vs n = 64 : match, calls = 127 (depth counts every call entered, and the call that
+    sees a single element is still a call, which is why the chain reports n and not n-1)
+    swaps measured = 0 (nothing ever needs to move: the input was
+    already sorted, so every comparison is wasted and no element is misplaced)
+    sorted anyway: confirmed, checksum 14948070509728313667
+  the same input with median-of-three instead of a fixed pivot:
+    n = 1024: comparisons 9229 (quadratic would be 523776), depth 11 (quadratic would be 1023)
+    reference check: confirmed
+
+=== 8. all-equal input: the case that separates Lomuto from Hoare ===
+  variant            n        comparisons     swaps   depth   verdict
+  lomuto-last            8           28          0       8   confirmed
+  lomuto-median3         8           42          7       8   confirmed
+  hoare-first            8           38         12       4   confirmed
+  hoare-median3          8           52         15       4   confirmed
+    (n(n-1)/2 = 28, n*log2(n) is what the balanced variants should stay near)
+  lomuto-last           64         2016          0      64   confirmed
+  lomuto-median3        64         2142         63      64   confirmed
+  hoare-first           64          510        192       7   confirmed
+  hoare-median3         64          636        223       7   confirmed
+    (n(n-1)/2 = 2016, n*log2(n) is what the balanced variants should stay near)
+  lomuto-last         1024       523776          0    1024   confirmed
+  lomuto-median3      1024       525822       1023    1024   confirmed
+  hoare-first         1024        12286       5120      11   confirmed
+  hoare-median3       1024        14332       5631      11   confirmed
+    (n(n-1)/2 = 523776, n*log2(n) is what the balanced variants should stay near)
+  Lomuto tests a[j] <= pivot, so on all-equal data EVERY element joins the left part
+  and the split is 1 against n-1: quadratic, and the measured table shows it at every n.
+  Median-of-three does NOT rescue that, because on this input every sampled value is
+  equal to the pivot, so it still lands on one side. Hoare's two pointers walk toward
+  each other and meet in the middle no matter how equal the values are: measured 12286
+  comparisons at n = 1024 against Lomuto's 523776, which is the whole difference
+  between n log2 n and n(n-1)/2 on data that has no order to exploit: a factor of 43
+  the textbook cure for all-equal data is a three way partition (values less, equal,
+  greater) or a random pivot, not a better median
+
+=== 9. iteration depth, measured: the O(log n) best case and the O(n) worst case ===
+  input      variant            n        depth   log2(n)+1   n       calls
+  random   lomuto-last           64        11           7       64        79
+  random   lomuto-median3        64         9           7       64        75
+  random   hoare-first           64        11           7       64       127
+  random   hoare-median3         64        10           7       64       127
+  sorted   lomuto-last           64        64           7       64       127
+  sorted   lomuto-median3        64         7           7       64        65
+  sorted   hoare-first           64        64           7       64       127
+  sorted   hoare-median3         64         8           7       64       127
+  reverse  lomuto-last           64        64           7       64       127
+  reverse  lomuto-median3        64        10           7       64        71
+  reverse  hoare-first           64        64           7       64       127
+  reverse  hoare-median3         64         8           7       64       127
+  all-equal lomuto-last           64        64           7       64       127
+  all-equal lomuto-median3        64        64           7       64       127
+  all-equal hoare-first           64         7           7       64       127
+  all-equal hoare-median3         64         7           7       64       127
+  random   lomuto-last         1024        23          11     1024      1369
+  random   lomuto-median3      1024        16          11     1024      1179
+  random   hoare-first         1024        23          11     1024      2047
+  random   hoare-median3       1024        21          11     1024      2047
+  sorted   lomuto-last         1024      1024          11     1024      2047
+  sorted   lomuto-median3      1024        11          11     1024      1025
+  sorted   hoare-first         1024      1024          11     1024      2047
+  sorted   hoare-median3       1024        12          11     1024      2047
+  reverse  lomuto-last         1024      1024          11     1024      2047
+  reverse  lomuto-median3      1024        22          11     1024      1127
+  reverse  hoare-first         1024      1024          11     1024      2047
+  reverse  hoare-median3       1024        12          11     1024      2047
+  all-equal lomuto-last         1024      1024          11     1024      2047
+  all-equal lomuto-median3      1024      1024          11     1024      2047
+  all-equal hoare-first         1024        11          11     1024      2047
+  all-equal hoare-median3       1024        11          11     1024      2047
+  depth is the measured maximum number of simultaneously live calls, and calls is the
+  measured number of recursive calls entered. Depth counts the call that sees a single
+  element too, so the two closed forms to read against are log2(n)+1 for a balanced run
+  and n for a degenerate one. The all-equal rows are the sharpest contrast in the file:
+  the same all-equal input at n = 1024 reaches depth 11 for hoare-first and depth 1024 for lomuto-last
+  which is log2(n)+1 = 11 against n = 1024, both measured on the same array
+
+=== 10. cost at n = 8192, four variants, two inputs ===
+  random   input, n = 8192
+    lomuto-last           0.408 ms  comparisons     126123  depth     28  confirmed
+    lomuto-median3        0.433 ms  comparisons     116675  depth     23  confirmed
+    hoare-first           0.465 ms  comparisons     177321  depth     39  confirmed
+    hoare-median3         0.487 ms  comparisons     166437  depth     26  confirmed
+  all-equal input, n = 8192
+    lomuto-last          13.760 ms  comparisons   33550336  depth   8192  confirmed
+    lomuto-median3       13.556 ms  comparisons   33566718  depth   8192  confirmed
+    hoare-first           0.142 ms  comparisons     122878  depth     14  confirmed
+    hoare-median3         0.131 ms  comparisons     139260  depth     14  confirmed
+  the all-equal rows are the whole point: the same four algorithms, the same data, and
+  on this input the fastest is hoare-median3    with 139260 comparisons in 0.131 ms while the slowest is lomuto-last      with 33550336 comparisons in 13.760 ms
+  a measured factor of 105.0 in time from the pivot choice alone, and n(n-1)/2 at n = 8192 is 33550336
+
+=== 11. n = 65536, random input, all four variants, against the reference ===
+  lomuto-last      comparisons     1220501  swaps     603641  depth     38  calls   87411  vs reference: confirmed  checksum 2590206648484365187
+  lomuto-median3   comparisons     1158392  swaps     585697  depth     30  calls   74799  vs reference: confirmed  checksum 2590206648484365187
+  hoare-first      comparisons     1591767  swaps     246935  depth     44  calls  131071  vs reference: confirmed  checksum 2590206648484365187
+  hoare-median3    comparisons     1627123  swaps     288561  depth     36  calls  131071  vs reference: confirmed  checksum 2590206648484365187
+
+=== 12. the complexity table ===
+  variant           best        average     worst case   stable   space     worst input measured at n = 1024
+  lomuto-last       O(n log n)  O(n log n)  O(n^2)       no       O(log n)  sorted  523776
+  lomuto-median3    O(n log n)  O(n log n)  O(n^2)       no       O(log n)  all-equal525822
+  hoare-first       O(n log n)  O(n log n)  O(n^2)       no       O(log n)  reverse 526334
+  hoare-median3     O(n log n)  O(n log n)  O(n^2)       no       O(log n)  random  16747
+  every worst case in that column is O(n^2): the split is decided by the data, so no
+  pivot rule removes the bad case, it only decides which inputs reach it. Median-of-three
+  does not change the theoretical bound, and an adversary who knows the pivot rule can
+  still force the quadratic case. What the measured column shows is which of the four
+  teaching inputs each choice survives: at n = 1024 the quadratic form is 523776 comparisons and a healthy run stays near n log2 n = 10240
+  read the measured column against those two numbers: sorted   is where lomuto-last collapses (523776), all-equal is where lomuto-median3 collapses (525822), hoare-first collapses on sorted
+  and reverse (526334), and hoare-median3 never left the healthy band on any of
+  the four shapes, which is a statement about these inputs, not a proof about all inputs
+  quick sort is NOT stable: a partition swaps elements across the whole range, so equal
+  keys change order, and none of the four variants repairs that. The cure for stability is
+  the merge sort of lesson 17 or a sort by (key, original index) pairs
+  quick sort sorts in place: every run in this lesson moved 2949120 bytes in 27 allocations, all of them this lesson's own scratch copies
+
+=== 13. the one line to remember ===
+  pick a pivot, move everything smaller to its left and everything larger to its right,
+  then do it again on both sides. The partition is one linear pass, so the cost is the
+  depth of the recursion: log2(n) levels when the pivot splits the range evenly,
+  n levels when it does not. Median-of-three makes the even split the normal case, and
+  Hoare's crossing pointers survive the all-equal input that kills Lomuto.
+

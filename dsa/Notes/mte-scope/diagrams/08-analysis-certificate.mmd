@@ -1,0 +1,22 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph LR
+  subgraph BEFORE["BEFORE n0: f(n) sits above c times g(n), so the bound does not hold here"]
+    direction TB
+    F1["f(n)<br/>the real cost of the algorithm"]
+    GG1["c times g(n)<br/>the model function scaled by c"]
+    F1 ~~~ GG1
+  end
+  subgraph AFTER["AT OR PAST n0: c times g(n) sits above f(n), so the bound holds from here on"]
+    direction TB
+    GG2["c times g(n)"]
+    F2["f(n)"]
+    GG2 ~~~ F2
+  end
+  N0(("n0"))
+  F1 --> N0
+  GG1 --> N0
+  N0 --> F2
+  N0 --> GG2
+  CROSS["THE CROSSING<br/>the two lines meet at n0. Before it the cost line is on top,<br/>after it the model line is on top and stays there."] -.-> N0
+  CERT["THE CERTIFICATE<br/>to show that f is O of g, hand over two things: a constant c larger than zero, and a point n0.<br/>Then show that for every n at or past n0, f(n) is at most c times g(n).<br/>Inputs below n0 may break the pattern, and that is allowed."]
+  N0 ~~~ CERT

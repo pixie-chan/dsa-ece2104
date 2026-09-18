@@ -1,0 +1,21 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"DejaVu Sans, sans-serif","primaryColor":"#e8f0fa","primaryBorderColor":"#3f6bab","primaryTextColor":"#10203a","lineColor":"#8aa6c8","tertiaryColor":"#fdf6e3"}}}%%
+graph TB
+  K8["8"] --> K3["3"]
+  K8 --> K10["10"]
+  K3 --> K1["1"]
+  K3 --> K6["6"]
+  K10 --> K14["14"]
+  K6 --> K4["4"]
+  K6 --> K7["7"]
+  K4 --> KNULL["empty link"]
+  RULE["AT EACH NODE<br/>a smaller key turns left, a larger key turns right, an equal key means found"] -.-> K8
+  FOUND["FOUND<br/>search for key 6 walks 8, then 3, then 6 and stops there<br/>3 comparisons"] -.-> K6
+  MISS["ABSENT<br/>search for key 5 walks the same three steps, then 6 down to 4,<br/>and the right link of 4 is empty, so the key is absent<br/>4 comparisons"] -.-> K4
+  LEG["HOW TO READ THE COLOURS<br/>GREEN marks the three steps both searches walk.<br/>RED marks the one extra step that only the search for 5 takes."]
+  LEG ~~~ K1
+  linkStyle 0,3 stroke:#1e8449,stroke-width:5px
+  linkStyle 5,7 stroke:#c0392b,stroke-width:4px,stroke-dasharray:6 6
+  classDef shared fill:#e8f6ee,stroke:#1e8449,stroke-width:3px
+  classDef extra fill:#fdecea,stroke:#c0392b,stroke-width:3px
+  class K8,K3,K6 shared
+  class K4,KNULL extra

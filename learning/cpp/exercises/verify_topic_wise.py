@@ -494,10 +494,30 @@ def check_style(md):
           f"{len(html_doc)} bytes")
 
 
+ROADMAP_LINK = "../midterm-roadmap/DSA-MIDTERM-ROADMAP.html#s5"
+
+
 def check_no_sibling_paths(md):
-    """Never point at a sibling folder: everything the reader needs lives here."""
-    bad = re.findall(r"\((\.\./[^)]+)\)", md)
-    check("paths: no relative path escapes this folder", not bad, str(bad))
+    """Two different kinds of path, two different rules.
+
+    An IMAGE embed must never leave this folder: the figures have to render for a reader who
+    opens the file offline from anywhere. A hyperlink MAY point at the companion roadmap, which
+    is the cross-page navigation that was asked for, so it is allowlisted by exact URL rather
+    than waved through as a class.
+    """
+    embeds = re.findall(r"!\[[^\]]*\]\(([^)]+)\)", md)
+    escaping = [e for e in embeds if e.startswith("/") or e.startswith("http") or ".." in e]
+    check("paths: no image embed escapes this folder", not escaping, str(escaping))
+
+    links = re.findall(r"(?<!!)\[[^\]]*\]\(([^)]+)\)", md)
+    outside = [u for u in links if u.startswith("..") and u != ROADMAP_LINK]
+    check("paths: the only out-of-folder link is the roadmap cross-link", not outside,
+          str(outside[:3]))
+    check("paths: the roadmap cross-link is present and points at the topic plan",
+          ROADMAP_LINK in md, f"{md.count(ROADMAP_LINK)} occurrences")
+    check("paths: every in-folder link target exists",
+          all((FOLDER / u).exists() for u in links
+              if not u.startswith(("http", "..", "#"))), "")
 
 
 def check_proof_rows(md, caps):

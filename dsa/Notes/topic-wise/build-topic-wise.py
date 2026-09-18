@@ -20,6 +20,7 @@ Usage:
 """
 import html
 import re
+import struct
 import sys
 from pathlib import Path
 
@@ -45,9 +46,27 @@ def inline(text):
     text = re.sub(r"`([^`]+)`", stash, text)
     text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"(?<!\w)\*([^*]+)\*(?!\w)", r"<em>\1</em>", text)
+    # links last, so the brackets inside a code span are never touched
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', text)
     for i, code in enumerate(placeholders):
         text = text.replace(f"\x00{i}\x00", f"<code>{code}</code>")
     return text
+
+
+def png_size(path, default=(1400, 900)):
+    """The real pixel size of a PNG, read from its IHDR.
+
+    The <img> width/height are layout hints that stop the page from reflowing as figures load.
+    Writing a guessed 1400x900 there would be a fabricated measurement in the markup, and a wrong
+    one for every figure whose aspect ratio is not 14:9, so the numbers come from the file.
+    """
+    try:
+        data = path.read_bytes()[:24]
+        if data[:8] == b"\x89PNG\r\n\x1a\n":
+            return struct.unpack(">II", data[16:24])
+    except OSError:
+        pass
+    return default
 
 
 def table_block(rows, caption):
@@ -133,11 +152,22 @@ def md_to_html(md):
             if m:
                 src = m.group(2)
                 alt = m.group(1)
+                w, h = png_size(HERE / src)
                 out.append(f'<figure><img src="{src}" alt="{html.escape(alt, quote=True)}" '
-                           f'loading="lazy" width="1400" height="900">'
+                           f'loading="lazy" width="{w}" height="{h}">'
                            f"<figcaption>{html.escape(alt)}</figcaption></figure>")
                 i += 1
                 continue
+
+        # blockquote: a run of lines starting with ">"
+        if line.startswith(">"):
+            close_list()
+            buf = []
+            while i < len(lines) and lines[i].startswith(">"):
+                buf.append(lines[i].lstrip(">").strip())
+                i += 1
+            out.append('<blockquote class="note">' + inline(" ".join(buf)) + "</blockquote>")
+            continue
 
         if line.startswith("### "):
             out.append(f"<h3>{inline(line[4:])}</h3>")
@@ -254,7 +284,7 @@ h1{{
   letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); white-space:nowrap}}
 .chips{{display:flex; gap:var(--s-2); overflow-x:auto; padding:var(--s-2) 0; flex:1;
   scrollbar-width:thin}}
-.chip{{display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+.chip{{display:inline-flex; align-items:center; min-height:44px; gap:6px; white-space:nowrap;
   border:var(--hair) solid var(--line-2); border-radius:999px; padding:4px var(--s-3);
   font-size:var(--text-xs); color:var(--text-2); text-decoration:none;
   transition:border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease)}}
@@ -264,7 +294,7 @@ h1{{
 .chip__n{{font-family:var(--font-mono); color:var(--text-3)}}
 .chip[aria-current="true"] .chip__n{{color:var(--accent)}}
 .toggle{{border:var(--hair) solid var(--line-2); background:var(--surface); color:var(--text-2);
-  border-radius:var(--r-1); padding:5px var(--s-3); font-family:var(--font-mono);
+  border-radius:var(--r-1); min-height:44px; padding:5px var(--s-3); font-family:var(--font-mono);
   font-size:var(--text-xs); cursor:pointer; white-space:nowrap}}
 .toggle:hover{{border-color:var(--accent); color:var(--accent)}}
 

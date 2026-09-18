@@ -282,6 +282,7 @@ footer{padding:var(--s-7) 0; color:var(--text-3); font-size:var(--text-sm);
 <p>Four of the fourteen are not in the mid-term block of the handout at all, and two of those are</p>
 <p>never scheduled anywhere in the plan. Those are taught here from the textbook named beside them.</p>
 <hr>
+<blockquote class="note"><strong>Companion page.</strong> This set is the topic-by-topic explanation. The study plan, the scope conflict against the handout, the mock paper and the numeric set live in the roadmap: <a href="../midterm-roadmap/DSA-MIDTERM-ROADMAP.html#s5">DSA mid-term roadmap, the fourteen projected topics</a> That link opens the roadmap's topic plan section (<code>#s5</code>), which is the session-by-session schedule that pairs with the fourteen sections below.</blockquote>
 <section class="topic" id="t1" aria-labelledby="t1-h"><header class="topic__head"><span class="topic__n">1</span><h2 id="t1-h">Array</h2></header>
 <h3>The plain explanation</h3>
 <p><em>Scope: in the mid-term block, handout lectures 1 to 4. Source: capture <code>lec05_run_output.txt</code>, lesson <code>05_ds_memory_representation.cpp</code>.</em></p>
@@ -308,7 +309,7 @@ footer{padding:var(--s-7) 0; color:var(--text-3); font-size:var(--text-sm);
 <tr><td>4</td><td>0x7ffe7c3131b0 + 4 × 4 = 0x7ffe7c3131c0</td><td>16</td><td>50</td></tr>
 </tbody></table></div>
 <p>The capture prints the arithmetic back: index 4 in one step equals <code>&amp;a[4]</code>, yes.</p>
-<figure><img src="diagrams/01-array-index-arithmetic.png" alt="Array index arithmetic" loading="lazy" width="1400" height="900"><figcaption>Array index arithmetic</figcaption></figure>
+<figure><img src="diagrams/01-array-index-arithmetic.png" alt="Array index arithmetic" loading="lazy" width="1384" height="1321"><figcaption>Array index arithmetic</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -387,7 +388,7 @@ int main(void) {
 <tr><td><code>P2 { char a; int b; char c; }</code></td><td>12</td><td><code>a</code> at 0</td><td>3 bytes at 1 to 3, then 3 at 9 to 11</td><td>none</td></tr>
 <tr><td><code>P3 { char a; char b; int c; }</code></td><td>8</td><td><code>a</code> at 0, <code>b</code> at 1</td><td>2 bytes at 2 to 3</td><td>none</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/02-pointer-arithmetic.png" alt="Pointer arithmetic and the node layout" loading="lazy" width="1400" height="900"><figcaption>Pointer arithmetic and the node layout</figcaption></figure>
+<figure><img src="diagrams/02-pointer-arithmetic.png" alt="Pointer arithmetic and the node layout" loading="lazy" width="1399" height="2310"><figcaption>Pointer arithmetic and the node layout</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -482,7 +483,7 @@ struct Node *push_front(struct Node *head, int v) {
 <tr><td>pop() gives 20</td><td>1</td><td>10</td></tr>
 <tr><td>pop() gives 10</td><td>0</td><td>empty</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/03-stack-array-push-pop.png" alt="Stack by array: push, pop and the capacity limit" loading="lazy" width="1400" height="900"><figcaption>Stack by array: push, pop and the capacity limit</figcaption></figure>
+<figure><img src="diagrams/03-stack-array-push-pop.png" alt="Stack by array: push, pop and the capacity limit" loading="lazy" width="1400" height="2281"><figcaption>Stack by array: push, pop and the capacity limit</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -580,8 +581,8 @@ int pop(struct ArrayStack *s, int *out) {
 <tr><td>3 dequeues</td><td>3</td><td>5</td><td>2</td><td><code>-- -- -- 4 5</code></td></tr>
 <tr><td>enqueue(6)</td><td>3</td><td>5</td><td>2</td><td>REFUSED, <code>rear</code> is at capacity</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/04-queue-fifo-indices.png" alt="Queue: FIFO, the wasted slots, and the ring" loading="lazy" width="1400" height="900"><figcaption>Queue: FIFO, the wasted slots, and the ring</figcaption></figure>
-<figure><img src="diagrams/16-circular-queue-wrap.png" alt="Circular queue: the index trajectory through two wrap-arounds" loading="lazy" width="1400" height="900"><figcaption>Circular queue: the index trajectory through two wrap-arounds</figcaption></figure>
+<figure><img src="diagrams/04-queue-fifo-indices.png" alt="Queue: FIFO, the wasted slots, and the ring" loading="lazy" width="1400" height="1636"><figcaption>Queue: FIFO, the wasted slots, and the ring</figcaption></figure>
+<figure><img src="diagrams/16-circular-queue-wrap.png" alt="Circular queue: the index trajectory through two wrap-arounds" loading="lazy" width="1400" height="2353"><figcaption>Circular queue: the index trajectory through two wrap-arounds</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -686,7 +687,7 @@ int dequeue(struct CircularQueue *q, int *out) {
 <tr><td><code>head = p</code></td><td>one pointer write</td><td>O(1)</td></tr>
 <tr><td>traverse to position i</td><td><code>cur = cur-&gt;next</code> i times</td><td>O(i)</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/05-linked-list-node-insert.png" alt="Linked list: node layout, head insertion, traversal" loading="lazy" width="1400" height="900"><figcaption>Linked list: node layout, head insertion, traversal</figcaption></figure>
+<figure><img src="diagrams/05-linked-list-node-insert.png" alt="Linked list: node layout, head insertion, traversal" loading="lazy" width="1398" height="2319"><figcaption>Linked list: node layout, head insertion, traversal</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -781,9 +782,9 @@ size_t length(const struct Node *head) {
 <tr><td>8</td><td>11</td><td>empty</td><td>11</td><td>1 2 4 5 8 9 10 11</td></tr>
 </tbody></table></div>
 <p>Comparisons in that merge: 7, against the bounds 4 and 7 for runs of 4 and 4.</p>
-<figure><img src="diagrams/06-merge-sort-merge-step.png" alt="Merge sort: the merge step and the recursion tree" loading="lazy" width="1400" height="900"><figcaption>Merge sort: the merge step and the recursion tree</figcaption></figure>
-<figure><img src="diagrams/15-merge-sort-recursion-tree.png" alt="Merge sort recursion tree" loading="lazy" width="1400" height="900"><figcaption>Merge sort recursion tree</figcaption></figure>
-<figure><img src="diagrams/17-merge-sort-array-vs-list.png" alt="Merge sort: the array buffer against the list relinking" loading="lazy" width="1400" height="900"><figcaption>Merge sort: the array buffer against the list relinking</figcaption></figure>
+<figure><img src="diagrams/06-merge-sort-merge-step.png" alt="Merge sort: the merge step and the recursion tree" loading="lazy" width="1400" height="2501"><figcaption>Merge sort: the merge step and the recursion tree</figcaption></figure>
+<figure><img src="diagrams/15-merge-sort-recursion-tree.png" alt="Merge sort recursion tree" loading="lazy" width="1400" height="2242"><figcaption>Merge sort recursion tree</figcaption></figure>
+<figure><img src="diagrams/17-merge-sort-array-vs-list.png" alt="Merge sort: the array buffer against the list relinking" loading="lazy" width="1384" height="657"><figcaption>Merge sort: the array buffer against the list relinking</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -879,7 +880,7 @@ void merge_sort(int *a, int lo, int hi, int *buf) {
 </tbody></table></div>
 <p>Steps 2 to 4 continue down to 1, and 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28, which is n(n − 1)/2 at</p>
 <p>n = 8. On the sorted input nothing ever needs to move, so the swaps column stays 0.</p>
-<figure><img src="diagrams/07-quick-sort-lomuto-partition.png" alt="Quick sort: the Lomuto partition and the degenerate case" loading="lazy" width="1400" height="900"><figcaption>Quick sort: the Lomuto partition and the degenerate case</figcaption></figure>
+<figure><img src="diagrams/07-quick-sort-lomuto-partition.png" alt="Quick sort: the Lomuto partition and the degenerate case" loading="lazy" width="1399" height="2337"><figcaption>Quick sort: the Lomuto partition and the degenerate case</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -973,7 +974,7 @@ void quick_sort(int *a, int lo, int hi) {
 <tr><td>Finiteness</td><td>it ends after a finite number of steps</td><td>a recursion with no base case runs the stack out</td></tr>
 <tr><td>Effectiveness</td><td>every step is basic enough to carry out</td><td>the steps cannot be executed at all</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/08-algorithm-fundamentals.png" alt="Algorithm fundamentals and the missing base case" loading="lazy" width="1400" height="900"><figcaption>Algorithm fundamentals and the missing base case</figcaption></figure>
+<figure><img src="diagrams/08-algorithm-fundamentals.png" alt="Algorithm fundamentals and the missing base case" loading="lazy" width="1384" height="970"><figcaption>Algorithm fundamentals and the missing base case</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -1058,7 +1059,7 @@ int sum_to(int n) {                 /* input: n. output: one int */
 <tr><td>1/1</td><td>certified from n = 7, margin 7</td><td>fails from n = 7, no n₀</td></tr>
 <tr><td>2/1</td><td>certified from n = 2, margin 3</td><td>fails from n = 2, no n₀</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/09-asymptotic-certificate.png" alt="The asymptotic certificate" loading="lazy" width="1400" height="900"><figcaption>The asymptotic certificate</figcaption></figure>
+<figure><img src="diagrams/09-asymptotic-certificate.png" alt="The asymptotic certificate" loading="lazy" width="1399" height="2106"><figcaption>The asymptotic certificate</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -1137,7 +1138,7 @@ int certifies_upper(long long (*f)(long long), long long (*g)(long long),
 </tbody></table></div>
 <p>Every count above was printed by the program next to a closed form it computed independently, and</p>
 <p>the verdict column in the capture reads match for all of them.</p>
-<figure><img src="diagrams/10-finding-complexity-loop-counts.png" alt="Finding complexity: loop counts and the three cases" loading="lazy" width="1400" height="900"><figcaption>Finding complexity: loop counts and the three cases</figcaption></figure>
+<figure><img src="diagrams/10-finding-complexity-loop-counts.png" alt="Finding complexity: loop counts and the three cases" loading="lazy" width="1384" height="795"><figcaption>Finding complexity: loop counts and the three cases</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -1233,7 +1234,7 @@ size_t count_ops(size_t n) {
 <tr><td>array by level, slot 1 is the root</td><td>left 2i, right 2i + 1</td><td>i / 2, integer division</td><td>4 bytes per slot, shape decides how many slots</td></tr>
 <tr><td>node plus pointers</td><td>follow <code>left</code> at offset 8</td><td>walk from the root</td><td>24 bytes per node, 7 allocations for 7 nodes</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/11-trees-fundamentals.png" alt="Trees: vocabulary, storage and what each form pays" loading="lazy" width="1400" height="900"><figcaption>Trees: vocabulary, storage and what each form pays</figcaption></figure>
+<figure><img src="diagrams/11-trees-fundamentals.png" alt="Trees: vocabulary, storage and what each form pays" loading="lazy" width="1399" height="1666"><figcaption>Trees: vocabulary, storage and what each form pays</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -1327,7 +1328,7 @@ int height(const struct Node *n) {
 <tr><td>tree node</td><td><code>struct TreeNodeForm { int key; TreeNodeForm* left; TreeNodeForm* right; };</code></td><td>24</td><td>4 bytes at 4 to 7</td></tr>
 <tr><td>BST wrapper</td><td><code>class BstForm { TreeNodeForm* root_; size_t count_; };</code></td><td>16</td><td>0</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/12-formulation-in-c-memory-layout.png" alt="Formulation in C: the memory layout of every structure" loading="lazy" width="1400" height="900"><figcaption>Formulation in C: the memory layout of every structure</figcaption></figure>
+<figure><img src="diagrams/12-formulation-in-c-memory-layout.png" alt="Formulation in C: the memory layout of every structure" loading="lazy" width="1384" height="1061"><figcaption>Formulation in C: the memory layout of every structure</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -1427,7 +1428,7 @@ static_assert(sizeof(struct TreeNodeForm) == 24, "tree node is 24 bytes");</code
 <tr><td>1, 2, 3, ... 31</td><td>31</td><td>a chain, every node has only a right child</td></tr>
 <tr><td>16, 8, 24, ... median first</td><td>5</td><td>perfectly balanced, 5 levels</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/13-bst-property-and-delete.png" alt="BST: the property, search paths and the three delete cases" loading="lazy" width="1400" height="900"><figcaption>BST: the property, search paths and the three delete cases</figcaption></figure>
+<figure><img src="diagrams/13-bst-property-and-delete.png" alt="BST: the property, search paths and the three delete cases" loading="lazy" width="1399" height="1666"><figcaption>BST: the property, search paths and the three delete cases</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
@@ -1527,7 +1528,7 @@ void inorder(const struct Node *root) {
 <tr><td>delete at the front</td><td>O(n), shift back</td><td>O(1), 1 write plus 1 free</td><td>pop O(1)</td><td>O(1), 3 writes</td><td>O(h)</td></tr>
 <tr><td>find the minimum</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(h), walk left</td></tr>
 </tbody></table></div>
-<figure><img src="diagrams/14-operations-cost-matrix.png" alt="The operation cost matrix" loading="lazy" width="1400" height="900"><figcaption>The operation cost matrix</figcaption></figure>
+<figure><img src="diagrams/14-operations-cost-matrix.png" alt="The operation cost matrix" loading="lazy" width="1384" height="1932"><figcaption>The operation cost matrix</figcaption></figure>
 <h3>The proof</h3>
 <div class="tbl-wrap">
 <table>
